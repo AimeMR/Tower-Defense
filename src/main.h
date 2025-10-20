@@ -198,27 +198,17 @@
 	void InitGL();	
 	
 	void InitAPI();
-	void GetGLVersion(int* major, int* minor);
 
 // Entorn VGI: Control de l'EVENT ONSIZE
 	void OnSize(GLFWwindow* window, int width, int height);
-
 	void OnPaint(GLFWwindow* window);
 	void configura_Escena();
 	void dibuixa_Escena();
-	void Barra_Estat();
 
 // EntornVGI: Funcions de mostrar Finestres ImGui
 	void draw_Menu_ImGui();
 	void MostraEntornVGIWindow(bool* p_open);
 	void ShowArxiusOptions();
-	void ShowAboutWindow(bool* p_open);
-	int shortCut_Camera();
-	int shortCut_Polars();
-	int shortCut_Projeccio();
-	int shortCut_Objecte();
-	int shortCut_Iluminacio();
-	int shortCut_Shader();
 	void ShowEntornVGIWindow(bool* p_open);
 
 // EntornVGI: RECURSOS DE MENU (persianes) DE L'APLICACIO:
@@ -229,22 +219,10 @@
 	void OnArxiuObrirSkybox();
 	// Desplegable CAMERA
 	void OnCameraEsferica();
-	void OnCameraOrigenEsferica();
 	void OnVistaMobil();
 	void OnVistaZoom();
-	void OnVistaZoomOrto();
 	void OnVistaSatelit();
-	void OnVistaPolarsX();
-	void OnVistaPolarsY();
-	void OnVistaPolarsZ();
-	void OnCameraNavega();
-	void OnCameraOrigenNavega();
-	void OnCameraGeode();
-	void OnCameraOrigenGeode();
 	// Desplegable VISTA
-	void OnVistaFullscreen();
-	void OnVistaPan();
-	void OnVistaOrigenPan();
 	void OnVistaEixos();
 	void OnVistaSkyBox();
 	// Desplegable PROJECCIO
@@ -315,24 +293,6 @@
 	void OnShaderLoadFiles();
 	void OnShaderPBinaryWrite();
 	void OnShaderPBinaryRead();
-
-// Entorn VGI: Control de l'EVENT TECLAT
-	void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void OnKeyUp(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void OnTextDown(GLFWwindow* window, unsigned int codepoint);
-
-// Entorn VGI: Funcions de tractament de teclat en diferents modus
-	void Teclat_Shift(int key, GLFWwindow* window);
-	void Teclat_Ctrl(int key);
-	void Teclat_ColorObjecte(int key, int action);
-	void Teclat_ColorFons(int key, int action);
-	void Teclat_Navega(int key, int action);
-	void Teclat_Pan(int key, int action);
-	void Teclat_TransEscala(int key, int action);
-	void Teclat_TransRota(int key, int action);
-	void Teclat_TransTraslada(int key, int action);
-	void Teclat_Grid(int key, int action);
-	void Teclat_PasCorbes(int key, int action);
 
 // Entorn VGI: Control de l'EVENT MOUSE
 	void OnMouseButton(GLFWwindow* window, int button, int action, int mods);
