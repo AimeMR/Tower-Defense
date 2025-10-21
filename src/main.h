@@ -203,28 +203,15 @@
 	void OnSize(GLFWwindow* window, int width, int height);
 	void dibuixa_Escena();
 	void OnPaint(GLFWwindow* window);
-	void draw_Menu_ImGui();
 	// Desplegable VISTA
 	void OnVistaSkyBox();
-	// Desplegable SHADERS
-	void OnShaderFlat();
-	void OnShaderGouraud();
-	void OnShaderPhong();
-	void OnShaderLoadFiles();
-	void OnShaderPBinaryWrite();
-	void OnShaderPBinaryRead();
+
 
 // Entorn VGI: Control de l'EVENT MOUSE
 	void OnMouseButton(GLFWwindow* window, int button, int action, int mods);
 	void OnMouseMove(GLFWwindow* window, double xpos, double ypos);
-	void OnMouseWheel(GLFWwindow* window, double xoffset, double yoffset);
-
-// Entorn VGI: Control de l'EVENT TIMER
-	void OnTimer();
-
+	void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods);
 // ---------------- Entorn VGI: Funcions locals a main.cpp
-	int Log2(int num);							// Log2: Càlcul del log base 2 de num
-	int llegir_ptsC(const char* nomf);				// Llegir Punts Control Corbes Bezier i B-Spline
 	void OnFull_Screen(GLFWmonitor* monitor, GLFWwindow* window);
 // ---------------- Entorn VGI: Tractament d'errors
 	void error_callback(int code, const char* description);
