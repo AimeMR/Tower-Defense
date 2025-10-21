@@ -205,8 +205,6 @@
 	void OnPaint(GLFWwindow* window);
 	// Desplegable VISTA
 	void OnVistaSkyBox();
-
-
 // Entorn VGI: Control de l'EVENT MOUSE
 	void OnMouseButton(GLFWwindow* window, int button, int action, int mods);
 	void OnMouseMove(GLFWwindow* window, double xpos, double ypos);

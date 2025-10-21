@@ -43,7 +43,7 @@ void InitGL()
 	OPV_G.R = 15.0;		OPV_G.alfa = 0.0;	OPV_G.beta = 0.0;	// Origen PV en esfèriques per a Vista_Geode
 
 // Entorn VGI: Variables de control per Menú Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
-	fullscreen = false;
+	fullscreen = true;
 	pan = false;
 	eixos = true;	eixos_programID = 0;  eixos_Id = 0;
 	sw_grid = false;
@@ -362,7 +362,6 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-
 	ImGuiIO& io = ImGui::GetIO();
 	io.AddMouseButtonEvent(button, action);
 
@@ -415,19 +414,15 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 	
 	//ZOOM
 	if (m_ButoDAvall && zzoom && (projeccio != CAP))
-	{	//CSize zoomincr = m_PosDAvall - point;
+	{
 		zoomincr.cx = m_PosDAvall.x - xpos;		zoomincr.cy = m_PosDAvall.y - ypos;
 		long int incr = zoomincr.cy / 1.0;
 
 		OPV.R = OPV.R + incr;
-		//if (OPV.R < 0.25) OPV.R = 0.25;
 		if (OPV.R < p_near) OPV.R = p_near;
 		if (OPV.R > p_far) OPV.R = p_far;
 
-		//m_PosDAvall = point;
 		m_PosDAvall.x = xpos;				m_PosDAvall.y = ypos;
-		// Crida a OnPaint() per redibuixar l'escena
-		//OnPaint(window);
 	}
 }
 
@@ -547,7 +542,7 @@ void menu() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	///
+
 	ImGui::Render();
 }
 
