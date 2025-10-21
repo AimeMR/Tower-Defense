@@ -123,7 +123,7 @@
 
 // Entorn VGI: Variables de control del menú Llums
 	bool llum_ambient;		// Booleana que controla la llum ambient (SI/NO).
-	LLUM llumGL[NUM_MAX_LLUMS];		// Vector de llums d'OpenGL
+	LLUM llum;		// Vector de llums d'OpenGL
 	bool sw_llambient;		// Booleana que controla modus de configurar el color de la llum ambient [TRUE] o no [FALSE]
 	CColor col_llambient;	// Color llum ambient.
 
@@ -201,73 +201,11 @@
 
 // Entorn VGI: Control de l'EVENT ONSIZE
 	void OnSize(GLFWwindow* window, int width, int height);
-	void OnPaint(GLFWwindow* window);
-	void configura_Escena();
 	void dibuixa_Escena();
-
-// EntornVGI: Funcions de mostrar Finestres ImGui
+	void OnPaint(GLFWwindow* window);
 	void draw_Menu_ImGui();
-	void MostraEntornVGIWindow(bool* p_open);
-	void ShowArxiusOptions();
-	void ShowEntornVGIWindow(bool* p_open);
-
-// EntornVGI: RECURSOS DE MENU (persianes) DE L'APLICACIO:
-	void OnArxiuObrirFractal();
-	void OnArxiuObrirFitxerObj();
-	void OnArxiuObrirFitxerFontLlum();
-	bool llegir_FontLlum(char* nomf);
-	void OnArxiuObrirSkybox();
-	// Desplegable CAMERA
-	void OnCameraEsferica();
-	void OnVistaMobil();
-	void OnVistaZoom();
-	void OnVistaSatelit();
 	// Desplegable VISTA
-	void OnVistaEixos();
 	void OnVistaSkyBox();
-	// Desplegable OBJECTE
-	void OnObjecteCap();
-	void OnObjecteCub();
-	void OnObjecteCubRGB();
-	void OnObjecteEsfera();
-	void OnObjecteTetera();
-	void OnObjecteArc();
-	void OnObjecteTie();
-	void OnObjecteCorbaBezier();
-	void OnObjecteCorbaLemniscata();
-	void OnObjecteCorbaHermitte();
-	void OnObjecteCorbaCatmullRom();
-	void OnObjecteCorbaBSpline();
-	void OnObjectePuntsControl();
-	void OnCorbesTriedreFrenet();
-	void OnCorbesTriedreDarboux();
-	void OnObjecteMatriuPrimitives();
-	void OnObjecteMatriuPrimitivesVAO();
-	// Desplegable OCULTACIONS
-	void OnOcultacionsFrontFaces();
-	void OnOcultacionsTestvis();
-	void OnOcultacionsZBuffer();
-	// Desplegable ILUMINACIÓ
-	void OnIluminacioLlumfixe();
-	void OnIluminacio2Sides();
-	void OnMaterialReflmaterial();
-	void OnMaterialEmissio();
-	void OnMaterialAmbient();
-	void OnMaterialDifusa();
-	void OnMaterialEspecular();
-	void OnIluminacioTextures();
-	void OnIluminacioTexturaFitxerimatge();
-	void OnIluminacioTexturaFlagInvertY();
-	// Desplegable LLUMS
-	void OnLlumsLlumAmbient();
-	void OnLlumsLlum0();
-	void OnLlumsLlum1();
-	void OnLlumsLlum2();
-	void OnLlumsLlum3();
-	void OnLlumsLlum4();
-	void OnLlumsLlum5();
-	void OnLlumsLlum6();
-	void OnLlumsLlum7();
 	// Desplegable SHADERS
 	void OnShaderFlat();
 	void OnShaderGouraud();

@@ -89,7 +89,7 @@ const double p_far=50000.0;
 #define TEXTURA_FITXERIMA 'I'
 
 // --------------  VGI: NOMBRE DE LLUMS: Nombre de Llums de l'aplicació, les d'OpenGL
-const int NUM_MAX_LLUMS = 8;
+const int NUM_MAX_LLUMS = 1;
 
 // -------------- VGI: SHADERS --> Tipus de Shaders
 #define CAP_SHADER ' '
