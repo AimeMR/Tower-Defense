@@ -225,10 +225,6 @@
 	// Desplegable VISTA
 	void OnVistaEixos();
 	void OnVistaSkyBox();
-	// Desplegable PROJECCIO
-	void OnProjeccioPerspectiva();
-	void OnProjeccioOrtografica();
-	void OnProjeccioAxonometrica();
 	// Desplegable OBJECTE
 	void OnObjecteCap();
 	void OnObjecteCub();
@@ -247,16 +243,6 @@
 	void OnCorbesTriedreDarboux();
 	void OnObjecteMatriuPrimitives();
 	void OnObjecteMatriuPrimitivesVAO();
-	// Desplegable TRANSFORMA
-	void OnTransformaTraslacio();
-	void OnTransformaOrigenTraslacio();
-	void OnTransformaRotacio();
-	void OnTransformaOrigenRotacio();
-	void OnTransformaEscalat();
-	void OnTransformaOrigenEscalat();
-	void OnTransformaMobilX();
-	void OnTransformaMobilY();
-	void OnTransformaMobilZ();
 	// Desplegable OCULTACIONS
 	void OnOcultacionsFrontFaces();
 	void OnOcultacionsTestvis();
@@ -264,10 +250,6 @@
 	// Desplegable ILUMINACIÓ
 	void OnIluminacioLlumfixe();
 	void OnIluminacio2Sides();
-	void OnIluminacioPunts();
-	void OnIluminacioFilferros();
-	void OnIluminacioPlana();
-	void OnIluminacioSuau();
 	void OnMaterialReflmaterial();
 	void OnMaterialEmissio();
 	void OnMaterialAmbient();

@@ -55,7 +55,7 @@ void InitGL()
 	tr_cpv.x = 0;	tr_cpv.y = 0;	tr_cpv.z = 0;		tr_cpvF.x = 0;	tr_cpvF.y = 0;	tr_cpvF.z = 0;
 
 // Entorn VGI: Variables de control per les opcions de menú Projecció, Objecte
-	projeccio = CAP;	// projeccio = PERSPECT;
+	projeccio = PERSPECT;	// projeccio = PERSPECT;
 	ProjectionMatrix = glm::mat4(1.0);	// Inicialitzar a identitat
 	objecte = CAP;		// objecte = TETERA;
 
@@ -75,10 +75,10 @@ void InitGL()
 	GTMatrix= glm::mat4(1.0);		// Inicialitzar a identitat
 
 // Entorn VGI: Variables de control per les opcions de menú Ocultacions
-	front_faces = true;	test_vis = false;	oculta = false;		back_line = false;
+	front_faces = true;	test_vis = false;	oculta = true;		back_line = false;
 
 // Entorn VGI: Variables de control del menú Iluminació		
-	ilumina = FILFERROS;			ifixe = false;					ilum2sides = false;
+	ilumina = SUAU;			ifixe = true;					ilum2sides = false;
 // Reflexions actives: Ambient [1], Difusa [2] i Especular [3]. No actives: Emission [0]. 
 	sw_material[0] = false;			sw_material[1] = true;			sw_material[2] = true;			sw_material[3] = true;	sw_material[4] = true;
 	sw_material_old[0] = false;		sw_material_old[1] = true;		sw_material_old[2] = true;		sw_material_old[3] = true;	sw_material_old[4] = true;
@@ -258,7 +258,7 @@ void InitGL()
 	shaderLighting.releaseAllShaders();
 	// Càrrega Shader de Gouraud
 	shader_programID = 0;
-	fprintf(stderr, "Gouraud_shdrML: \n");
+	fprintf(stderr, "Gouraud_shdrML: \n"); 
 	if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\gouraud_shdrML.vert", ".\\shaders\\gouraud_shdrML.frag");
 	shader = GOURAUD_SHADER;
 
@@ -457,7 +457,7 @@ void OnPaint(GLFWwindow* window)
 		n[0] = 0;		n[1] = 0;		n[2] = 0;
 		ViewMatrix = Vista_Esferica(shader_programID, OPV, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
 			front_faces, oculta, test_vis, back_line,
-			ilumina, llum_ambient, llumGL, ifixe, ilum2sides,
+			ilumina, llum_ambient, llumGL, true, ilum2sides,
 			eixos, grid, hgrid);
 	}
 
@@ -822,9 +822,6 @@ void ShowEntornVGIWindow(bool* p_open)
 		ImGui::Separator();
 	}
 
-	//Simplificació desplegable projecció
-	OnProjeccioPerspectiva();
-
 // DESPLEGABLE VISTA
 	//IMGUI_DEMO_MARKER("Help");
 	if (ImGui::CollapsingHeader("OBJECTE"))
@@ -938,9 +935,6 @@ void ShowEntornVGIWindow(bool* p_open)
 //IMGUI_DEMO_MARKER("Help");
 	if (ImGui::CollapsingHeader("ILUMINACIO"))
 	{
-		ImGui::Checkbox("Llum Fixe (T) / Llum lligada a camera (F) - (<Ctrl>+F)", &ifixe);
-		ImGui::Spacing();
-
 		// Entorn VGI. Mostrar Opcions desplegable TIPUS ILUMINACIO
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 		ImGui::SeparatorText("TIPUS ILUMINACIO:");
@@ -948,47 +942,6 @@ void ShowEntornVGIWindow(bool* p_open)
 
 		
 		static ImGuiComboFlags flags = ( 0 && ImGuiComboFlags_PopupAlignLeft && ImGuiComboFlags_NoPreview && ImGuiComboFlags_NoArrowButton);
-
-		const char* items[] = { "Punts (<Ctrl>+F1)", "Filferros (<Ctrl>+F2)", "Plana (<Ctrl>+F3)",
-			"Suau (<Ctrl>+F4)" };
-		const char* combo_preview_value = items[oIlumina];  // Pass in the preview value visible before opening the combo (it could be anything)
-		if (ImGui::BeginCombo("     ", combo_preview_value, flags))
-		{	for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-			{	const bool is_selected = (oIlumina == n);
-				if (ImGui::Selectable(items[n], is_selected))
-					oIlumina = n;
-
-				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-				if (is_selected) ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-
-		// Entorn VGI. Gestió opcions desplegable TIPUS ILUMINACIO segons el valor de la variable selected
-			switch (oIlumina)
-			{
-			case 0:
-				// Opció ILUMINACIO Punts
-				if (ilumina != PUNTS) OnIluminacioPunts();
-				break;
-			case 1:
-				// Opció ILUMINACIO Filferros
-				if (ilumina != FILFERROS) OnIluminacioFilferros();
-				break;
-			case 2:
-				// Opció ILUMINACIO Plana
-				if (ilumina != PLANA) OnIluminacioPlana();
-				break;
-			case 3:
-				// Opció ILUMINACIO Suau
-				if (ilumina != SUAU) OnIluminacioSuau();
-				break;
-			default: 
-				// Opció per defecte: FILFERROS
-				OnIluminacioFilferros();
-				break;
-
-			}
 
 		//IMGUI_DEMO_MARKER("Widgets/Selectables/Single Selection REFLEXIO MATERIAL");
 		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
@@ -1140,25 +1093,6 @@ void ShowEntornVGIWindow(bool* p_open)
 	ImGui::PopItemWidth();
 	ImGui::End();
 }
-
-
-/* ------------------------------------------------------------------------- */
-/*   RECURSOS DE MENU (persianes) DE L'APLICACIO:                            */
-/*					1. ARXIUS												 */
-/*					4. CÀMERA: Esfèrica (Mobil, Zoom, ZoomO, Satelit), Navega*/
-/*					5. VISTA: Pan, Eixos i Grid							     */
-/*					6. PROJECCIÓ                                             */
-/*					7. OBJECTE					                             */
-/*					8. TRANSFORMA											 */
-/*					9. OCULTACIONS											 */
-/*				   10. IL.LUMINACIÓ											 */
-/*				   11. LLUMS												 */
-/*				   12. SHADERS												 */
-/* ------------------------------------------------------------------------- */
-
-/* ------------------------------------------------------------------------- */
-/*					1. ARXIUS 												 */
-/* ------------------------------------------------------------------------- */
 
 // Obrir fitxer Fractal
 void OnArxiuObrirFractal()
@@ -1625,70 +1559,6 @@ void OnOcultacionsZBuffer()
 /* ------------------------------------------------------------------------- */
 /*					10. IL.LUMINACIÓ										 */
 /* ------------------------------------------------------------------------- */
-
-// IL.LUMINACIÓ Font de llum fixe? (opció booleana).
-void OnIluminacioLlumfixe()
-{
-// TODO: Agregue aquí su código de controlador de comandos
-	ifixe = !ifixe;
-}
-
-
-// IL.LUMINACIÓ: Mantenir iluminades les Cares Front i Back
-void OnIluminacio2Sides()
-{
-// TODO: Agregue aquí su código de controlador de comandos
-	ilum2sides = !ilum2sides;
-}
-
-
-// ILUMINACIÓ PUNTS
-void OnIluminacioPunts()
-{
-// TODO: Agregue aquí su código de controlador de comandos
-	ilumina = PUNTS;
-	test_vis = false;		oculta = false;
-}
-
-
-// ILUMINACIÓ FILFERROS
-void OnIluminacioFilferros()
-{
-// TODO: Agregue aquí su código de controlador de comandos
-	ilumina = FILFERROS;
-	test_vis = false;		oculta = false;
-}
-
-
-// ILUMINACIÓ PLANA
-void OnIluminacioPlana()
-{
-// TODO: Agregue aquí su código de controlador de comandos
-	test_vis = false;		oculta = true;
-	if (ilumina != PLANA) {
-		ilumina = PLANA;
-		// Elimina shader anterior
-		shaderLighting.DeleteProgram();
-		// Càrrega Flat shader
-		shader_programID = shaderLighting.loadFileShaders(".\\shaders\\flat_shdrML.vert", ".\\shaders\\flat_shdrML.frag");
-		}
-}
-
-
-// ILUMINACIÓ SUAU
-void OnIluminacioSuau()
-{
-// TODO: Agregue aquí su código de controlador de comandos
-	test_vis = false;		oculta = true;
-	if (ilumina != SUAU) {
-		ilumina = SUAU;
-		// Elimina shader anterior
-		shaderLighting.DeleteProgram();
-		// Càrrega Flat shader
-		shader_programID = shaderLighting.loadFileShaders(".\\shaders\\gouraud_shdrML.vert", ".\\shaders\\gouraud_shdrML.frag");
-	}
-}
-
 
 // ILUMINACIÓ->REFLECTIVITAT MATERIAL / COLOR: Activació i desactivació de la reflectivitat pròpia del material com a color.
 void OnMaterialReflmaterial()
