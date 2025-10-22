@@ -123,7 +123,7 @@
 
 // Entorn VGI: Variables de control del menú Llums
 	bool llum_ambient;		// Booleana que controla la llum ambient (SI/NO).
-	LLUM llumGL[NUM_MAX_LLUMS];		// Vector de llums d'OpenGL
+	LLUM llum;		// Vector de llums d'OpenGL
 	bool sw_llambient;		// Booleana que controla modus de configurar el color de la llum ambient [TRUE] o no [FALSE]
 	CColor col_llambient;	// Color llum ambient.
 
@@ -198,153 +198,18 @@
 	void InitGL();	
 	
 	void InitAPI();
-	void GetGLVersion(int* major, int* minor);
 
 // Entorn VGI: Control de l'EVENT ONSIZE
 	void OnSize(GLFWwindow* window, int width, int height);
-
-	void OnPaint(GLFWwindow* window);
-	void configura_Escena();
 	void dibuixa_Escena();
-	void Barra_Estat();
-
-// EntornVGI: Funcions de mostrar Finestres ImGui
-	void draw_Menu_ImGui();
-	void MostraEntornVGIWindow(bool* p_open);
-	void ShowArxiusOptions();
-	void ShowAboutWindow(bool* p_open);
-	int shortCut_Camera();
-	int shortCut_Polars();
-	int shortCut_Projeccio();
-	int shortCut_Objecte();
-	int shortCut_Iluminacio();
-	int shortCut_Shader();
-	void ShowEntornVGIWindow(bool* p_open);
-
-// EntornVGI: RECURSOS DE MENU (persianes) DE L'APLICACIO:
-	void OnArxiuObrirFractal();
-	void OnArxiuObrirFitxerObj();
-	void OnArxiuObrirFitxerFontLlum();
-	bool llegir_FontLlum(char* nomf);
-	void OnArxiuObrirSkybox();
-	// Desplegable CAMERA
-	void OnCameraEsferica();
-	void OnCameraOrigenEsferica();
-	void OnVistaMobil();
-	void OnVistaZoom();
-	void OnVistaZoomOrto();
-	void OnVistaSatelit();
-	void OnVistaPolarsX();
-	void OnVistaPolarsY();
-	void OnVistaPolarsZ();
-	void OnCameraNavega();
-	void OnCameraOrigenNavega();
-	void OnCameraGeode();
-	void OnCameraOrigenGeode();
+	void OnPaint(GLFWwindow* window);
 	// Desplegable VISTA
-	void OnVistaFullscreen();
-	void OnVistaPan();
-	void OnVistaOrigenPan();
-	void OnVistaEixos();
 	void OnVistaSkyBox();
-	// Desplegable PROJECCIO
-	void OnProjeccioPerspectiva();
-	void OnProjeccioOrtografica();
-	void OnProjeccioAxonometrica();
-	// Desplegable OBJECTE
-	void OnObjecteCap();
-	void OnObjecteCub();
-	void OnObjecteCubRGB();
-	void OnObjecteEsfera();
-	void OnObjecteTetera();
-	void OnObjecteArc();
-	void OnObjecteTie();
-	void OnObjecteCorbaBezier();
-	void OnObjecteCorbaLemniscata();
-	void OnObjecteCorbaHermitte();
-	void OnObjecteCorbaCatmullRom();
-	void OnObjecteCorbaBSpline();
-	void OnObjectePuntsControl();
-	void OnCorbesTriedreFrenet();
-	void OnCorbesTriedreDarboux();
-	void OnObjecteMatriuPrimitives();
-	void OnObjecteMatriuPrimitivesVAO();
-	// Desplegable TRANSFORMA
-	void OnTransformaTraslacio();
-	void OnTransformaOrigenTraslacio();
-	void OnTransformaRotacio();
-	void OnTransformaOrigenRotacio();
-	void OnTransformaEscalat();
-	void OnTransformaOrigenEscalat();
-	void OnTransformaMobilX();
-	void OnTransformaMobilY();
-	void OnTransformaMobilZ();
-	// Desplegable OCULTACIONS
-	void OnOcultacionsFrontFaces();
-	void OnOcultacionsTestvis();
-	void OnOcultacionsZBuffer();
-	// Desplegable ILUMINACIÓ
-	void OnIluminacioLlumfixe();
-	void OnIluminacio2Sides();
-	void OnIluminacioPunts();
-	void OnIluminacioFilferros();
-	void OnIluminacioPlana();
-	void OnIluminacioSuau();
-	void OnMaterialReflmaterial();
-	void OnMaterialEmissio();
-	void OnMaterialAmbient();
-	void OnMaterialDifusa();
-	void OnMaterialEspecular();
-	void OnIluminacioTextures();
-	void OnIluminacioTexturaFitxerimatge();
-	void OnIluminacioTexturaFlagInvertY();
-	// Desplegable LLUMS
-	void OnLlumsLlumAmbient();
-	void OnLlumsLlum0();
-	void OnLlumsLlum1();
-	void OnLlumsLlum2();
-	void OnLlumsLlum3();
-	void OnLlumsLlum4();
-	void OnLlumsLlum5();
-	void OnLlumsLlum6();
-	void OnLlumsLlum7();
-	// Desplegable SHADERS
-	void OnShaderFlat();
-	void OnShaderGouraud();
-	void OnShaderPhong();
-	void OnShaderLoadFiles();
-	void OnShaderPBinaryWrite();
-	void OnShaderPBinaryRead();
-
-// Entorn VGI: Control de l'EVENT TECLAT
-	void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void OnKeyUp(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void OnTextDown(GLFWwindow* window, unsigned int codepoint);
-
-// Entorn VGI: Funcions de tractament de teclat en diferents modus
-	void Teclat_Shift(int key, GLFWwindow* window);
-	void Teclat_Ctrl(int key);
-	void Teclat_ColorObjecte(int key, int action);
-	void Teclat_ColorFons(int key, int action);
-	void Teclat_Navega(int key, int action);
-	void Teclat_Pan(int key, int action);
-	void Teclat_TransEscala(int key, int action);
-	void Teclat_TransRota(int key, int action);
-	void Teclat_TransTraslada(int key, int action);
-	void Teclat_Grid(int key, int action);
-	void Teclat_PasCorbes(int key, int action);
-
 // Entorn VGI: Control de l'EVENT MOUSE
 	void OnMouseButton(GLFWwindow* window, int button, int action, int mods);
 	void OnMouseMove(GLFWwindow* window, double xpos, double ypos);
-	void OnMouseWheel(GLFWwindow* window, double xoffset, double yoffset);
-
-// Entorn VGI: Control de l'EVENT TIMER
-	void OnTimer();
-
+	void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods);
 // ---------------- Entorn VGI: Funcions locals a main.cpp
-	int Log2(int num);							// Log2: Càlcul del log base 2 de num
-	int llegir_ptsC(const char* nomf);				// Llegir Punts Control Corbes Bezier i B-Spline
 	void OnFull_Screen(GLFWmonitor* monitor, GLFWwindow* window);
 // ---------------- Entorn VGI: Tractament d'errors
 	void error_callback(int code, const char* description);
