@@ -17,6 +17,7 @@
 #include "visualitzacio.h"
 #include "escena.h"
 #include "main.h"
+//#include "menu.h"
 
 
 void InitGL()
@@ -537,11 +538,76 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 }
 
 
+//-----------------Variables globales
+
+
+//ImGui: Gestió de finestres de menú ImGui
+
+bool show_menu_inicio = false;
+bool show_menu_settings = false;
+bool show_menu_creditos = false;
+
 //--------------------- A PARTIR D'AQUÍ EL NOSTRE CODI
 void menu() {
+
+	// Inizializa frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
+	//if(show_another_window)
+	
+
+		// 3. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+	{
+		//ventana incio 
+		/*
+		static float f = 0.0f;
+		static int counter = 0;
+		static float PV[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+		ImGui::Begin("Menu inicio");                          // Create a window called "Status Menu" and append into it.
+
+		ImGui::Text("Finestres EntornVGI:");               // Display some text (you can use a format strings too)
+		ImGui::SameLine();
+		ImGui::Checkbox("EntornVGI Window", &show_EntornVGI_window);
+		ImGui::Separator();
+		ImGui::Spacing();
+
+	
+		
+
+		ImGui::End();*/
+		static bool use_work_area = true;
+		static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+
+		// We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
+		// Based on your use case you may want one of the other.
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
+		ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
+
+		if (ImGui::Begin("Example: Fullscreen window", NULL, flags))
+		{
+			ImGui::Checkbox("Use work area instead of main area", &use_work_area);
+			ImGui::SameLine();
+			//HelpMarker("Main Area = entire viewport,\nWork Area = entire viewport minus sections used by the main menu bars, task bars etc.\n\nEnable the main-menu bar in Examples menu to see the difference.");
+
+			ImGui::CheckboxFlags("ImGuiWindowFlags_NoBackground", &flags, ImGuiWindowFlags_NoBackground);
+			ImGui::CheckboxFlags("ImGuiWindowFlags_NoDecoration", &flags, ImGuiWindowFlags_NoDecoration);
+			ImGui::Indent();
+			ImGui::CheckboxFlags("ImGuiWindowFlags_NoTitleBar", &flags, ImGuiWindowFlags_NoTitleBar);
+			ImGui::CheckboxFlags("ImGuiWindowFlags_NoCollapse", &flags, ImGuiWindowFlags_NoCollapse);
+			ImGui::CheckboxFlags("ImGuiWindowFlags_NoScrollbar", &flags, ImGuiWindowFlags_NoScrollbar);
+			ImGui::Unindent();
+
+			//if (p_open && ImGui::Button("Close this window"))
+				//*p_open = false;
+		}
+		ImGui::End();
+
+	}
+	//ImGui::OpenPopup();
 
 	ImGui::Render();
 }
@@ -624,6 +690,7 @@ int main(void)
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
+
 	// Entorn VGI.ImGui: Setup Dear ImGui style
 	//ImGui::StyleColorsDark();
 	ImGui::StyleColorsLight();
@@ -670,11 +737,10 @@ int main(void)
 		glfwPollEvents();
 
 		menu();
-
-		// Crida a OnPaint() per redibuixar l'escena
+		//Feed input to dear imgui, start new frame
+		
 		OnPaint(window);
 		
-
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		// Entorn VGI: Activa la finestra actual
 		glfwMakeContextCurrent(window);
