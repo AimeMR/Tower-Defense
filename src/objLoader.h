@@ -67,7 +67,7 @@ class OBJLOADER_CLASS_DECL COBJModel
 {
   public:
 	void _stdcall DrawModel(int prim_Id);
-	int _stdcall LoadModel(char* szFileName);
+	int _stdcall LoadModel(const char* szFileName);
 	_stdcall COBJModel();
 	virtual _stdcall ~COBJModel();
 	void _stdcall EliminaLlista(int prim_Id);

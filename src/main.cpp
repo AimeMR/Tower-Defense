@@ -17,6 +17,7 @@
 #include "visualitzacio.h"
 #include "escena.h"
 #include "main.h"
+#include "material.h"
 
 
 void InitGL()
@@ -68,7 +69,7 @@ void InitGL()
 	transf = false;		trasl = false;		rota = false;		escal = false;
 	fact_Tras = 1;		fact_Rota = 90;
 	TG.VTras.x = 0.0;	TG.VTras.y = 0.0;	TG.VTras.z = 0;	TGF.VTras.x = 0.0;	TGF.VTras.y = 0.0;	TGF.VTras.z = 0;
-	TG.VRota.x = 0;		TG.VRota.y = 0;		TG.VRota.z = 0;	TGF.VRota.x = 0;	TGF.VRota.y = 0;	TGF.VRota.z = 0;
+	TG.VRota.x = 0;		TG.VRota.y = 0;		TG.VRota.z = 45;	TGF.VRota.x = 0;	TGF.VRota.y = 0;	TGF.VRota.z = 45;
 	TG.VScal.x = 1;		TG.VScal.y = 1;		TG.VScal.z = 1;	TGF.VScal.x = 1;	TGF.VScal.y = 1;	TGF.VScal.z = 1;
 
 	transX = false;		transY = false;		transZ = false;
@@ -89,7 +90,7 @@ void InitGL()
 // Entorn VGI: Variables de control del menú Llums
 // Entorn VGI: Inicialització variables Llums
 	llum_ambient = true;
-	llum.posicio.x = 0.0;			llum.posicio.y = 0.0;			llum.posicio.z = 200.0;		llum.posicio.w = 1.0;
+	llum.posicio.x = 100.0;			llum.posicio.y = 100.0;			llum.posicio.z = 100.0;		llum.posicio.w = 1.0;
 	llum.difusa.r = 1.0f;			llum.difusa.g = 1.0f;			llum.difusa.b = 1.0f;		llum.difusa.a = 1.0f;
 	llum.especular.r = 1.0f;		llum.especular.g = 1.0f;		llum.especular.b = 1.0f;	llum.especular.a = 1.0f;
 	llum.atenuacio.a = 0.0;		llum.atenuacio.b = 0.0;		llum.atenuacio.c = 1.0;
@@ -103,7 +104,7 @@ void InitGL()
 	shaderLighting.releaseAllShaders();
 	// Càrrega Shader de Gouraud
 	shader_programID = 0;
-	fprintf(stderr, "Gouraud_shdrML: \n"); 
+	fprintf(stderr, "phong_shdrML: \n"); 
 	if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\phong_shdrML.vert", ".\\shaders\\phong_shdrML.frag");
 	shader = PHONG_SHADER;
 
@@ -133,6 +134,7 @@ void InitGL()
 		};
 		cubemapTexture = loadCubemap(faces);
 	}
+
 
 // Entorn VGI: Variables de control dels botons de mouse
 	m_PosEAvall.x = 0;			m_PosEAvall.y = 0;			m_PosDAvall.x = 0;			m_PosDAvall.y = 0;
@@ -182,6 +184,14 @@ void InitGL()
 
 // Entorn VGI: Altres variables
 	mida = 1.0;			nom = "";		buffer = "";
+
+	mapaModel = ::new COBJModel;
+	mapaModel->netejaTextures_OBJ();
+	mapaModel->netejaVAOList_OBJ();
+	mapaModel->LoadModel(".\\modelos\\ejemplo.obj");
+
+	mapa = GameObject(mapaModel);
+
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
 
@@ -290,11 +300,10 @@ void dibuixa_Escena() {
 	//	GTMatrix = glm::scale();
 
 	//	Dibuix geometria de l'escena amb comandes GL.
-	dibuixa_EscenaGL(shader_programID, eixos, eixos_Id, grid, hgrid, objecte, col_obj, sw_material,
-		textura, texturesID, textura_map, tFlag_invert_Y,
-		npts_T, PC_t, pas_CS, sw_Punts_Control, dibuixa_TriedreFrenet,
-		ObOBJ,				// Classe de l'objecte OBJ que conté els VAO's
-		ViewMatrix, GTMatrix);
+
+
+
+
 }
 
 // OnPaint: Funció de dibuix i visualització en frame buffer del frame
@@ -323,7 +332,15 @@ void OnPaint(GLFWwindow* window)
 		'c', true, &llum, true, false,
 		eixos, grid, hgrid);
 
-	GTMatrix = instancia(transf, TG, TGF);
+
+	CColor red;
+	red.r = 0;
+	red.b = 0;
+	red.g = 0;
+	red.a = 1;
+
+	mapa.dibuixarObjecte(shader_programID, red, sw_material, ViewMatrix);
+
 	dibuixa_Escena();
 }
 
@@ -605,6 +622,8 @@ int main(void)
 
 	// Initialize Application control varibles
 	InitGL();
+
+	//cargarModelos();
 
 	// ------------- Entorn VGI: Callbacks
 	// Set GLFW event callbacks. I removed glfwSetWindowSizeCallback for conciseness

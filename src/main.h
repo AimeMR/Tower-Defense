@@ -8,9 +8,11 @@
 
 // Entorn VGI: Llibreries i constants Constants de l'aplicació EntornVGI
 #include "stdafx.h"
-
+#include "gameObject.h"
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
-#include "objLoader.h"	
+
+COBJModel* mapaModel;
+GameObject mapa;
 
 //-------------- Entorn VGI: Variables globals de main
 
@@ -191,6 +193,8 @@
 	std::string nom;	// Nom de fitxer.
 	std::string buffer; // Buffer que magatzema string caracters corresponent a variables double a printar en Status Bar (funció Barra_Estat).
 //-------------- Entorn VGI: Fi De Variables globals de main
+
+
 
 //-------------- Entorn VGI: Declaració funcions main
 

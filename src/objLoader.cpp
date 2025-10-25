@@ -60,7 +60,7 @@ _stdcall COBJModel::~COBJModel()
 
 //bool _stdcall COBJModel::LoadModel(const char szFileName[],unsigned int iDisplayList)
 //GLuint _stdcall COBJModel::LoadModel(char *szFileName, int prim_Id)
-int _stdcall COBJModel::LoadModel(char* szFileName)
+int _stdcall COBJModel::LoadModel(const char* szFileName)
 {
 ////////////////////////////////////////////////////////////////////////
 // Load a OBJ file and render its data into a display list

@@ -30,8 +30,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-//#include <GL/freeglut.h>
-//#include "freeglut_internal.h"
+ //#include <GL/freeglut.h>
+ //#include "freeglut_internal.h"
 #include "constants.h"
 #include <vector>
 #include <string>
@@ -180,7 +180,7 @@ void drawCubeSkybox();
 void glutSolidSphere(GLdouble radius, GLint slices, GLint stacks); // Draws a solid sphere
 CVAO loadglutSolidSphere_VAO(GLdouble radius, GLint slices, GLint stacks); // Loads a solid sphere as VAO
 CVAO loadglutSolidSphere_EBO(GLdouble radius, GLint slices, GLint stacks); // Loads a solid sphere as EBO
-void fghCircleTable(double **sint, double **cost, const int n);
+void fghCircleTable(double** sint, double** cost, const int n);
 
 // ---------- CONE ------------------------------------------------------------
 void glutSolidCone(GLdouble base, GLdouble height, GLint slices, GLint stacks); // Draws a solid cone
@@ -227,41 +227,41 @@ CVAO loadglutSolidTetrahedron_EBO(void);	// Loads a solid tetrahedron as EBO
 
 // ---------- ICOSAHEDRON -----------------------------------------------------
 static GLdouble icos_r[12][3] = {
-    {  1.0,             0.0,             0.0            },
-    {  0.447213595500,  0.894427191000,  0.0            },
-    {  0.447213595500,  0.276393202252,  0.850650808354 },
-    {  0.447213595500, -0.723606797748,  0.525731112119 },
-    {  0.447213595500, -0.723606797748, -0.525731112119 },
-    {  0.447213595500,  0.276393202252, -0.850650808354 },
-    { -0.447213595500, -0.894427191000,  0.0 },
-    { -0.447213595500, -0.276393202252,  0.850650808354 },
-    { -0.447213595500,  0.723606797748,  0.525731112119 },
-    { -0.447213595500,  0.723606797748, -0.525731112119 },
-    { -0.447213595500, -0.276393202252, -0.850650808354 },
-    { -1.0,             0.0,             0.0            }
+	{  1.0,             0.0,             0.0            },
+	{  0.447213595500,  0.894427191000,  0.0            },
+	{  0.447213595500,  0.276393202252,  0.850650808354 },
+	{  0.447213595500, -0.723606797748,  0.525731112119 },
+	{  0.447213595500, -0.723606797748, -0.525731112119 },
+	{  0.447213595500,  0.276393202252, -0.850650808354 },
+	{ -0.447213595500, -0.894427191000,  0.0 },
+	{ -0.447213595500, -0.276393202252,  0.850650808354 },
+	{ -0.447213595500,  0.723606797748,  0.525731112119 },
+	{ -0.447213595500,  0.723606797748, -0.525731112119 },
+	{ -0.447213595500, -0.276393202252, -0.850650808354 },
+	{ -1.0,             0.0,             0.0            }
 };
 
-static int icos_v [20][3] = {
-    {  0,  1,  2 },
-    {  0,  2,  3 },
-    {  0,  3,  4 },
-    {  0,  4,  5 },
-    {  0,  5,  1 },
-    {  1,  8,  2 },
-    {  2,  7,  3 },
-    {  3,  6,  4 },
-    {  4, 10,  5 },
-    {  5,  9,  1 },
-    {  1,  9,  8 },
-    {  2,  8,  7 },
-    {  3,  7,  6 },
-    {  4,  6, 10 },
-    {  5, 10,  9 },
-    { 11,  9, 10 },
-    { 11,  8,  9 },
-    { 11,  7,  8 },
-    { 11,  6,  7 },
-    { 11, 10,  6 }
+static int icos_v[20][3] = {
+	{  0,  1,  2 },
+	{  0,  2,  3 },
+	{  0,  3,  4 },
+	{  0,  4,  5 },
+	{  0,  5,  1 },
+	{  1,  8,  2 },
+	{  2,  7,  3 },
+	{  3,  6,  4 },
+	{  4, 10,  5 },
+	{  5,  9,  1 },
+	{  1,  9,  8 },
+	{  2,  8,  7 },
+	{  3,  7,  6 },
+	{  4,  6, 10 },
+	{  5, 10,  9 },
+	{ 11,  9, 10 },
+	{ 11,  8,  9 },
+	{ 11,  7,  8 },
+	{ 11,  6,  7 },
+	{ 11, 10,  6 }
 };
 
 void glutSolidIcosahedron(void);			// Draws a solid icosahedron
@@ -271,50 +271,50 @@ CVAO loadglutSolidIcosahedron_EBO(void);	// Draws a solid icosahedron in EBO
 // ---------- RHOMBIC DODECAHEDRON ---------------------------------------------
 
 static GLdouble rdod_r[14][3] = {
-    {  0.0,             0.0,             1.0 },
-    {  0.707106781187,  0.000000000000,  0.5 },
-    {  0.000000000000,  0.707106781187,  0.5 },
-    { -0.707106781187,  0.000000000000,  0.5 },
-    {  0.000000000000, -0.707106781187,  0.5 },
-    {  0.707106781187,  0.707106781187,  0.0 },
-    { -0.707106781187,  0.707106781187,  0.0 },
-    { -0.707106781187, -0.707106781187,  0.0 },
-    {  0.707106781187, -0.707106781187,  0.0 },
-    {  0.707106781187,  0.000000000000, -0.5 },
-    {  0.000000000000,  0.707106781187, -0.5 },
-    { -0.707106781187,  0.000000000000, -0.5 },
-    {  0.000000000000, -0.707106781187, -0.5 },
-    {  0.0,             0.0,            -1.0 }
-} ;
+	{  0.0,             0.0,             1.0 },
+	{  0.707106781187,  0.000000000000,  0.5 },
+	{  0.000000000000,  0.707106781187,  0.5 },
+	{ -0.707106781187,  0.000000000000,  0.5 },
+	{  0.000000000000, -0.707106781187,  0.5 },
+	{  0.707106781187,  0.707106781187,  0.0 },
+	{ -0.707106781187,  0.707106781187,  0.0 },
+	{ -0.707106781187, -0.707106781187,  0.0 },
+	{  0.707106781187, -0.707106781187,  0.0 },
+	{  0.707106781187,  0.000000000000, -0.5 },
+	{  0.000000000000,  0.707106781187, -0.5 },
+	{ -0.707106781187,  0.000000000000, -0.5 },
+	{  0.000000000000, -0.707106781187, -0.5 },
+	{  0.0,             0.0,            -1.0 }
+};
 
-static int rdod_v [12][4] = {
-    { 0,  1,  5,  2 },
-    { 0,  2,  6,  3 },
-    { 0,  3,  7,  4 },
-    { 0,  4,  8,  1 },
-    { 5, 10,  6,  2 },
-    { 6, 11,  7,  3 },
-    { 7, 12,  8,  4 },
-    { 8,  9,  5,  1 },
-    { 5,  9, 13, 10 },
-    { 6, 10, 13, 11 },
-    { 7, 11, 13, 12 },
-    { 8, 12, 13,  9 }
+static int rdod_v[12][4] = {
+	{ 0,  1,  5,  2 },
+	{ 0,  2,  6,  3 },
+	{ 0,  3,  7,  4 },
+	{ 0,  4,  8,  1 },
+	{ 5, 10,  6,  2 },
+	{ 6, 11,  7,  3 },
+	{ 7, 12,  8,  4 },
+	{ 8,  9,  5,  1 },
+	{ 5,  9, 13, 10 },
+	{ 6, 10, 13, 11 },
+	{ 7, 11, 13, 12 },
+	{ 8, 12, 13,  9 }
 };
 
 static GLdouble rdod_n[12][3] = {
-    {  0.353553390594,  0.353553390594,  0.5 },
-    { -0.353553390594,  0.353553390594,  0.5 },
-    { -0.353553390594, -0.353553390594,  0.5 },
-    {  0.353553390594, -0.353553390594,  0.5 },
-    {  0.000000000000,  1.000000000000,  0.0 },
-    { -1.000000000000,  0.000000000000,  0.0 },
-    {  0.000000000000, -1.000000000000,  0.0 },
-    {  1.000000000000,  0.000000000000,  0.0 },
-    {  0.353553390594,  0.353553390594, -0.5 },
-    { -0.353553390594,  0.353553390594, -0.5 },
-    { -0.353553390594, -0.353553390594, -0.5 },
-    {  0.353553390594, -0.353553390594, -0.5 }
+	{  0.353553390594,  0.353553390594,  0.5 },
+	{ -0.353553390594,  0.353553390594,  0.5 },
+	{ -0.353553390594, -0.353553390594,  0.5 },
+	{  0.353553390594, -0.353553390594,  0.5 },
+	{  0.000000000000,  1.000000000000,  0.0 },
+	{ -1.000000000000,  0.000000000000,  0.0 },
+	{  0.000000000000, -1.000000000000,  0.0 },
+	{  1.000000000000,  0.000000000000,  0.0 },
+	{  0.353553390594,  0.353553390594, -0.5 },
+	{ -0.353553390594,  0.353553390594, -0.5 },
+	{ -0.353553390594, -0.353553390594, -0.5 },
+	{  0.353553390594, -0.353553390594, -0.5 }
 };
 
 void glutSolidRhombicDodecahedron(void);			// Draws a solid Rhombic Dodecahedron
@@ -2831,7 +2831,7 @@ void draw_BSpline_Curve(int nptsCorba, CPunt3D ctr_points[MAX_PATCH_CORBA], floa
 CVAO load_BSpline_Curve_VAO(int nptsCorba, CPunt3D ctr_points[MAX_PATCH_CORBA], float pas);
 CVAO load_BSpline_Curve_EBO(int nptsCorba, CPunt3D ctr_points[MAX_PATCH_CORBA], float pas);
 void draw_TFBSpline_Curve(GLuint sh_programID, CPunt3D* ctr_points, int nptsCorba, float pas);
-CPunt3D Punt_Corba_BSpline(float t, CPunt3D * ctr);
+CPunt3D Punt_Corba_BSpline(float t, CPunt3D* ctr);
 
 // D_BSpline_Curve: Funció per a calcular la primera derivada de la corba B-Spline segons:
 //     * t: paràmetre entre (0,1).
@@ -2865,11 +2865,11 @@ const int MAX_PATCH_BEZIER = 25;	// Màxim tamany vector Punts de control
 const GLdouble PAS_BEZIER = 0.10;	// Pas Bezier. Precisió de la corba
 
 // Dibuix Corba de Bezier en VBO
-void draw_Bezier_Curve(int nptsCorba, CPunt3D ctr_points[MAX_PATCH_CORBA],  float pas, bool tancat);
+void draw_Bezier_Curve(int nptsCorba, CPunt3D ctr_points[MAX_PATCH_CORBA], float pas, bool tancat);
 CVAO load_Bezier_Curve_VAO(int nptsCorba, CPunt3D ctr_points[MAX_PATCH_CORBA], float pas, bool tancat);
 CVAO load_Bezier_Curve_EBO(int nptsCorba, CPunt3D ctr_points[MAX_PATCH_CORBA], float pas, bool tancat);
 void draw_TFBezier_Curve(GLuint sh_programID, CPunt3D* ctr_points, int nptsCorba, float pas, bool tancat);
-CPunt3D Punt_Bezier_Curve(float t, CPunt3D * ctr);
+CPunt3D Punt_Bezier_Curve(float t, CPunt3D* ctr);
 
 // D_CBezier: Funció per a calcular la primera derivada de la corba Bezier segons:
 //     * t: paràmetre entre (0,1).
