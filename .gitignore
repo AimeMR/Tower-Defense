@@ -37,6 +37,9 @@
 !EntornVGI/textures/
 !EntornVGI/textures/**
 
+!EntornVGI/modelos/
+!EntornVGI/modelos/**
+
 # 3. Volver a ignorar carpetas de compilación
 # Esto es por si aparecen dentro de carpetas que hemos re-incluido
 # (como src/x64/ o EntornVGI/x64/)
