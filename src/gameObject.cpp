@@ -11,8 +11,8 @@ GameObject::GameObject(COBJModel* objModel)
 
 void GameObject::dibuixarObjecte(GLuint shaderID, CColor colorObj, bool* sw_mat, glm::mat4 view)
 {
-	SeleccionaMaterial(shaderID, 0, sw_mat);
 
+	SeleccionaMaterial(shaderID, 0, sw_mat);
 
 	glm::mat4 model(1.0f), normal(1.0f);
 

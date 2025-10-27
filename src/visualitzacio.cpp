@@ -370,7 +370,6 @@ glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPu
 	up[2] = cos(opv.alfa);
 
 // Iluminacio movent-se amb la camara (abans glLookAt)
-	if (!ifix) Iluminacio(sh_programID,iluminacio, ifix, il2sides, llum_amb, lumi, objecte, frnt_fcs, bck_ln, step);
 
 // Opció pan: desplaçament del Centre de l'esfera (pant=1)
 	if (pant) TransMatrix = glm::translate(TransMatrix, vec3(tr.x, tr.y, tr.z));	//glTranslatef(tr.x, tr.y, tr.z);
@@ -391,7 +390,6 @@ glm::mat4 Vista_Esferica(GLuint sh_programID,CEsfe3D opv,char VPol,bool pant,CPu
    glUniformMatrix4fv(glGetUniformLocation(sh_programID, "viewMatrix"), 1, GL_FALSE, &MatriuVista[0][0]);
 
 // Iluminacio fixe respecte la camara (després glLookAt)
-   if (ifix) Iluminacio(sh_programID,iluminacio, ifix, il2sides, llum_amb, lumi, objecte, frnt_fcs, bck_ln, step);
 
 // Test de Visibilitat
 	if (testv) glEnable(GL_CULL_FACE);

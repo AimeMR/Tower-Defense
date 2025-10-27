@@ -108,6 +108,9 @@ void InitGL()
 	if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\phong_shdrML.vert", ".\\shaders\\phong_shdrML.frag");
 	shader = PHONG_SHADER;
 
+	customShader.releaseAllShaders();
+	customShaderID = customShader.loadFileShaders(".\\shaders\\customShader.vert", ".\\shaders\\customShader.frag");
+
 // Càrrega SHADERS
 // Càrrega Shader Eixos
 	fprintf(stderr, "Eixos: \n");
@@ -291,6 +294,7 @@ void dibuixa_Escena() {
 	//glUseProgram(shader_programID);
 
 //	Dibuix SkyBox Cúbic.
+
 	if (SkyBoxCube) dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, ProjectionMatrix, ViewMatrix);
 
 	//	Dibuix Coordenades Món i Reixes.
@@ -321,13 +325,13 @@ void OnPaint(GLFWwindow* window)
 	glDisable(GL_SCISSOR_TEST);		// Desactivació del retall de pantalla
 
 	// Entorn VGI: Activar shader Visualització Escena
-	glUseProgram(shader_programID);
+	glUseProgram(customShaderID);
 
 	// Entorn VGI: Definició de Viewport, Projecció i Càmara
-	ProjectionMatrix = Projeccio_Perspectiva(shader_programID, 0, 0, w, h, OPV.R);
+	ProjectionMatrix = Projeccio_Perspectiva(customShaderID, 0, 0, w, h, OPV.R);
 
 	// Entorn VGI: Definició de la càmera.
-	ViewMatrix = Vista_Esferica(shader_programID, OPV, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
+	ViewMatrix = Vista_Esferica(customShaderID, OPV, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
 		front_faces, oculta, test_vis, back_line,
 		'c', true, &llum, true, false,
 		eixos, grid, hgrid);
@@ -339,7 +343,11 @@ void OnPaint(GLFWwindow* window)
 	red.g = 0;
 	red.a = 1;
 
-	mapa.dibuixarObjecte(shader_programID, red, sw_material, ViewMatrix);
+
+
+
+
+	mapa.dibuixarObjecte(customShaderID, red, sw_material, ViewMatrix);
 
 	dibuixa_Escena();
 }

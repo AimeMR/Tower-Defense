@@ -14,6 +14,10 @@
 COBJModel* mapaModel;
 GameObject mapa;
 
+GLuint customShaderID;	
+Shader customShader;
+
+
 //-------------- Entorn VGI: Variables globals de main
 
 // Retrieving main monitor
