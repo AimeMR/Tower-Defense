@@ -336,6 +336,18 @@ void OnPaint(GLFWwindow* window)
 		'c', true, &llum, true, false,
 		eixos, grid, hgrid);
 
+	
+	glm::vec3 lightDir(1, 1, 1);
+	glm::vec3 lightColor(1, 1, 1);
+
+	float ambient = 0.2;
+
+	glUniform1f(glGetUniformLocation(customShaderID, "ambientIntensity"), GLfloat(ambient));
+	glUniform3fv(glGetUniformLocation(customShaderID, "lightDirection"), 1, &lightDir[0]);
+	glUniform3fv(glGetUniformLocation(customShaderID, "lightColor"), 1, &lightColor[0]);
+
+	//glm::vec4 objectDiffuseColor(0.6f, 0.4f, 0.3f, 1.0f); // Marrón / Gris
+	//glUniform3fv(glGetUniformLocation(customShaderID, "material.diffuse"), 1, &objectDiffuseColor[0]);
 
 	CColor red;
 	red.r = 0;
@@ -344,8 +356,11 @@ void OnPaint(GLFWwindow* window)
 	red.a = 1;
 
 
+	frameTimer += deltaTime;
 
+	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), glm::radians(frameTimer * 0), glm::vec3(0, 0, 1));
 
+	mapa.transform(glm::vec3(0, 0, 0), rot, glm::vec3(1, 1, 1));
 
 	mapa.dibuixarObjecte(customShaderID, red, sw_material, ViewMatrix);
 
@@ -691,6 +706,7 @@ int main(void)
 		now = glfwGetTime();
 		delta = now - previous;
 		previous = now;
+		deltaTime = delta;
 
 
 		// Poll for and process events

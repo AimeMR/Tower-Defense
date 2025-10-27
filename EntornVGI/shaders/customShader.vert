@@ -15,11 +15,20 @@ layout (location = 3) in vec2 in_TexCoord;
 
 out vec4 vertColor;
 
+out vec3 normal;
+out vec3 fragPos;
+
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
+uniform mat4 normalMatrix;
 
 void main() {
+	fragPos = vec3(viewMatrix * modelMatrix * vec4(in_Vertex, 1.0));
+
+	vec4 transNormal = normalMatrix * vec4(in_Normal, 0.0);
+	normal = normalize(transNormal.xyz);
+
 	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(in_Vertex, 1.0);
 	vertColor = in_Color;
 }

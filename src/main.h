@@ -17,6 +17,9 @@ GameObject mapa;
 GLuint customShaderID;	
 Shader customShader;
 
+float deltaTime;
+float frameTimer = 0;
+
 
 //-------------- Entorn VGI: Variables globals de main
 

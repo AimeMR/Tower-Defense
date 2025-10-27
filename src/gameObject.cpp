@@ -12,15 +12,16 @@ GameObject::GameObject(COBJModel* objModel)
 void GameObject::dibuixarObjecte(GLuint shaderID, CColor colorObj, bool* sw_mat, glm::mat4 view)
 {
 
-	SeleccionaMaterial(shaderID, 0, sw_mat);
+	//SeleccionaMaterial(shaderID, 0, sw_mat);
 
 	glm::mat4 model(1.0f), normal(1.0f);
 
 
 	model = getModelMatrix();
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "modelMatrix"), 1, GL_FALSE, &model[0][0]);
-	normal = transpose(inverse(view * model));
-
+	
+	//normal = transpose(inverse(view * model));
+	normal = model;
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "normalMatrix"), 1, GL_FALSE, &normal[0][0]);
 	glUniform1i(glGetUniformLocation(shaderID, "textur"), false);
 	m_objModel->draw_TriVAO_OBJ(shaderID);

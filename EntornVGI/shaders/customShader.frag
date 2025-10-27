@@ -10,15 +10,28 @@ struct Material
 
 uniform Material material;
 
-uniform vec3 lightColor;   // color de la luz
-uniform vec3 objectColor;  // color del objeto
+uniform vec3 lightColor;
+uniform vec3 lightDirection;
+uniform float ambientIntensity;
 
 in vec4 vertColor;
+
+in vec3 normal;
+in vec3 fragPos;
 
 out vec4 FragColor;
 
 void main()
 {
-    vec3 result = material.diffuse.rgb;
-    FragColor = vec4(result, 1.0);
+	vec3 norm = normalize(normal);
+	vec3 lightDir = normalize(lightDirection);
+
+	float diffFactor = max(dot(norm, lightDir), 0.0);
+	vec3 diffuseColor = material.diffuse.rgb * lightColor * diffFactor;
+
+	vec3 ambient = material.diffuse.rgb * lightColor * ambientIntensity;
+	
+
+	vec3 result = ambient + diffuseColor;
+	FragColor = vec4(result, 1.0);
 }
