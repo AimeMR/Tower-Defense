@@ -340,7 +340,7 @@ void OnPaint(GLFWwindow* window)
 	glm::vec3 lightDir(1, 1, 1);
 	glm::vec3 lightColor(1, 1, 1);
 
-	float ambient = 0.2;
+	float ambient = 0.1;
 
 	glUniform1f(glGetUniformLocation(customShaderID, "ambientIntensity"), GLfloat(ambient));
 	glUniform3fv(glGetUniformLocation(customShaderID, "lightDirection"), 1, &lightDir[0]);
@@ -645,6 +645,10 @@ int main(void)
 
 	// Initialize Application control varibles
 	InitGL();
+
+
+	glEnable(GL_FRAMEBUFFER_SRGB); //NO WAY ESTO ARREGLA LOS COLORES WTF OSEA HOLY SHIT
+
 
 	//cargarModelos();
 

@@ -21,7 +21,7 @@ void GameObject::dibuixarObjecte(GLuint shaderID, CColor colorObj, bool* sw_mat,
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "modelMatrix"), 1, GL_FALSE, &model[0][0]);
 	
 	//normal = transpose(inverse(view * model));
-	normal = model;
+	normal = transpose(inverse(model));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "normalMatrix"), 1, GL_FALSE, &normal[0][0]);
 	glUniform1i(glGetUniformLocation(shaderID, "textur"), false);
 	m_objModel->draw_TriVAO_OBJ(shaderID);
