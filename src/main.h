@@ -8,9 +8,20 @@
 
 // Entorn VGI: Llibreries i constants Constants de l'aplicació EntornVGI
 #include "stdafx.h"
-
+#include "gameObject.h"
+#include <vector>
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
-#include "objLoader.h"	
+
+COBJModel* mapaModel;
+std::vector<GameObject*> objects;
+std::vector<COBJModel*> models;
+
+GLuint customShaderID;	
+Shader customShader;
+
+float deltaTime;
+float frameTimer = 0;
+
 
 //-------------- Entorn VGI: Variables globals de main
 
@@ -192,17 +203,25 @@
 	std::string buffer; // Buffer que magatzema string caracters corresponent a variables double a printar en Status Bar (funció Barra_Estat).
 //-------------- Entorn VGI: Fi De Variables globals de main
 
+
+
 //-------------- Entorn VGI: Declaració funcions main
+// Carregar models
+	void loadModels();
 
 // Inicialització variables de control
 	void InitGL();	
 	
 	void InitAPI();
-
+// Creació i destrucció d'objectes
+	GameObject* createObject(int model);
+	void destroyObject(GameObject* obj);
 // Entorn VGI: Control de l'EVENT ONSIZE
 	void OnSize(GLFWwindow* window, int width, int height);
 	void dibuixa_Escena();
 	void OnPaint(GLFWwindow* window);
+// Loop del juego
+	void Update();
 	// Desplegable VISTA
 	void OnVistaSkyBox();
 // Entorn VGI: Control de l'EVENT MOUSE
