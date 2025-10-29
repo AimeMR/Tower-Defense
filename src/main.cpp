@@ -719,22 +719,26 @@ int main(void)
 		previous = now;
 		deltaTime = delta;
 
+		frameTimer += deltaTime;
 
 		// Poll for and process events
 		glfwPollEvents();
 
 		menu();
 
+		glm::vec3 lightDirA(1, 1, 1);
+		glm::vec3 lightDir;
 
+		glm::mat4 rot = glm::rotate(glm::mat4(1.0f), glm::radians(frameTimer * 50), glm::vec3(0, 0, 1));
 
+		glm::vec4 rotatedLightDir = rot * glm::vec4(lightDirA, 0.0f);
 
-
+		lightDir = glm::vec3(rotatedLightDir);
 		////////////////////// VARIABLES ///////////////////
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Este primer glClear es un poco redundante
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-		glm::vec3 lightDir(1, 1, 1);
 		glm::vec3 lightColor(1, 1, 1);
 		float ambient = 0.1;
 
