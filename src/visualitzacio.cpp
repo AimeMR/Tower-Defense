@@ -320,20 +320,20 @@ void Iluminacio(GLint sh_programID, char ilumin, bool ifix, bool ilu2sides, bool
 // -------- Entorn VGI: PERSPECTIVA (Funcions Projeccio_Perspectiva i Vista_Esferica)
 
 // Projeccio_Perspectiva: Definició Viewport i gluPerspective
-glm::mat4 Projeccio_Perspectiva(GLuint sh_programID, int minx,int miny,GLsizei w,GLsizei h,double zoom)
+glm::mat4 Projeccio_Perspectiva(GLuint sh_programID, int minx, int miny, GLsizei w, GLsizei h, double zoom)
 {
 	glm::mat4 MatriuProjeccio(1.0);
 
-// Definició Viewport
-	glViewport(minx,miny,w,h);
-	if (h==0) h=1;
+	// Definició Viewport
+	glViewport(minx, miny, w, h);
+	if (h == 0) h = 1;
 
-// PROJECCIO PERSPECTIVA.Definim volum de visualització adaptant-lo 
-//							a les mides actuals de la finestra windows. Amb glm::perspective()
+	// PROJECCIO PERSPECTIVA.Definim volum de visualització adaptant-lo 
+	//                            a les mides actuals de la finestra windows. Amb glm::perspective()
 	if (w >= h) MatriuProjeccio = glm::perspective(glm::radians(60.0), 1.0 * w / h, p_near, p_far);
-		else MatriuProjeccio = glm::perspective(glm::radians(60.0), 1.0 * w / h, p_near, p_far);
+	else MatriuProjeccio = glm::perspective(glm::radians(60.0), 1.0 * w / h, p_near, p_far);
 
-// Pas Matriu a shader
+	// Pas Matriu a shader
 	glUniformMatrix4fv(glGetUniformLocation(sh_programID, "projectionMatrix"), 1, GL_FALSE, &MatriuProjeccio[0][0]);
 
 	return MatriuProjeccio;

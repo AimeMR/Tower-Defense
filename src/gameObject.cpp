@@ -9,7 +9,7 @@ GameObject::GameObject(COBJModel* objModel)
 	m_scale = glm::vec3(1, 1, 1);
 }
 
-void GameObject::dibuixarObjecte(GLuint shaderID, CColor colorObj, bool* sw_mat, glm::mat4 view)
+void GameObject::dibuixarObjecte(GLuint shaderID, glm::mat4 view)
 {
 
 	//SeleccionaMaterial(shaderID, 0, sw_mat);

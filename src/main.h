@@ -17,9 +17,17 @@ GameObject mapa;
 GLuint customShaderID;	
 Shader customShader;
 
+GLuint shadowShaderID;
+Shader shadowShader;
+
 float deltaTime;
 float frameTimer = 0;
 
+
+GLuint depthMapFB;
+GLuint depthMap;
+int shadowWidth = 1024;
+int shadowHeight = 1024;
 
 //-------------- Entorn VGI: Variables globals de main
 

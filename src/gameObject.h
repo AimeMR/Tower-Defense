@@ -12,7 +12,7 @@ public:
 	glm::mat4 getModelMatrix();
 	glm::mat4 getNormalMatrix();
 
-	void dibuixarObjecte(GLuint shaderID, CColor colorObj, bool* sw_mat, glm::mat4 view);
+	void dibuixarObjecte(GLuint shaderID, glm::mat4 view);
 
 	int ID;
 	bool m_texture;

@@ -29,6 +29,7 @@
     <ClCompile Include="..\src\escena.cpp" />
     <ClCompile Include="..\src\gameObject.cpp" />
     <ClCompile Include="..\src\glut_geometry.cpp" />
+    <ClCompile Include="..\src\lightManager.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\material.cpp" />
     <ClCompile Include="..\src\objLoader.cpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="..\src\escena.h" />
     <ClInclude Include="..\src\gameObject.h" />
     <ClInclude Include="..\src\glut_geometry.h" />
+    <ClInclude Include="..\src\lightManager.h" />
     <ClInclude Include="..\src\main.h" />
     <ClInclude Include="..\src\material.h" />
     <ClInclude Include="..\src\objLoader.h" />
