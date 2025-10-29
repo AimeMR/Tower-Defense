@@ -33,9 +33,9 @@
     <ClCompile Include="..\src\material.cpp" />
     <ClCompile Include="..\src\menu.cpp" />
     <ClCompile Include="..\src\objLoader.cpp" />
+    <ClCompile Include="..\src\player.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\visualitzacio.cpp" />
-    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\ImGui\imconfig.h" />
@@ -54,10 +54,10 @@
     <ClInclude Include="..\src\material.h" />
     <ClInclude Include="..\src\menu.h" />
     <ClInclude Include="..\src\objLoader.h" />
+    <ClInclude Include="..\src\player.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\stdafx.h" />
     <ClInclude Include="..\src\visualitzacio.h" />
-    <ClInclude Include="Player.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -736,11 +736,10 @@ int main(void)
 		// Poll for and process events
 		glfwPollEvents();
 
-		menu(salir);
 		//Feed input to dear imgui, start new frame
 		
 		// Draws the UI
-		menu();
+		menu(salir);
 
 		// Update transforms and objects
 		Update();
