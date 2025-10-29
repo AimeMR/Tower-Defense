@@ -656,8 +656,8 @@ int main(void)
 			fullscreen = false;
 		}
 	}
-
-    while (!glfwWindowShouldClose(window))
+	bool salir = false;
+    while (!glfwWindowShouldClose(window) and !salir)
     {  
 		now = glfwGetTime();
 		delta = now - previous;
@@ -667,7 +667,7 @@ int main(void)
 		// Poll for and process events
 		glfwPollEvents();
 
-		menu();
+		menu(salir);
 		//Feed input to dear imgui, start new frame
 		
 		OnPaint(window);
@@ -680,9 +680,9 @@ int main(void)
 		glfwSwapBuffers(window);
     }
 
-	// Check if the ESC key was pressed or the window was closed
+	// Check if the ESC key was pressed or the window was closed o boton salir presionado
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-		glfwWindowShouldClose(window) == 0);
+		glfwWindowShouldClose(window) == 0 && !salir);
 
 	// Entorn VGI.ImGui: Cleanup ImGui
 	ImGui_ImplOpenGL3_Shutdown();

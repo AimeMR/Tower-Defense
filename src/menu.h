@@ -7,7 +7,7 @@ extern bool show_menu_ajustes;
 extern bool show_jugar;
 extern bool show_menu_creditos;
 
-void menu();
+void menu(bool& salir);
 void iniciarPartida();
 void menuAjustes();
 void menuCreditos();

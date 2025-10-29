@@ -14,8 +14,10 @@ bool show_menu_ajustes = false;
 bool show_jugar = false;
 bool show_menu_creditos = false;
 
+
 //--------------------- A PARTIR D'AQUÍ EL NOSTRE CODI
-void menu() {
+void menu(bool& salir) 
+{
 
 	static bool show_app_debug_log = true;
 	// Inizializa frame
@@ -26,8 +28,8 @@ void menu() {
 	//if(show_another_window)
 
 	static bool use_work_area = true;
-	static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
-
+	//static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+	static ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 	// We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
 	// Based on your use case you may want one of the other.
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -55,33 +57,58 @@ void menu() {
 			//if (show_app_debug_log)
 				//ImGui::ShowDebugLogWindow(&show_app_debug_log);
 
+			// a) Colores (para opacidad, color de fondo, y borde)
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.3f, 0.6f, 1.0f)); // Fondo opaco (Alpha=1.0f)
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.4f, 0.7f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.2f, 0.5f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 0.0f, 1.0f)); // Borde amarillo
+
+			// b) Variables (para el grosor del borde)
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f); // Grosor del borde de 2px
+
 
 			ImGui::SetWindowFontScale(1.5f);
-			ImVec2 botonJugar = centrarBotonMenu(0.5, 0.40);
-
+			
 			//Inicia el juego
+			ImVec2 botonJugar = centrarBotonMenu(0.5, 0.40);
 			if (ImGui::Button("Jugar", botonJugar))
 			{
 				show_menu_inicio = false;
 				show_jugar = true;
 			}
-			
-			ImVec2 botonAjuste = centrarBotonMenu(0.5, 0.05);
+
 			//Activa el menu de ajustes
+			ImVec2 botonAjuste = centrarBotonMenu(0.5, 0.05);
 			if (ImGui::Button("Ajustes", botonAjuste))
 			{
 				show_menu_inicio = false;
 				show_menu_ajustes = true;
 			}
 			
-			ImVec2 botonCreditos = centrarBotonMenu(0.5, 0.05);
 			//Activa el menu de creditos
+			ImVec2 botonCreditos = centrarBotonMenu(0.5, 0.05);
 			if (ImGui::Button("Creditos", botonCreditos))
 			{
 				show_menu_inicio = false;
 				show_menu_creditos = true;
 			}
+
+			//Sale del juego
+			ImVec2 botonSalir = centrarBotonMenu(0.05, 0.95);
+			if (ImGui::Button("Salir", botonSalir))
+			{
+				show_menu_inicio = false;
+				salir = true;
+			}
 			ImGui::SetWindowFontScale(1.0f);
+
+			// --- 3. Restablecer estilos (IMPORTANTE) ---
+			// Sacamos 4 colores (Button, ButtonHovered, ButtonActive, Border)
+			ImGui::PopStyleColor(4);
+
+			// Sacamos 1 variable (FrameBorderSize)
+			ImGui::PopStyleVar(1);
+
 		}
 		ImGui::End();
 	}
