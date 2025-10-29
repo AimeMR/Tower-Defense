@@ -10,7 +10,7 @@
 #include "menu.h"
 
 bool show_menu_inicio = true;
-bool show_menu_settings = false;
+bool show_menu_ajustes = false;
 bool show_jugar = false;
 bool show_menu_creditos = false;
 
@@ -39,6 +39,7 @@ void menu() {
 	{
 		if (ImGui::Begin("Example: Fullscreen window", &show_menu_inicio, flags))
 		{
+			/*
 			ImGui::Checkbox("Use work area instead of main area", &use_work_area);
 			ImGui::SameLine();
 			//HelpMarker("Main Area = entire viewport,\nWork Area = entire viewport minus sections used by the main menu bars, task bars etc.\n\nEnable the main-menu bar in Examples menu to see the difference.");
@@ -49,29 +50,38 @@ void menu() {
 			ImGui::CheckboxFlags("ImGuiWindowFlags_NoTitleBar", &flags, ImGuiWindowFlags_NoTitleBar);
 			ImGui::CheckboxFlags("ImGuiWindowFlags_NoCollapse", &flags, ImGuiWindowFlags_NoCollapse);
 			ImGui::CheckboxFlags("ImGuiWindowFlags_NoScrollbar", &flags, ImGuiWindowFlags_NoScrollbar);
-			ImGui::Unindent();
+			ImGui::Unindent();*/
 
-			if (show_app_debug_log)
-				ImGui::ShowDebugLogWindow(&show_app_debug_log);
+			//if (show_app_debug_log)
+				//ImGui::ShowDebugLogWindow(&show_app_debug_log);
+
+
+			ImGui::SetWindowFontScale(1.5f);
+			ImVec2 botonJugar = centrarBotonMenu(0.5, 0.40);
 
 			//Inicia el juego
-			if (ImGui::Button("Jugar"))
+			if (ImGui::Button("Jugar", botonJugar))
 			{
 				show_menu_inicio = false;
 				show_jugar = true;
 			}
-			//Activa el menu de settings
-			if (ImGui::Button("Settings"))
+			
+			ImVec2 botonAjuste = centrarBotonMenu(0.5, 0.05);
+			//Activa el menu de ajustes
+			if (ImGui::Button("Ajustes", botonAjuste))
 			{
 				show_menu_inicio = false;
-				show_menu_settings = true;
+				show_menu_ajustes = true;
 			}
+			
+			ImVec2 botonCreditos = centrarBotonMenu(0.5, 0.05);
 			//Activa el menu de creditos
-			if (ImGui::Button("Creditos"))
+			if (ImGui::Button("Creditos", botonCreditos))
 			{
 				show_menu_inicio = false;
 				show_menu_creditos = true;
 			}
+			ImGui::SetWindowFontScale(1.0f);
 		}
 		ImGui::End();
 	}
@@ -80,10 +90,10 @@ void menu() {
 	{
 		iniciarPartida();
 	}
-	//Menu settings
-	else if (show_menu_settings)
+	//Menu ajustes
+	else if (show_menu_ajustes)
 	{
-		menuSettings();
+		menuAjustes();
 	}
 	//Menu settings
 	else if (show_menu_creditos)
@@ -94,18 +104,37 @@ void menu() {
 	ImGui::Render();
 }
 
+ImVec2 centrarBotonMenu(float porX, float porY)
+{
+	// 1. Define el tamaño del botón
+	ImVec2 button_size(200, 50);
+
+	// 2. Obtener el ancho de la región de contenido disponible DENTRO de esta ventana
+	float content_ancho = ImGui::GetContentRegionAvail().x;
+	float content_altura = ImGui::GetContentRegionAvail().y;
+	// 3. Calcular el desplazamiento (offset)
+	float offsetX = (content_ancho - button_size.x) * porX;
+	float offsetY = (content_altura - button_size.y) * porY;
+
+	// 4. Mover el cursor por el offset
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
+	
+	return button_size;
+}
+
 void iniciarPartida()
 {
 	
 }
 
-void menuSettings()
+void menuAjustes()
 {
 	show_menu_inicio = false;
-	ImGui::Begin("Menu", &show_menu_settings);
+	ImGui::Begin("Menu", &show_menu_ajustes);
 	if (ImGui::Button("Cerrar"))
 	{
-		show_menu_settings = false;
+		show_menu_ajustes = false;
 		show_menu_inicio = true;
 	}
 	ImGui::End();
@@ -114,10 +143,10 @@ void menuSettings()
 void menuCreditos()
 {
 	show_menu_inicio = false;
-	ImGui::Begin("Menu", &show_menu_settings);
+	ImGui::Begin("Menu", &show_menu_creditos);
 	if (ImGui::Button("Cerrar"))
 	{
-		show_menu_settings = false;
+		show_menu_creditos = false;
 		show_menu_inicio = true;
 	}
 	ImGui::End();
