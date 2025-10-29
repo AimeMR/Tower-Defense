@@ -111,7 +111,6 @@ void InitGL()
 	// Càrrega Shader de Gouraud
 	shader_programID = 0;
 	fprintf(stderr, "phong_shdrML: \n"); 
-	if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\phong_shdrML.vert", ".\\shaders\\phong_shdrML.frag");
 	shader = PHONG_SHADER;
 
 	customShader.releaseAllShaders();
@@ -707,7 +706,6 @@ int main(void)
 	if (eixos) 
 	{
 		if (!eixos_programID) eixos_programID = shaderEixos.loadFileShaders(".\\shaders\\eixos.VERT", ".\\shaders\\eixos.FRAG");
-		if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\gouraud_shdrML.vert", ".\\shaders\\gouraud_shdrML.frag");
 		if (!eixos_Id) eixos_Id = deixos(); // Funció que defineix els Eixos Coordenades Món com un VAO.
 	}
 	if (SkyBoxCube) OnVistaSkyBox();
