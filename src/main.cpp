@@ -19,6 +19,12 @@
 #include "main.h"
 #include "material.h"
 
+void loadModels() 
+{
+	COBJModel* newModel = new COBJModel();
+	newModel->LoadModel(".\\modelos\\ejemplo.obj");
+	models.push_back(newModel);
+}
 
 void InitGL()
 {
@@ -188,12 +194,9 @@ void InitGL()
 // Entorn VGI: Altres variables
 	mida = 1.0;			nom = "";		buffer = "";
 
-	mapaModel = ::new COBJModel;
-	mapaModel->netejaTextures_OBJ();
-	mapaModel->netejaVAOList_OBJ();
-	mapaModel->LoadModel(".\\modelos\\ejemplo.obj");
+	loadModels();
 
-	mapa = GameObject(mapaModel);
+	GameObject* mapa = createObject(0);
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
@@ -284,6 +287,31 @@ void InitAPI()
 	glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)wglGetProcAddress("glVertexAttribPointer");
 }
 
+GameObject* createObject(int model)
+{
+	GameObject* newObject = new GameObject(models[model]);
+	newObject->setId(objects.size());
+	objects.push_back(newObject);
+	return newObject;
+}
+
+void destroyObject(GameObject* obj)
+{
+	int id = obj->objectID;
+	int vectorSize = objects.size();
+
+	if (id < vectorSize)
+	{
+		GameObject* lastObject = objects.back();
+		if (id != vectorSize - 1)
+			lastObject->setId(id);
+
+		std::swap(objects[id], objects.back());
+		objects.pop_back();
+		delete obj;
+	}
+}
+
 void OnSize(GLFWwindow* window, int width, int height)
 {
 	w = width;	h = height;
@@ -293,7 +321,7 @@ void dibuixa_Escena() {
 
 	//glUseProgram(shader_programID);
 
-//	Dibuix SkyBox Cúbic.
+	//	Dibuix SkyBox Cúbic.
 
 	if (SkyBoxCube) dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, ProjectionMatrix, ViewMatrix);
 
@@ -304,10 +332,6 @@ void dibuixa_Escena() {
 	//	GTMatrix = glm::scale();
 
 	//	Dibuix geometria de l'escena amb comandes GL.
-
-
-
-
 }
 
 // OnPaint: Funció de dibuix i visualització en frame buffer del frame
@@ -355,16 +379,16 @@ void OnPaint(GLFWwindow* window)
 	red.g = 0;
 	red.a = 1;
 
-
-	frameTimer += deltaTime;
-
-	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), glm::radians(frameTimer * 0), glm::vec3(0, 0, 1));
-
-	mapa.transform(glm::vec3(0, 0, 0), rot, glm::vec3(1, 1, 1));
-
-	mapa.dibuixarObjecte(customShaderID, red, sw_material, ViewMatrix);
+	for(GameObject* obj : objects)
+		obj->dibuixarObjecte(customShaderID, red, sw_material, ViewMatrix);
 
 	dibuixa_Escena();
+}
+
+void Update() {
+	frameTimer += deltaTime;
+	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), glm::radians(frameTimer * 10), glm::vec3(0, 0, 1));
+	objects[0]->rotate(rot);
 }
 
 // Skybox
@@ -716,7 +740,11 @@ int main(void)
 		// Poll for and process events
 		glfwPollEvents();
 
+		// Draws the UI
 		menu();
+
+		// Update transforms and objects
+		Update();
 
 		// Crida a OnPaint() per redibuixar l'escena
 		OnPaint(window);
@@ -733,6 +761,13 @@ int main(void)
 	// Check if the ESC key was pressed or the window was closed
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(window) == 0);
+
+	// Delete all the objects in the scene
+	for (GameObject* obj : objects)
+		delete obj;
+
+	for (COBJModel* mod : models)
+		delete mod;
 
 	// Entorn VGI.ImGui: Cleanup ImGui
 	ImGui_ImplOpenGL3_Shutdown();

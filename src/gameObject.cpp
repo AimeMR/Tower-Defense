@@ -7,6 +7,8 @@ GameObject::GameObject(COBJModel* objModel)
 	m_pos = glm::vec3(0, 0, 0);
 	m_rot = glm::mat4(1.0);
 	m_scale = glm::vec3(1, 1, 1);
+	objectID = -1;
+	pickingID = -1;
 }
 
 void GameObject::dibuixarObjecte(GLuint shaderID, CColor colorObj, bool* sw_mat, glm::mat4 view)
@@ -27,14 +29,6 @@ void GameObject::dibuixarObjecte(GLuint shaderID, CColor colorObj, bool* sw_mat,
 	m_objModel->draw_TriVAO_OBJ(shaderID);
 }
 
-
-void GameObject::transform(glm::vec3 pos, glm::mat4 rot, glm::vec3 scale)
-{
-	m_pos = pos;
-	m_rot = rot;
-	m_scale = scale;
-}
-	
 glm::mat4 GameObject::getModelMatrix()
 {
 	glm::mat4 TransMatrix;
