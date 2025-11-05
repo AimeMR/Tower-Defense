@@ -23,7 +23,7 @@
 void loadModels() 
 {
 	COBJModel* newModel = new COBJModel();
-	newModel->LoadModel(".\\modelos\\ejemplo.obj");
+	newModel->LoadModel(".\\modelos\\MAPA.obj");
 	models.push_back(newModel);
 }
 

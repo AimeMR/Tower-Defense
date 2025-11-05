@@ -57,15 +57,7 @@ void menu(bool& salir)
 			//if (show_app_debug_log)
 				//ImGui::ShowDebugLogWindow(&show_app_debug_log);
 
-			// a) Colores (para opacidad, color de fondo, y borde)
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.3f, 0.6f, 1.0f)); // Fondo opaco (Alpha=1.0f)
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.4f, 0.7f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.2f, 0.5f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 0.0f, 1.0f)); // Borde amarillo
-
-			// b) Variables (para el grosor del borde)
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f); // Grosor del borde de 2px
-
+			cambiarEstiloBotones();
 
 			ImGui::SetWindowFontScale(1.5f);
 			
@@ -103,19 +95,14 @@ void menu(bool& salir)
 			ImGui::SetWindowFontScale(1.0f);
 
 			// --- 3. Restablecer estilos (IMPORTANTE) ---
-			// Sacamos 4 colores (Button, ButtonHovered, ButtonActive, Border)
-			ImGui::PopStyleColor(4);
-
-			// Sacamos 1 variable (FrameBorderSize)
-			ImGui::PopStyleVar(1);
-
+			regresarEstiloBotones();
 		}
 		ImGui::End();
 	}
 	//Iniciar juego
 	else if (show_jugar)
 	{
-		iniciarPartida();
+		iniciarPartida(salir);
 	}
 	//Menu ajustes
 	else if (show_menu_ajustes)
@@ -129,6 +116,28 @@ void menu(bool& salir)
 	}
 
 	ImGui::Render();
+}
+
+void cambiarEstiloBotones()
+{
+	// a) Colores (para opacidad, color de fondo, y borde)
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.3f, 0.6f, 1.0f)); // Fondo opaco (Alpha=1.0f)
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.4f, 0.7f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.2f, 0.5f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 0.0f, 1.0f)); // Borde amarillo
+
+	// b) Variables (para el grosor del borde)
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f); // Grosor del borde de 2px
+}
+
+void regresarEstiloBotones()
+{
+	// Sacamos 4 colores (Button, ButtonHovered, ButtonActive, Border)
+	ImGui::PopStyleColor(4);
+
+	// Sacamos 1 variable (FrameBorderSize)
+	ImGui::PopStyleVar(1);
+
 }
 
 ImVec2 centrarBotonMenu(float porX, float porY)
@@ -150,7 +159,7 @@ ImVec2 centrarBotonMenu(float porX, float porY)
 	return button_size;
 }
 
-void iniciarPartida()
+void iniciarPartida(bool& salir)
 {
 	
 }

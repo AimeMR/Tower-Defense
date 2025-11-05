@@ -8,7 +8,10 @@ extern bool show_jugar;
 extern bool show_menu_creditos;
 
 void menu(bool& salir);
-void iniciarPartida();
+void iniciarPartida(bool& salir);
 void menuAjustes();
 void menuCreditos();
+
+void cambiarEstiloBotones();
+void regresarEstiloBotones();
 ImVec2 centrarBotonMenu(float porX, float porY);
