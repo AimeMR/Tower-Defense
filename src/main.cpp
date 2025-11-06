@@ -108,11 +108,10 @@ void InitGL()
 	if (!shader_programID) shader_programID = shaderLighting.loadFileShaders(".\\shaders\\phong_shdrML.vert", ".\\shaders\\phong_shdrML.frag");
 	shader = PHONG_SHADER;
 
+	fprintf(stderr, "Custom shader: \n");
 	customShader.releaseAllShaders();
 	customShaderID = customShader.loadFileShaders(".\\shaders\\customShader.vert", ".\\shaders\\customShader.frag");
 
-	shadowShader.releaseAllShaders();
-	shadowShaderID = shadowShader.loadFileShaders(".\\shaders\\shadowMapping.vert", ".\\shaders\\shadowMapping.frag");
 
 // Càrrega SHADERS
 // Càrrega Shader Eixos
@@ -197,6 +196,18 @@ void InitGL()
 	mapaModel->LoadModel(".\\modelos\\ejemplo.obj");
 
 	mapa = GameObject(mapaModel);
+	objects.push_back(&mapa);
+
+	//CAMARA
+	mainCamara = Camara();
+
+	luz.InitIluminacion(w, h);
+	direccionSol = glm::vec3(1, 1, 1);
+	luz.m_cam = &mainCamara;
+
+
+
+	luz.objetos = &objects;
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
@@ -290,28 +301,9 @@ void InitAPI()
 void OnSize(GLFWwindow* window, int width, int height)
 {
 	w = width;	h = height;
+	luz.UpdateWindow(width, height);
 }
 
-void dibuixa_Escena() {
-
-	//glUseProgram(shader_programID);
-
-//	Dibuix SkyBox Cúbic.
-
-	if (SkyBoxCube) dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, ProjectionMatrix, ViewMatrix);
-
-	//	Dibuix Coordenades Món i Reixes.
-	dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, ProjectionMatrix, ViewMatrix);
-
-	// Escalat d'objectes, per adequar-los a les vistes ortogràfiques (Pràctica 2)
-	//	GTMatrix = glm::scale();
-
-	//	Dibuix geometria de l'escena amb comandes GL.
-
-
-
-
-}
 
 // OnPaint: Funció de dibuix i visualització en frame buffer del frame
 void OnPaint(GLFWwindow* window)
@@ -327,28 +319,9 @@ void OnPaint(GLFWwindow* window)
 	// Entorn VGI: PROJECCIÓ PERSPECTIVA
 	glDisable(GL_SCISSOR_TEST);		// Desactivació del retall de pantalla
 
-	// Entorn VGI: Activar shader Visualització Escena
 
+	luz.RenderGame(customShaderID);
 
-	//glm::vec4 objectDiffuseColor(0.6f, 0.4f, 0.3f, 1.0f); // Marrón / Gris
-	//glUniform3fv(glGetUniformLocation(customShaderID, "material.diffuse"), 1, &objectDiffuseColor[0]);
-
-	CColor red;
-	red.r = 0;
-	red.b = 0;
-	red.g = 0;
-	red.a = 1;
-
-
-	frameTimer += deltaTime;
-
-	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), glm::radians(frameTimer * 60), glm::vec3(0, 0, 1));
-
-	mapa.transform(glm::vec3(0, 0, 0), rot, glm::vec3(1, 1, 1));
-
-	//mapa.dibuixarObjecte(customShaderID, red, sw_material, ViewMatrix);
-
-	dibuixa_Escena();
 }
 
 // Skybox
@@ -448,6 +421,8 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 
 		m_PosDAvall.x = xpos;				m_PosDAvall.y = ypos;
 	}
+
+
 }
 
 void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -671,7 +646,7 @@ int main(void)
 		if (!eixos_Id) eixos_Id = deixos(); // Funció que defineix els Eixos Coordenades Món com un VAO.
 	}
 	if (SkyBoxCube) OnVistaSkyBox();
-	if (fullscreen)
+	if (!fullscreen)
 	{
 		const GLFWvidmode* currentMode = glfwGetVideoMode(primary);
 		if (currentMode) {
@@ -688,29 +663,10 @@ int main(void)
 			fullscreen = false;
 		}
 	}
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 
 
-	glGenTextures(1, &depthMap); //textura depth
-	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-	
-	glGenFramebuffers(1, &depthMapFB);  //framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFB);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		fprintf(stderr, "ERROR: Depth framebuffer no completo\n");
-	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     while (!glfwWindowShouldClose(window))
     {  
@@ -726,80 +682,31 @@ int main(void)
 
 		menu();
 
-		glm::vec3 lightDirA(1, 1, 1);
-		glm::vec3 lightDir;
-
-		glm::mat4 rot = glm::rotate(glm::mat4(1.0f), glm::radians(frameTimer * 50), glm::vec3(0, 0, 1));
-
-		glm::vec4 rotatedLightDir = rot * glm::vec4(lightDirA, 0.0f);
-
-		lightDir = glm::vec3(rotatedLightDir);
-		////////////////////// VARIABLES ///////////////////
-
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
-
-		glm::vec3 lightColor(1, 1, 1);
-		float ambient = 0.1;
-
-		float boxSize = 10;
-
-		////////////////////// VARIABLES ///////////////////
-		float near_plane = 1.0f, far_plane = 100.0f;
-		glm::mat4 lightProjection = glm::ortho(-boxSize, boxSize, -boxSize, boxSize, near_plane, far_plane);
-		glm::mat4 lightView = glm::lookAt(lightDir * 10.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+		mainCamara.UpdateWindow(w, h);
 
 
-		////////////////////// RENDERIZAR ESCENA SOMBRAS ///////////////////
-		glUseProgram(shadowShaderID);
-		glUniformMatrix4fv(glGetUniformLocation(shadowShaderID, "lightSpaceMatrix"), 1, GL_FALSE, &lightSpaceMatrix[0][0]);
-
-		glViewport(0, 0, 1024, 1024);
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFB);
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		glCullFace(GL_FRONT); 
+		//mainCamara.m_viewMatrix = ViewMatrix;
 
 
-		mapa.dibuixarObjecte(shadowShaderID, ViewMatrix);
-
-		glCullFace(GL_BACK);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0); 
-
-
-		////////////////////// DIBUJAR ESCENA NORMAL Y TAL ///////////////////
-		glViewport(0, 0, w, h);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glUseProgram(customShaderID);
-
-		glUniform1f(glGetUniformLocation(customShaderID, "ambientIntensity"), GLfloat(ambient));
-		glUniform3fv(glGetUniformLocation(customShaderID, "lightDirection"), 1, &lightDir[0]);
-		glUniform3fv(glGetUniformLocation(customShaderID, "lightColor"), 1, &lightColor[0]);
-
-		ProjectionMatrix = Projeccio_Perspectiva(customShaderID, 0, 0, w, h, OPV.R);
-		ViewMatrix = Vista_Esferica(customShaderID, OPV, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
-			front_faces, oculta, test_vis, back_line,
-			'c', true, &llum, true, false,
-			eixos, grid, hgrid);
-
-		glUniformMatrix4fv(glGetUniformLocation(customShaderID, "lightSpaceMatrix"), 1, GL_FALSE, &lightSpaceMatrix[0][0]);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
-		glUniform1i(glGetUniformLocation(customShaderID, "shadowMap"), 0);
-
-		mapa.dibuixarObjecte(customShaderID, ViewMatrix);
+		glm::vec3 pos(-10, -10, 5);
+		glm::mat4 matrot(1.0f);
+		matrot = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		matrot = glm::rotate(matrot, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		mainCamara.translate(pos);
+		mainCamara.rotate(matrot);
 
 
-		//OnPaint(window);
 
-		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, ProjectionMatrix, ViewMatrix);
+		luz.RenderShadows(direccionSol);
 
-		//	Dibuix Coordenades Món i Reixes.
-		dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, ProjectionMatrix, ViewMatrix);
-		
+		luz.RenderGame(customShaderID);
+
+
+
+		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, mainCamara.getProjection(), mainCamara.getView());
+		dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, mainCamara.getProjection(), mainCamara.getView());
+
+		//mainCamara.rotate(glm::vec3(45, frameTimer, 0));
 
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		// Entorn VGI: Activa la finestra actual

@@ -9,7 +9,7 @@ GameObject::GameObject(COBJModel* objModel)
 	m_scale = glm::vec3(1, 1, 1);
 }
 
-void GameObject::dibuixarObjecte(GLuint shaderID, glm::mat4 view)
+void GameObject::dibuixarObjecte(GLuint shaderID)
 {
 
 	//SeleccionaMaterial(shaderID, 0, sw_mat);
@@ -27,13 +27,6 @@ void GameObject::dibuixarObjecte(GLuint shaderID, glm::mat4 view)
 	m_objModel->draw_TriVAO_OBJ(shaderID);
 }
 
-
-void GameObject::transform(glm::vec3 pos, glm::mat4 rot, glm::vec3 scale)
-{
-	m_pos = pos;
-	m_rot = rot;
-	m_scale = scale;
-}
 	
 glm::mat4 GameObject::getModelMatrix()
 {

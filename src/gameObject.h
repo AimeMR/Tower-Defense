@@ -8,13 +8,17 @@ class GameObject
 public:
 	GameObject() {};
 	GameObject(COBJModel* model);
-	void transform(glm::vec3 pos, glm::mat4 rot, glm::vec3 scale);
+	void translate(glm::vec3 pos) { m_pos = pos; }
+	void rotate(glm::mat4 rot) { m_rot = rot; }
+	void scale(glm::vec3 scale) { m_scale = scale; }
+	void setId(int id) { objectID = id; }
 	glm::mat4 getModelMatrix();
 	glm::mat4 getNormalMatrix();
 
-	void dibuixarObjecte(GLuint shaderID, glm::mat4 view);
+	void dibuixarObjecte(GLuint shaderID);
 
-	int ID;
+	int objectID;
+	int pickingID;
 	bool m_texture;
 	COBJModel* m_objModel;
 
@@ -23,4 +27,4 @@ public:
 	glm::vec3 m_pos;
 	glm::mat4 m_rot;
 	glm::vec3 m_scale;
-}; 
+};
