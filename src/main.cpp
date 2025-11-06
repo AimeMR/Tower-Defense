@@ -197,9 +197,11 @@ void InitGL()
 	mida = 1.0;			nom = "";		buffer = "";
 
 	loadModels();
+
+	createObject(0);
 	
 	mainCamara = Camara();
-	distancia = 15;
+	distancia = 25;
 	mainCamara.UpdateWindow(w, h);
 	yawCamera = -135;
 	pitchCamera = 45; //eje arriba
@@ -209,7 +211,6 @@ void InitGL()
 	direccionSol = glm::vec3(1, 1, 1);
 	luz.m_cam = &mainCamara;
 	luz.objetos = &objects;
-	mapa = GameObject(mapaModel);
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
@@ -331,56 +332,7 @@ void OnSize(GLFWwindow* window, int width, int height)
 	luz.UpdateWindow(width, height);
 	mainCamara.UpdateWindow(width, height);
 }
-/*
-void dibuixa_Escena() {
 
-	//glUseProgram(shader_programID);
-
-//	Dibuix SkyBox C�bic.
-
-	if (SkyBoxCube) dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, ProjectionMatrix, ViewMatrix);
-
-
-	// Escalat d'objectes, per adequar-los a les vistes ortogr�fiques (Pr�ctica 2)
-	//	GTMatrix = glm::scale();
-
-	//	Dibuix geometria de l'escena amb comandes GL.
-
-
-
-
-}
-
-
-// OnPaint: Funci� de dibuix i visualitzaci� en frame buffer del frame
-void OnPaint(GLFWwindow* window)
-{
-	// TODO: Agregue aqu� su c�digo de controlador de mensajes
-	GLdouble vpv[3] = { 0.0, 0.0, 1.0 };
-
-	// Entorn VGI.ImGui: Men� ImGui condicionat al color de fons
-	if ((c_fons.r < 0.5) || (c_fons.g < 0.5) || (c_fons.b < 0.5))
-		ImGui::StyleColorsLight();
-	else ImGui::StyleColorsDark();
-
-	// Entorn VGI: PROJECCI� PERSPECTIVA
-	glDisable(GL_SCISSOR_TEST);		// Desactivaci� del retall de pantalla
-
-
-	luz.RenderGame(customShaderID);
-
-
-	frameTimer += deltaTime;
-
-	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), glm::radians(frameTimer * 0), glm::vec3(0, 0, 1));
-
-	mapa.transform(glm::vec3(0, 0, 0), rot, glm::vec3(1, 1, 1));
-
-	mapa.dibuixarObjecte(customShaderID, red, sw_material, ViewMatrix);
-
-	dibuixa_Escena();
-}
-*/
 // Skybox
 void OnVistaSkyBox()
 {
@@ -451,7 +403,7 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 		double deltaY = ypos - m_PosEAvall.y;
 
 
-		yawCamera -= (float)deltaX * sensibilidad;
+		yawCamera += (float)deltaX * sensibilidad;
 		pitchCamera -= (float)deltaY * sensibilidad;
 
 		m_PosEAvall.x = xpos;
@@ -480,19 +432,15 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 
 	
 	//ZOOM
-	/*
+	
 	if (m_ButoDAvall && zzoom && (projeccio != CAP))
 	{
-		zoomincr.cx = m_PosDAvall.x - xpos;		zoomincr.cy = m_PosDAvall.y - ypos;
-		long int incr = zoomincr.cy / 1.0;
-
-		OPV.R = OPV.R + incr;
-		if (OPV.R < p_near) OPV.R = p_near;
-		if (OPV.R > p_far) OPV.R = p_far;
-
+		distancia += m_PosDAvall.y - ypos;
+		if (distancia < 2) { distancia = 2; }
+		if (distancia > 100) { distancia = 100; }
 		m_PosDAvall.x = xpos;				m_PosDAvall.y = ypos;
 	}
-	*/
+	
 
 }
 
@@ -752,7 +700,7 @@ int main(void)
 		menu(salir);
 
 		// Update transforms and objects
-		Update();
+		//Update();
 
 		// Crida a OnPaint() per redibuixar l'escena
 		luz.RenderShadows(direccionSol);
