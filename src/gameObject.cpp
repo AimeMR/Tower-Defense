@@ -11,7 +11,7 @@ GameObject::GameObject(COBJModel* objModel)
 	pickingID = -1;
 }
 
-void GameObject::dibuixarObjecte(GLuint shaderID, CColor colorObj, bool* sw_mat, glm::mat4 view)
+void GameObject::dibuixarObjecte(GLuint shaderID)
 {
 
 	//SeleccionaMaterial(shaderID, 0, sw_mat);
@@ -29,6 +29,8 @@ void GameObject::dibuixarObjecte(GLuint shaderID, CColor colorObj, bool* sw_mat,
 	m_objModel->draw_TriVAO_OBJ(shaderID);
 }
 
+
+	
 glm::mat4 GameObject::getModelMatrix()
 {
 	glm::mat4 TransMatrix;

@@ -1,8 +1,8 @@
-//******** PRACTICA VISUALITZACIÓ GRÀFICA INTERACTIVA (Escola Enginyeria - UAB)
-//******** Entorn bàsic VS2022 MONOFINESTRA amb OpenGL 4.6, interfície GLFW 3.4, ImGui i llibreries GLM
-//******** Ferran Poveda, Marc Vivet, Carme Julià, Débora Gil, Enric Martí (Setembre 2025)
-// main.cpp : Definició de main
-//    Versió 0.5:	- Interficie ImGui
+//******** PRACTICA VISUALITZACI� GR�FICA INTERACTIVA (Escola Enginyeria - UAB)
+//******** Entorn b�sic VS2022 MONOFINESTRA amb OpenGL 4.6, interf�cie GLFW 3.4, ImGui i llibreries GLM
+//******** Ferran Poveda, Marc Vivet, Carme Juli�, D�bora Gil, Enric Mart� (Setembre 2025)
+// main.cpp : Definici� de main
+//    Versi� 0.5:	- Interficie ImGui
 //					- Per a dialeg de cerca de fitxers, s'utilitza la llibreria NativeFileDialog
 
 
@@ -29,28 +29,28 @@ void loadModels()
 
 void InitGL()
 {
-// TODO: agregar aquí el código de construcción
+// TODO: agregar aqu� el c�digo de construcci�n
 
-//------ Entorn VGI: Inicialització de les variables globals de CEntornVGIView
+//------ Entorn VGI: Inicialitzaci� de les variables globals de CEntornVGIView
 	int i;
 
 // Entorn VGI: Variable de control per a Status Bar (consola) 
 	statusB = false;
 
-// Entorn VGI: Variables de control per Menú Càmera: Esfèrica, Navega, Mòbil, Zoom, Satelit, Polars... 
+// Entorn VGI: Variables de control per Men� C�mera: Esf�rica, Navega, M�bil, Zoom, Satelit, Polars... 
 	camera = CAM_ESFERICA;
 	mobil = true;	zzoom = true;		zzoomO = false;		satelit = false;
 
-// Entorn VGI: Variables de control de l'opció Càmera->Navega?
+// Entorn VGI: Variables de control de l'opci� C�mera->Navega?
 	n[0] = 0.0;		n[1] = 0.0;		n[2] = 0.0;
 	opvN.x = 10.0;	opvN.y = 0.0;		opvN.z = 0.0;
 	angleZ = 0.0;
 	ViewMatrix = glm::mat4(1.0);		// Inicialitzar a identitat
 
-// Entorn VGI: Variables de control de l'opció Càmera->Geode?
-	OPV_G.R = 15.0;		OPV_G.alfa = 0.0;	OPV_G.beta = 0.0;	// Origen PV en esfèriques per a Vista_Geode
+// Entorn VGI: Variables de control de l'opci� C�mera->Geode?
+	OPV_G.R = 15.0;		OPV_G.alfa = 0.0;	OPV_G.beta = 0.0;	// Origen PV en esf�riques per a Vista_Geode
 
-// Entorn VGI: Variables de control per Menú Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
+// Entorn VGI: Variables de control per Men� Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
 	fullscreen = true;
 	pan = false;
 	eixos = true;	eixos_programID = 0;  eixos_Id = 0;
@@ -58,11 +58,11 @@ void InitGL()
 	grid.x = false;	grid.y = false;		grid.z = false;		grid.w = false;
 	hgrid.x = 0.0;	hgrid.y = 0.0;		hgrid.z = 0.0;		hgrid.w = 0.0;
 
-// Entorn VGI: Variables opció Vista->Pan
+// Entorn VGI: Variables opci� Vista->Pan
 	fact_pan = 1;
 	tr_cpv.x = 0;	tr_cpv.y = 0;	tr_cpv.z = 0;		tr_cpvF.x = 0;	tr_cpvF.y = 0;	tr_cpvF.z = 0;
 
-// Entorn VGI: Variables de control per les opcions de menú Projecció, Objecte
+// Entorn VGI: Variables de control per les opcions de men� Projecci�, Objecte
 	projeccio = PERSPECT;
 	ProjectionMatrix = glm::mat4(1.0);	// Inicialitzar a identitat
 	objecte = CAP;		// objecte = TETERA;
@@ -72,7 +72,7 @@ void InitGL()
 	skC_VAOID.vaoId = 0;	skC_VAOID.vboId = 0;	skC_VAOID.nVertexs = 36;
 	cubemapTexture = 0;
 
-// Entorn VGI: Variables de control del menú Transforma
+// Entorn VGI: Variables de control del men� Transforma
 	transf = false;		trasl = false;		rota = false;		escal = false;
 	fact_Tras = 1;		fact_Rota = 90;
 	TG.VTras.x = 0.0;	TG.VTras.y = 0.0;	TG.VTras.z = 0;	TGF.VTras.x = 0.0;	TGF.VTras.y = 0.0;	TGF.VTras.z = 0;
@@ -82,10 +82,10 @@ void InitGL()
 	transX = false;		transY = false;		transZ = false;
 	GTMatrix= glm::mat4(1.0);		// Inicialitzar a identitat
 
-// Entorn VGI: Variables de control per les opcions de menú Ocultacions
+// Entorn VGI: Variables de control per les opcions de men� Ocultacions
 	front_faces = true;	test_vis = false;	oculta = true;		back_line = false;
 
-// Entorn VGI: Variables de control del menú Iluminació		
+// Entorn VGI: Variables de control del men� Iluminaci�		
 	ilumina = SUAU;			ifixe = true;					ilum2sides = false;
 // Reflexions actives: Ambient [1], Difusa [2] i Especular [3]. No actives: Emission [0]. 
 	sw_material[0] = false;			sw_material[1] = true;			sw_material[2] = true;			sw_material[3] = true;	sw_material[4] = true;
@@ -94,8 +94,8 @@ void InitGL()
 	for (i = 0; i < NUM_MAX_TEXTURES; i++) texturesID[i] = 0;
 	tFlag_invert_Y = false;
 
-// Entorn VGI: Variables de control del menú Llums
-// Entorn VGI: Inicialització variables Llums
+// Entorn VGI: Variables de control del men� Llums
+// Entorn VGI: Inicialitzaci� variables Llums
 	llum_ambient = true;
 	llum.posicio.x = 100.0;			llum.posicio.y = 100.0;			llum.posicio.z = 100.0;		llum.posicio.w = 1.0;
 	llum.difusa.r = 1.0f;			llum.difusa.g = 1.0f;			llum.difusa.b = 1.0f;		llum.difusa.a = 1.0f;
@@ -106,27 +106,29 @@ void InitGL()
 	llum.spotcoscutoff = cos(25.0 * PI / 180);		llum.spotexponent = 1.0;
 	llum.encesa = true;
 
-// Entorn VGI: Variables de control del menú Shaders
+// Entorn VGI: Variables de control del men� Shaders
 	shader = CAP_SHADER;	shader_programID = 0;	
 	shaderLighting.releaseAllShaders();
-	// Càrrega Shader de Gouraud
+	// C�rrega Shader de Gouraud
 	shader_programID = 0;
 	fprintf(stderr, "phong_shdrML: \n"); 
 	shader = PHONG_SHADER;
 
+	fprintf(stderr, "Custom shader: \n");
 	customShader.releaseAllShaders();
 	customShaderID = customShader.loadFileShaders(".\\shaders\\customShader.vert", ".\\shaders\\customShader.frag");
 
-// Càrrega SHADERS
-// Càrrega Shader Eixos
+
+// C�rrega SHADERS
+// C�rrega Shader Eixos
 	fprintf(stderr, "Eixos: \n");
 	if (!eixos_programID) eixos_programID = shaderEixos.loadFileShaders(".\\shaders\\eixos.VERT", ".\\shaders\\eixos.FRAG");
 
-// Càrrega Shader Skybox
+// C�rrega Shader Skybox
 	fprintf(stderr, "SkyBox: \n");
 	if (!skC_programID) skC_programID = shader_SkyBoxC.loadFileShaders(".\\shaders\\skybox.VERT", ".\\shaders\\skybox.FRAG");
 
-// Càrrega VAO Skybox Cube
+// C�rrega VAO Skybox Cube
 	if (skC_VAOID.vaoId == 0) skC_VAOID = loadCubeSkybox_VAO();
 	Set_VAOList(CUBE_SKYBOX, skC_VAOID);
 
@@ -151,12 +153,12 @@ void InitGL()
 	m_EsfeEAvall.R = 0.0;		m_EsfeEAvall.alfa = 0.0;	m_EsfeEAvall.beta = 0.0;
 	m_EsfeIncEAvall.R = 0.0;	m_EsfeIncEAvall.alfa = 0.0;	m_EsfeIncEAvall.beta = 0.0;
 
-// Entorn VGI: Variables que controlen paràmetres visualització: Mides finestra Windows i PV
-	w = 640;			h = 480;			// Mides de la finestra Windows (w-amplada,h-alçada)
-	width_old = 640;	height_old = 480;	// Mides de la resolució actual de la pantalla (finestra Windows)
-	w_old = 640;		h_old = 480;		// Mides de la finestra Windows (w-amplada,h-alçada) per restaurar Finestra des de fullscreen
-	OPV.R = cam_Esferica[0];	OPV.alfa = cam_Esferica[1];		OPV.beta = cam_Esferica[2];		// Origen PV en esfèriques
-	//OPV.R = 15.0;		OPV.alfa = 0.0;		OPV.beta = 0.0;										// Origen PV en esfèriques
+// Entorn VGI: Variables que controlen par�metres visualitzaci�: Mides finestra Windows i PV
+	w = 640;			h = 480;			// Mides de la finestra Windows (w-amplada,h-al�ada)
+	width_old = 640;	height_old = 480;	// Mides de la resoluci� actual de la pantalla (finestra Windows)
+	w_old = 640;		h_old = 480;		// Mides de la finestra Windows (w-amplada,h-al�ada) per restaurar Finestra des de fullscreen
+	OPV.R = cam_Esferica[0];	OPV.alfa = cam_Esferica[1];		OPV.beta = cam_Esferica[2];		// Origen PV en esf�riques
+	//OPV.R = 15.0;		OPV.alfa = 0.0;		OPV.beta = 0.0;										// Origen PV en esf�riques
 	Vis_Polar = POLARZ;	oPolars = -1;
 
 // Entorn VGI: Color de fons i de l'objecte
@@ -195,8 +197,19 @@ void InitGL()
 	mida = 1.0;			nom = "";		buffer = "";
 
 	loadModels();
+	
+	mainCamara = Camara();
+	distancia = 15;
+	mainCamara.UpdateWindow(w, h);
+	yawCamera = -135;
+	pitchCamera = 45; //eje arriba
+	sensibilidad = 0.5;
 
-	GameObject* mapa = createObject(0);
+	luz.InitIluminacion(w, h);
+	direccionSol = glm::vec3(1, 1, 1);
+	luz.m_cam = &mainCamara;
+	luz.objetos = &objects;
+	mapa = GameObject(mapaModel);
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
@@ -204,11 +217,11 @@ void InitGL()
 
 void InitAPI()
 {
-// Vendor, Renderer, Version, Shading Laguage Version i Extensions suportades per la placa gràfica gravades en fitxer extensions.txt
+// Vendor, Renderer, Version, Shading Laguage Version i Extensions suportades per la placa gr�fica gravades en fitxer extensions.txt
 	std::string nomf = "extensions.txt";
 	char const* nomExt = "";
 	const char* nomfitxer;
-	nomfitxer = nomf.c_str();	// Conversió tipus string --> char *
+	nomfitxer = nomf.c_str();	// Conversi� tipus string --> char *
 	int num_Ext;
 
 	char* str = (char*)glGetString(GL_VENDOR);
@@ -232,7 +245,7 @@ void InitAPI()
 					fprintf(f, "%s \n", nomExt);
 					//fprintf(stderr, "%s", nomExt);	// Displaiar extensions per pantalla
 				}
-				//fprintf(stderr, "\n");				// Displaiar <cr> per pantalla després extensions
+				//fprintf(stderr, "\n");				// Displaiar <cr> per pantalla despr�s extensions
 //				str = (char*)glGetString(GL_EXTENSIONS);
 //				fprintf(f, "EXTENSIONS: %s\n", str);
 				//fprintf(stderr, "EXTENSIONS: %s\n", str);
@@ -315,89 +328,66 @@ void destroyObject(GameObject* obj)
 void OnSize(GLFWwindow* window, int width, int height)
 {
 	w = width;	h = height;
+	luz.UpdateWindow(width, height);
+	mainCamara.UpdateWindow(width, height);
 }
-
+/*
 void dibuixa_Escena() {
 
 	//glUseProgram(shader_programID);
 
-	//	Dibuix SkyBox Cúbic.
+//	Dibuix SkyBox C�bic.
 
 	if (SkyBoxCube) dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, ProjectionMatrix, ViewMatrix);
 
-	//	Dibuix Coordenades Món i Reixes.
-	dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, ProjectionMatrix, ViewMatrix);
 
-	// Escalat d'objectes, per adequar-los a les vistes ortogràfiques (Pràctica 2)
+	// Escalat d'objectes, per adequar-los a les vistes ortogr�fiques (Pr�ctica 2)
 	//	GTMatrix = glm::scale();
 
 	//	Dibuix geometria de l'escena amb comandes GL.
+
+
+
+
 }
 
-// OnPaint: Funció de dibuix i visualització en frame buffer del frame
+
+// OnPaint: Funci� de dibuix i visualitzaci� en frame buffer del frame
 void OnPaint(GLFWwindow* window)
 {
-	// TODO: Agregue aquí su código de controlador de mensajes
+	// TODO: Agregue aqu� su c�digo de controlador de mensajes
 	GLdouble vpv[3] = { 0.0, 0.0, 1.0 };
 
-	// Entorn VGI.ImGui: Menú ImGui condicionat al color de fons
+	// Entorn VGI.ImGui: Men� ImGui condicionat al color de fons
 	if ((c_fons.r < 0.5) || (c_fons.g < 0.5) || (c_fons.b < 0.5))
 		ImGui::StyleColorsLight();
 	else ImGui::StyleColorsDark();
 
-	// Entorn VGI: PROJECCIÓ PERSPECTIVA
-	glDisable(GL_SCISSOR_TEST);		// Desactivació del retall de pantalla
+	// Entorn VGI: PROJECCI� PERSPECTIVA
+	glDisable(GL_SCISSOR_TEST);		// Desactivaci� del retall de pantalla
 
-	// Entorn VGI: Activar shader Visualització Escena
-	glUseProgram(customShaderID);
 
-	// Entorn VGI: Definició de Viewport, Projecció i Càmara
-	ProjectionMatrix = Projeccio_Perspectiva(customShaderID, 0, 0, w, h, OPV.R);
+	luz.RenderGame(customShaderID);
 
-	// Entorn VGI: Definició de la càmera.
-	ViewMatrix = Vista_Esferica(customShaderID, OPV, Vis_Polar, pan, tr_cpv, tr_cpvF, c_fons, col_obj, objecte, mida, pas,
-		front_faces, oculta, test_vis, back_line,
-		'c', true, &llum, true, false,
-		eixos, grid, hgrid);
 
-	
-	glm::vec3 lightDir(1, 1, 1);
-	glm::vec3 lightColor(1, 1, 1);
+	frameTimer += deltaTime;
 
-	float ambient = 0.1;
+	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), glm::radians(frameTimer * 0), glm::vec3(0, 0, 1));
 
-	glUniform1f(glGetUniformLocation(customShaderID, "ambientIntensity"), GLfloat(ambient));
-	glUniform3fv(glGetUniformLocation(customShaderID, "lightDirection"), 1, &lightDir[0]);
-	glUniform3fv(glGetUniformLocation(customShaderID, "lightColor"), 1, &lightColor[0]);
+	mapa.transform(glm::vec3(0, 0, 0), rot, glm::vec3(1, 1, 1));
 
-	//glm::vec4 objectDiffuseColor(0.6f, 0.4f, 0.3f, 1.0f); // Marrón / Gris
-	//glUniform3fv(glGetUniformLocation(customShaderID, "material.diffuse"), 1, &objectDiffuseColor[0]);
-
-	CColor red;
-	red.r = 0;
-	red.b = 0;
-	red.g = 0;
-	red.a = 1;
-
-	for(GameObject* obj : objects)
-		obj->dibuixarObjecte(customShaderID, red, sw_material, ViewMatrix);
+	mapa.dibuixarObjecte(customShaderID, red, sw_material, ViewMatrix);
 
 	dibuixa_Escena();
 }
-
-void Update() {
-	frameTimer += deltaTime;
-	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), glm::radians(frameTimer * 10), glm::vec3(0, 0, 1));
-	objects[0]->rotate(rot);
-}
-
+*/
 // Skybox
 void OnVistaSkyBox()
 {
-// Càrrega Shader Skybox
+// C�rrega Shader Skybox
 	if (!skC_programID) skC_programID = shader_SkyBoxC.loadFileShaders(".\\shaders\\skybox.VERT", ".\\shaders\\skybox.FRAG");
 
-// Càrrega VAO Skybox Cube
+// C�rrega VAO Skybox Cube
 	if (skC_VAOID.vaoId == 0) skC_VAOID = loadCubeSkybox_VAO();
 	Set_VAOList(CUBE_SKYBOX, skC_VAOID);
 
@@ -436,7 +426,7 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 			m_ButoEAvall = true;
 			m_PosEAvall.x = xpos;	m_PosEAvall.y = ypos;
 			m_EsfeEAvall = OPV;
-			//Picking objects JAVI AQUÍ
+			//Picking objects JAVI AQU�
 		}
 		// OnLButtonUp
 		else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
@@ -455,28 +445,42 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 
 void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 {
-// TODO: Agregue aquí su código de controlador de mensajes o llame al valor predeterminado
-	double modul = 0;
-	GLdouble vdir[3] = { 0, 0, 0 };
-	CSize gir = { 0,0 }, girn = { 0,0 }, girT = { 0,0 }, zoomincr = { 0,0 };
-
-	//ROTACIÓ
 	if (m_ButoEAvall && mobil && projeccio != CAP)
 	{
-		gir.cx = m_PosEAvall.x - xpos;		gir.cy = m_PosEAvall.y - ypos;
-		m_PosEAvall.x = xpos;				m_PosEAvall.y = ypos;
-		OPV.beta = OPV.beta - gir.cx / 2.0;
-		OPV.alfa = OPV.alfa + gir.cy / 2.0;
+		double deltaX = xpos - m_PosEAvall.x;
+		double deltaY = ypos - m_PosEAvall.y;
 
-		// Entorn VGI: Control per evitar el creixement desmesurat dels angles.
-		while (OPV.alfa >= 360)		OPV.alfa = OPV.alfa - 360.0;
-		while (OPV.alfa < 0)		OPV.alfa = OPV.alfa + 360.0;
-		while (OPV.beta >= 360)		OPV.beta = OPV.beta - 360.0;
-		while (OPV.beta < 0)		OPV.beta = OPV.beta + 360.0;
+
+		yawCamera -= (float)deltaX * sensibilidad;
+		pitchCamera -= (float)deltaY * sensibilidad;
+
+		m_PosEAvall.x = xpos;
+		m_PosEAvall.y = ypos;
+
+		if (pitchCamera > 89.0f)  pitchCamera = 89.0f;
+		if (pitchCamera < 0) pitchCamera = 0;
+
+		while (yawCamera >= 360.0f) yawCamera -= 360.0f;
+		while (yawCamera < 0.0f)    yawCamera += 360.0f;
 	}
+
+	float yawRadiants = glm::radians(yawCamera);
+	float pitchRadiants = glm::radians(pitchCamera);
+
+	glm::vec3 forward;
+
+	forward.x = glm::cos(yawRadiants) * glm::cos(pitchRadiants);
+	forward.y = glm::sin(yawRadiants) * glm::cos(pitchRadiants);
+	forward.z = glm::sin(pitchRadiants);
+
+	forward = glm::normalize(forward);
+
+	mainCamara.translate(forward * distancia);
+	mainCamara.target(glm::vec3(0, 0, 0));
 
 	
 	//ZOOM
+	/*
 	if (m_ButoDAvall && zzoom && (projeccio != CAP))
 	{
 		zoomincr.cx = m_PosDAvall.x - xpos;		zoomincr.cy = m_PosDAvall.y - ypos;
@@ -488,6 +492,8 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 
 		m_PosDAvall.x = xpos;				m_PosDAvall.y = ypos;
 	}
+	*/
+
 }
 
 void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -507,7 +513,7 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	}
 }
 
-// Entorn VGI. OnFull_Screen: Funció per a pantalla completa
+// Entorn VGI. OnFull_Screen: Funci� per a pantalla completa
 void OnFull_Screen(GLFWmonitor* monitor, GLFWwindow *window)
 {
 	fullscreen = !fullscreen;
@@ -647,7 +653,7 @@ int main(void)
 	// Make the window's context current
     glfwMakeContextCurrent(window);
 
-	// Llegir resolució actual de pantalla
+	// Llegir resoluci� actual de pantalla
 	glfwGetWindowSize(window, &width_old, &height_old);
 
 	// Initialize GLEW
@@ -704,7 +710,7 @@ int main(void)
 	if (eixos) 
 	{
 		if (!eixos_programID) eixos_programID = shaderEixos.loadFileShaders(".\\shaders\\eixos.VERT", ".\\shaders\\eixos.FRAG");
-		if (!eixos_Id) eixos_Id = deixos(); // Funció que defineix els Eixos Coordenades Món com un VAO.
+		if (!eixos_Id) eixos_Id = deixos(); // Funci� que defineix els Eixos Coordenades M�n com un VAO.
 	}
 	if (SkyBoxCube) OnVistaSkyBox();
 	if (fullscreen)
@@ -724,14 +730,18 @@ int main(void)
 			fullscreen = false;
 		}
 	}
+
+	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
-    while (!glfwWindowShouldClose(window) and !salir)
+
+    while (!glfwWindowShouldClose(window))
     {  
 		now = glfwGetTime();
 		delta = now - previous;
 		previous = now;
 		deltaTime = delta;
 
+		frameTimer += deltaTime;
 
 		// Poll for and process events
 		glfwPollEvents();
@@ -745,13 +755,19 @@ int main(void)
 		Update();
 
 		// Crida a OnPaint() per redibuixar l'escena
-		OnPaint(window);
+		luz.RenderShadows(direccionSol);
+		luz.RenderGame(customShaderID);
+
+		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, mainCamara.getProjection(), mainCamara.getView());
+		dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, mainCamara.getProjection(), mainCamara.getView());
+
 		
+
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		// Entorn VGI: Activa la finestra actual
 		glfwMakeContextCurrent(window);
 
-		// Entorn VGI: Transferència del buffer OpenGL a buffer de pantalla
+		// Entorn VGI: Transfer�ncia del buffer OpenGL a buffer de pantalla
 		glfwSwapBuffers(window);
     }
 

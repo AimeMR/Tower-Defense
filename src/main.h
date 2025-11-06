@@ -9,6 +9,8 @@
 // Entorn VGI: Llibreries i constants Constants de l'aplicació EntornVGI
 #include "stdafx.h"
 #include "gameObject.h"
+#include "iluminacion.h"
+#include "camara.h"
 #include <vector>
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
 
@@ -19,8 +21,24 @@ std::vector<COBJModel*> models;
 GLuint customShaderID;	
 Shader customShader;
 
+
+
 float deltaTime;
 float frameTimer = 0;
+
+
+
+//ILUMINACION
+Iluminacion luz;
+glm::vec3 direccionSol;
+
+//CAMARA
+Camara mainCamara;
+float yawCamera, pitchCamera;
+float distancia;
+float sensibilidad;
+
+
 
 
 //-------------- Entorn VGI: Variables globals de main

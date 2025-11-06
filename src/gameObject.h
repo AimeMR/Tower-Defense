@@ -15,7 +15,7 @@ public:
 	glm::mat4 getModelMatrix();
 	glm::mat4 getNormalMatrix();
 
-	void dibuixarObjecte(GLuint shaderID, CColor colorObj, bool* sw_mat, glm::mat4 view);
+	void dibuixarObjecte(GLuint shaderID);
 
 	int objectID;
 	int pickingID;
@@ -27,4 +27,4 @@ public:
 	glm::vec3 m_pos;
 	glm::mat4 m_rot;
 	glm::vec3 m_scale;
-}; 
+};

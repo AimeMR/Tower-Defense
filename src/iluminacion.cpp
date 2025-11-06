@@ -1,0 +1,112 @@
+#include "iluminacion.h"
+
+void Iluminacion::InitIluminacion(int width, int height)
+{
+	fprintf(stderr, "Shadow mapping shader: \n");
+	m_shadowShader.releaseAllShaders();
+	m_shadowShaderID = m_shadowShader.loadFileShaders(".\\shaders\\shadowMapping.vert", ".\\shaders\\shadowMapping.frag");
+
+
+	w = width;
+	h = height;
+
+	glGenTextures(1, &m_depthMap); //textura depth
+	glBindTexture(GL_TEXTURE_2D, m_depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	glGenFramebuffers(1, &m_depthMapFB);  //framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+	m_ambientIntensity = 0.1;
+	m_lightColor = glm::vec3(1, 1, 1);
+
+}
+
+void Iluminacion::UpdateWindow(int width, int height)
+{
+	w = width;
+	h = height;
+}
+
+void Iluminacion::RenderShadows(glm::vec3 lightDir)
+{
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(2.0f, 5.0f); // Valores comunes que suelen funcionar
+
+	float boxSize = 10;
+	float near_plane = 1.0f, far_plane = 100.0f;
+	m_lightDirection = lightDir;
+
+	glm::mat4 lightProjection = glm::ortho(-boxSize, boxSize, -boxSize, boxSize, near_plane, far_plane);
+	glm::mat4 lightView = glm::lookAt(m_lightDirection * 10.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	m_lightSpaceMatrix = lightProjection * lightView;
+
+	glUseProgram(m_shadowShaderID);
+	glUniformMatrix4fv(glGetUniformLocation(m_shadowShaderID, "lightSpaceMatrix"), 1, GL_FALSE, &m_lightSpaceMatrix[0][0]);
+
+	glViewport(0, 0, 1024, 1024);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glCullFace(GL_FRONT);
+
+	//dibujar objetos
+
+	for (GameObject* obj : *objetos)
+	{
+		obj->dibuixarObjecte(m_shadowShaderID);
+	}
+
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	glCullFace(GL_BACK);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+}
+
+
+void Iluminacion::RenderGame(GLuint shaderID)
+{
+	glViewport(0, 0, w, h);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glUseProgram(shaderID);
+
+
+	glm::mat4 projectionMatrix, viewMatrix;
+	projectionMatrix = m_cam->getProjection();
+	viewMatrix = m_cam->getView();
+
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]);
+
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "lightSpaceMatrix"), 1, GL_FALSE, &m_lightSpaceMatrix[0][0]);
+
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_depthMap);
+	glUniform1i(glGetUniformLocation(shaderID, "shadowMap"), 0);
+
+
+	glUniform1f(glGetUniformLocation(shaderID, "ambientIntensity"), GLfloat(m_ambientIntensity));
+	glUniform3fv(glGetUniformLocation(shaderID, "lightDirection"), 1, &m_lightDirection[0]);
+	glUniform3fv(glGetUniformLocation(shaderID, "lightColor"), 1, &m_lightColor[0]);
+
+	for (GameObject* obj : *objetos)
+	{
+		obj->dibuixarObjecte(shaderID);
+	}
+
+}
