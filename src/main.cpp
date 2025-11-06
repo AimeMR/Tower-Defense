@@ -37,74 +37,15 @@ void InitGL()
 // Entorn VGI: Variable de control per a Status Bar (consola) 
 	statusB = false;
 
-// Entorn VGI: Variables de control per Men� C�mera: Esf�rica, Navega, M�bil, Zoom, Satelit, Polars... 
-	camera = CAM_ESFERICA;
-	mobil = true;	zzoom = true;		zzoomO = false;		satelit = false;
-
-// Entorn VGI: Variables de control de l'opci� C�mera->Navega?
-	n[0] = 0.0;		n[1] = 0.0;		n[2] = 0.0;
-	opvN.x = 10.0;	opvN.y = 0.0;		opvN.z = 0.0;
-	angleZ = 0.0;
-	ViewMatrix = glm::mat4(1.0);		// Inicialitzar a identitat
-
-// Entorn VGI: Variables de control de l'opci� C�mera->Geode?
-	OPV_G.R = 15.0;		OPV_G.alfa = 0.0;	OPV_G.beta = 0.0;	// Origen PV en esf�riques per a Vista_Geode
-
 // Entorn VGI: Variables de control per Men� Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
 	fullscreen = true;
-	pan = false;
-	eixos = true;	eixos_programID = 0;  eixos_Id = 0;
-	sw_grid = false;
-	grid.x = false;	grid.y = false;		grid.z = false;		grid.w = false;
-	hgrid.x = 0.0;	hgrid.y = 0.0;		hgrid.z = 0.0;		hgrid.w = 0.0;
-
-// Entorn VGI: Variables opci� Vista->Pan
-	fact_pan = 1;
-	tr_cpv.x = 0;	tr_cpv.y = 0;	tr_cpv.z = 0;		tr_cpvF.x = 0;	tr_cpvF.y = 0;	tr_cpvF.z = 0;
-
-// Entorn VGI: Variables de control per les opcions de men� Projecci�, Objecte
-	projeccio = PERSPECT;
-	ProjectionMatrix = glm::mat4(1.0);	// Inicialitzar a identitat
-	objecte = CAP;		// objecte = TETERA;
+	eixos = true;
 
 // Entorn VGI: Variables de control Skybox Cube
 	SkyBoxCube = true;		skC_programID = 0;
 	skC_VAOID.vaoId = 0;	skC_VAOID.vboId = 0;	skC_VAOID.nVertexs = 36;
 	cubemapTexture = 0;
 
-// Entorn VGI: Variables de control del men� Transforma
-	transf = false;		trasl = false;		rota = false;		escal = false;
-	fact_Tras = 1;		fact_Rota = 90;
-	TG.VTras.x = 0.0;	TG.VTras.y = 0.0;	TG.VTras.z = 0;	TGF.VTras.x = 0.0;	TGF.VTras.y = 0.0;	TGF.VTras.z = 0;
-	TG.VRota.x = 0;		TG.VRota.y = 0;		TG.VRota.z = 45;	TGF.VRota.x = 0;	TGF.VRota.y = 0;	TGF.VRota.z = 45;
-	TG.VScal.x = 1;		TG.VScal.y = 1;		TG.VScal.z = 1;	TGF.VScal.x = 1;	TGF.VScal.y = 1;	TGF.VScal.z = 1;
-
-	transX = false;		transY = false;		transZ = false;
-	GTMatrix= glm::mat4(1.0);		// Inicialitzar a identitat
-
-// Entorn VGI: Variables de control per les opcions de men� Ocultacions
-	front_faces = true;	test_vis = false;	oculta = true;		back_line = false;
-
-// Entorn VGI: Variables de control del men� Iluminaci�		
-	ilumina = SUAU;			ifixe = true;					ilum2sides = false;
-// Reflexions actives: Ambient [1], Difusa [2] i Especular [3]. No actives: Emission [0]. 
-	sw_material[0] = false;			sw_material[1] = true;			sw_material[2] = true;			sw_material[3] = true;	sw_material[4] = true;
-	sw_material_old[0] = false;		sw_material_old[1] = true;		sw_material_old[2] = true;		sw_material_old[3] = true;	sw_material_old[4] = true;
-	textura = false;				t_textura = CAP;				textura_map = true;
-	for (i = 0; i < NUM_MAX_TEXTURES; i++) texturesID[i] = 0;
-	tFlag_invert_Y = false;
-
-// Entorn VGI: Variables de control del men� Llums
-// Entorn VGI: Inicialitzaci� variables Llums
-	llum_ambient = true;
-	llum.posicio.x = 100.0;			llum.posicio.y = 100.0;			llum.posicio.z = 100.0;		llum.posicio.w = 1.0;
-	llum.difusa.r = 1.0f;			llum.difusa.g = 1.0f;			llum.difusa.b = 1.0f;		llum.difusa.a = 1.0f;
-	llum.especular.r = 1.0f;		llum.especular.g = 1.0f;		llum.especular.b = 1.0f;	llum.especular.a = 1.0f;
-	llum.atenuacio.a = 0.0;		llum.atenuacio.b = 0.0;		llum.atenuacio.c = 1.0;
-	llum.restringida = false;
-	llum.spotdirection.x = 0.0; llum.spotdirection.y = 0.0;	llum.spotdirection.z = -1.0;
-	llum.spotcoscutoff = cos(25.0 * PI / 180);		llum.spotexponent = 1.0;
-	llum.encesa = true;
 
 // Entorn VGI: Variables de control del men� Shaders
 	shader = CAP_SHADER;	shader_programID = 0;	
@@ -161,37 +102,7 @@ void InitGL()
 	//OPV.R = 15.0;		OPV.alfa = 0.0;		OPV.beta = 0.0;										// Origen PV en esf�riques
 	Vis_Polar = POLARZ;	oPolars = -1;
 
-// Entorn VGI: Color de fons i de l'objecte
-	fonsR = true;		fonsG = true;		fonsB = true;
-	c_fons.r = clear_colorB.x;		c_fons.g = clear_colorB.y;		c_fons.b = clear_colorB.z;			c_fons.b = clear_colorB.w;
-	sw_color = false;
-	col_obj.r = clear_colorO.x;	col_obj.g = clear_colorO.y;	col_obj.b = clear_colorO.z;		col_obj.a = clear_colorO.w;
 
-// Entorn VGI: Objecte OBJ
-	ObOBJ = NULL;		vao_OBJ.vaoId = 0;		vao_OBJ.vboId = 0;		vao_OBJ.nVertexs = 0;
-
-// Entorn VGI: OBJECTE --> Corba B-Spline i Bezier
-	npts_T = 0;
-	for (i = 0; i < MAX_PATCH_CORBA; i = i++)
-	{	PC_t[i].x = 0.0;
-		PC_t[i].y = 0.0;
-		PC_t[i].z = 0.0;
-	}
-
-	pas_CS = PAS_BSPLINE;
-	sw_Punts_Control = false;
-
-// TRIEDRE DE FRENET / DARBOUX: VT: vector Tangent, VNP: Vector Normal Principal, VBN: vector BiNormal
-	dibuixa_TriedreFrenet = false;		dibuixa_TriedreDarboux = false;
-	VT = { 0.0, 0.0, 1.0 };		VNP = { 1.0, 0.0, 0.0 };	VBN = { 0.0, 1.0, 0.0 };
-
-// Entorn VGI: Variables del Timer
-	t = 0;			anima = false;
-
-// Entorn VGI: Variables de l'objecte FRACTAL
-	t_fractal = CAP;	soroll = 'C';
-	pas = 64;			pas_ini = 64;
-	sw_il = true;		palcolFractal = false;
 
 // Entorn VGI: Altres variables
 	mida = 1.0;			nom = "";		buffer = "";
@@ -397,7 +308,7 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 
 void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 {
-	if (m_ButoEAvall && mobil && projeccio != CAP)
+	if (m_ButoEAvall)
 	{
 		double deltaX = xpos - m_PosEAvall.x;
 		double deltaY = ypos - m_PosEAvall.y;
@@ -433,7 +344,7 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 	
 	//ZOOM
 	
-	if (m_ButoDAvall && zzoom && (projeccio != CAP))
+	if (m_ButoDAvall)
 	{
 		distancia += m_PosDAvall.y - ypos;
 		if (distancia < 2) { distancia = 2; }
