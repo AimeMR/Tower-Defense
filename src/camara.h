@@ -10,7 +10,8 @@ public:
 
 	void translate(glm::vec3 pos) { m_position = pos; }
 	void rotate(glm::mat4 rot) { m_rotation = rot; }
-	//void rotate(glm::vec3 eulerRot);
+	void rotate(glm::vec3 eulerRot);
+	void target(glm::vec3 target);
 
 	glm::mat4 getProjection();
 	glm::mat4 getView();

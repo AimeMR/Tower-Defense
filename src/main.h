@@ -34,6 +34,9 @@ glm::vec3 direccionSol;
 
 //CAMARA
 Camara mainCamara;
+float yawCamera, pitchCamera;
+float distancia;
+float sensibilidad;
 
 //Objetos
 std::vector<GameObject*> objects;

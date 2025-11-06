@@ -14,6 +14,29 @@ Camara::Camara()
 	m_zoom = 60;
 }
 
+void Camara::rotate(glm::vec3 eulerAngles)
+{
+	glm::mat4 rotationMatrix(1.0f);
+
+	//pitch - arriba abajo
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(eulerAngles.x), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	//yaw - izquierda derecha
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(eulerAngles.y), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	//roll - inclinar
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(eulerAngles.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	m_rotation = rotationMatrix;
+}
+
+void Camara::target(glm::vec3 target)
+{
+	glm::vec3 fixedTarget;
+
+	fixedTarget = target - m_position;
+	m_rotation = glm::lookAt(glm::vec3(0, 0, 0), target, glm::vec3(0, 0, 1));
+}
 
 
 glm::mat4 Camara::getProjection()
@@ -27,7 +50,7 @@ glm::mat4 Camara::getView()
 {
 
 	//vector forward de la camara
-	glm::vec4 forwardBase = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f); 
+	glm::vec4 forwardBase = glm::vec4(0.0f, 1.0f, -1.0f, 0.0f); 
 	glm::vec3 forward = glm::vec3(m_rotation * forwardBase);
 	forward = glm::normalize(forward);
 

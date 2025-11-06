@@ -45,6 +45,9 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir)
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(2.0f, 5.0f); // Valores comunes que suelen funcionar
+
 	float boxSize = 10;
 	float near_plane = 1.0f, far_plane = 100.0f;
 	m_lightDirection = lightDir;
@@ -56,7 +59,7 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir)
 	glUseProgram(m_shadowShaderID);
 	glUniformMatrix4fv(glGetUniformLocation(m_shadowShaderID, "lightSpaceMatrix"), 1, GL_FALSE, &m_lightSpaceMatrix[0][0]);
 
-	glViewport(0, 0, m_shadowWidth, m_shadowHeight);
+	glViewport(0, 0, 1024, 1024);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glCullFace(GL_FRONT);
@@ -68,13 +71,11 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir)
 		obj->dibuixarObjecte(m_shadowShaderID);
 	}
 
-
+	glDisable(GL_POLYGON_OFFSET_FILL);
 	glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }
-
-
 
 
 void Iluminacion::RenderGame(GLuint shaderID)

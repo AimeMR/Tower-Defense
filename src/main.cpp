@@ -200,6 +200,11 @@ void InitGL()
 
 	//CAMARA
 	mainCamara = Camara();
+	distancia = 15;
+	mainCamara.UpdateWindow(w, h);
+	yawCamera = -135; 
+	pitchCamera = 45; //eje arriba
+	sensibilidad = 0.5;
 
 	luz.InitIluminacion(w, h);
 	direccionSol = glm::vec3(1, 1, 1);
@@ -302,6 +307,8 @@ void OnSize(GLFWwindow* window, int width, int height)
 {
 	w = width;	h = height;
 	luz.UpdateWindow(width, height);
+	mainCamara.UpdateWindow(width, height);
+
 }
 
 
@@ -388,28 +395,42 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 
 void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 {
-// TODO: Agregue aquí su código de controlador de mensajes o llame al valor predeterminado
-	double modul = 0;
-	GLdouble vdir[3] = { 0, 0, 0 };
-	CSize gir = { 0,0 }, girn = { 0,0 }, girT = { 0,0 }, zoomincr = { 0,0 };
-
-	//ROTACIÓ
 	if (m_ButoEAvall && mobil && projeccio != CAP)
 	{
-		gir.cx = m_PosEAvall.x - xpos;		gir.cy = m_PosEAvall.y - ypos;
-		m_PosEAvall.x = xpos;				m_PosEAvall.y = ypos;
-		OPV.beta = OPV.beta - gir.cx / 2.0;
-		OPV.alfa = OPV.alfa + gir.cy / 2.0;
+		double deltaX = xpos - m_PosEAvall.x;
+		double deltaY = ypos - m_PosEAvall.y;
 
-		// Entorn VGI: Control per evitar el creixement desmesurat dels angles.
-		while (OPV.alfa >= 360)		OPV.alfa = OPV.alfa - 360.0;
-		while (OPV.alfa < 0)		OPV.alfa = OPV.alfa + 360.0;
-		while (OPV.beta >= 360)		OPV.beta = OPV.beta - 360.0;
-		while (OPV.beta < 0)		OPV.beta = OPV.beta + 360.0;
+
+		yawCamera -= (float)deltaX * sensibilidad;
+		pitchCamera -= (float)deltaY * sensibilidad;
+
+		m_PosEAvall.x = xpos;
+		m_PosEAvall.y = ypos;
+
+		if (pitchCamera > 89.0f)  pitchCamera = 89.0f;
+		if (pitchCamera < 0) pitchCamera = 0;
+
+		while (yawCamera >= 360.0f) yawCamera -= 360.0f;
+		while (yawCamera < 0.0f)    yawCamera += 360.0f;
 	}
+
+	float yawRadiants = glm::radians(yawCamera);
+	float pitchRadiants = glm::radians(pitchCamera);
+
+	glm::vec3 forward;
+
+	forward.x = glm::cos(yawRadiants) * glm::cos(pitchRadiants);
+	forward.y = glm::sin(yawRadiants) * glm::cos(pitchRadiants);
+	forward.z = glm::sin(pitchRadiants);
+
+	forward = glm::normalize(forward);
+
+	mainCamara.translate(forward * distancia);
+	mainCamara.target(glm::vec3(0, 0, 0));
 
 	
 	//ZOOM
+	/*
 	if (m_ButoDAvall && zzoom && (projeccio != CAP))
 	{
 		zoomincr.cx = m_PosDAvall.x - xpos;		zoomincr.cy = m_PosDAvall.y - ypos;
@@ -421,7 +442,7 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 
 		m_PosDAvall.x = xpos;				m_PosDAvall.y = ypos;
 	}
-
+	*/
 
 }
 
@@ -646,7 +667,7 @@ int main(void)
 		if (!eixos_Id) eixos_Id = deixos(); // Funció que defineix els Eixos Coordenades Món com un VAO.
 	}
 	if (SkyBoxCube) OnVistaSkyBox();
-	if (!fullscreen)
+	if (fullscreen)
 	{
 		const GLFWvidmode* currentMode = glfwGetVideoMode(primary);
 		if (currentMode) {
@@ -663,7 +684,6 @@ int main(void)
 			fullscreen = false;
 		}
 	}
-	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
 
@@ -682,26 +702,10 @@ int main(void)
 
 		menu();
 
-		mainCamara.UpdateWindow(w, h);
-
-
-		//mainCamara.m_viewMatrix = ViewMatrix;
-
-
-		glm::vec3 pos(-10, -10, 5);
-		glm::mat4 matrot(1.0f);
-		matrot = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		matrot = glm::rotate(matrot, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		mainCamara.translate(pos);
-		mainCamara.rotate(matrot);
-
 
 
 		luz.RenderShadows(direccionSol);
-
 		luz.RenderGame(customShaderID);
-
-
 
 		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, mainCamara.getProjection(), mainCamara.getView());
 		dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, mainCamara.getProjection(), mainCamara.getView());
