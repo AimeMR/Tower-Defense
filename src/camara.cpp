@@ -41,6 +41,7 @@ void Camara::target(glm::vec3 target)
 
 glm::mat4 Camara::getProjection()
 {
+	if (m_h == 0) { m_h = 1; }
 	m_projectionMatrix = glm::perspective(glm::radians(m_zoom), 1.0 * m_w / m_h, m_near, m_far);
 
 	return m_projectionMatrix;
