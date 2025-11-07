@@ -48,8 +48,8 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir)
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(2.0f, 5.0f); // Valores comunes que suelen funcionar
 
-	float boxSize = 30;
-	float near_plane = 1.0f, far_plane = 2000.0f;
+	float boxSize = 20;
+	float near_plane = 1.0f, far_plane = 100.0f;
 	m_lightDirection = lightDir;
 
 	glm::mat4 lightProjection = glm::ortho(-boxSize, boxSize, -boxSize, boxSize, near_plane, far_plane);

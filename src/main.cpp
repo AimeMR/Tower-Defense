@@ -23,7 +23,7 @@
 void loadModels() 
 {
 	COBJModel* newModel = new COBJModel();
-	newModel->LoadModel(".\\modelos\\MAPA.obj");
+	newModel->LoadModel(".\\modelos\\MAPAV2.obj");
 	models.push_back(newModel);
 }
 
@@ -119,7 +119,7 @@ void InitGL()
 	sensibilidad = 0.5;
 
 	luz.InitIluminacion(w, h);
-	direccionSol = glm::vec3(1, 1, 1);
+	direccionSol = glm::vec3(-1, -1, 1);
 	luz.m_cam = &mainCamara;
 	luz.objetos = &objects;
 
@@ -612,6 +612,10 @@ int main(void)
 
 		// Update transforms and objects
 		//Update();
+
+		//glm::mat4 luzRot = glm::rotate(glm::mat4(1.0f), glm::radians(0.2f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		//direccionSol = glm::vec3(luzRot * glm::vec4(direccionSol,0));
 
 		// Crida a OnPaint() per redibuixar l'escena
 		luz.RenderShadows(direccionSol);
