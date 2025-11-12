@@ -222,7 +222,7 @@ GameObject* createObject(int model)
 
 void destroyObject(GameObject* obj)
 {
-	int id = obj->objectID;
+	int id = obj->getId();
 	int vectorSize = objects.size();
 
 	if (id < vectorSize)
@@ -641,6 +641,9 @@ int main(void)
 	// Delete all the objects in the scene
 	for (GameObject* obj : objects)
 		delete obj;
+
+	for (Enemy* en : enemies)
+		delete en;
 
 	for (COBJModel* mod : models)
 		delete mod;

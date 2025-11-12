@@ -9,6 +9,17 @@ GameObject::GameObject(COBJModel* objModel)
 	m_scale = glm::vec3(1, 1, 1);
 	objectID = -1;
 	pickingID = -1;
+	m_texture = false;
+}
+
+void GameObject::translate(glm::vec3 pos) 
+{
+	m_pos = pos;
+}
+
+void GameObject::rotate(glm::mat4 rot)
+{
+	m_rot = rot;
 }
 
 void GameObject::dibuixarObjecte(GLuint shaderID)

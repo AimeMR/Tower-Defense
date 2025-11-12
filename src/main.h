@@ -7,14 +7,15 @@
 
 
 // Entorn VGI: Llibreries i constants Constants de l'aplicació EntornVGI
-#include "stdafx.h"
 #include "gameObject.h"
+#include "Enemy.h"
 #include "iluminacion.h"
 #include "camara.h"
 #include <vector>
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
 
 COBJModel* mapaModel;
+std::vector<Enemy*> enemies;
 std::vector<GameObject*> objects;
 std::vector<COBJModel*> models;
 
