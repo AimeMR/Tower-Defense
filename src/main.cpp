@@ -23,7 +23,7 @@
 void loadModels() 
 {
 	COBJModel* newModel = new COBJModel();
-	newModel->LoadModel(".\\modelos\\MAPAV.obj");
+	newModel->LoadModel(".\\modelos\\MAPA.obj");
 	models.push_back(newModel);
 }
 
@@ -115,6 +115,7 @@ void InitGL()
 	loadModels();
 
 	createObject(0);
+
 	
 	mainCamara = Camara();
 	distancia = 25;
