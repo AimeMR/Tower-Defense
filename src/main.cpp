@@ -23,7 +23,7 @@
 void loadModels() 
 {
 	COBJModel* newModel = new COBJModel();
-	newModel->LoadModel(".\\modelos\\MAPAV2.obj");
+	newModel->LoadModel(".\\modelos\\MAPAV.obj");
 	models.push_back(newModel);
 }
 
@@ -58,6 +58,11 @@ void InitGL()
 	fprintf(stderr, "Custom shader: \n");
 	customShader.releaseAllShaders();
 	customShaderID = customShader.loadFileShaders(".\\shaders\\customShader.vert", ".\\shaders\\customShader.frag");
+
+
+	fprintf(stderr, "Picking objects shader: \n");
+	poShader.releaseAllShaders();
+	poShaderID = poShader.loadFileShaders(".\\shaders\\pickingObject.vert", ".\\shaders\\pickingObject.frag");
 
 
 // C�rrega SHADERS
@@ -122,6 +127,11 @@ void InitGL()
 	direccionSol = glm::vec3(-1, -1, 1);
 	luz.m_cam = &mainCamara;
 	luz.objetos = &objects;
+
+	po = PickingObjects3D(w, h, poShaderID);
+	po.m_cam = &mainCamara;
+	po.m_objectes = &objects;
+	
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
@@ -216,6 +226,8 @@ GameObject* createObject(int model)
 {
 	GameObject* newObject = new GameObject(models[model]);
 	newObject->setId(objects.size());
+	
+
 	objects.push_back(newObject);
 	return newObject;
 }
@@ -242,6 +254,7 @@ void OnSize(GLFWwindow* window, int width, int height)
 	w = width;	h = height;
 	luz.UpdateWindow(width, height);
 	mainCamara.UpdateWindow(width, height);
+	po.updatePickingObjectSize(width, height);
 }
 
 // Skybox
@@ -532,7 +545,7 @@ int main(void)
 	InitGL();
 
 
-	glEnable(GL_FRAMEBUFFER_SRGB); //NO WAY ESTO ARREGLA LOS COLORES WTF OSEA HOLY SHIT
+	glEnable(GL_FRAMEBUFFER_SRGB);
 
 
 	//cargarModelos();
@@ -593,6 +606,8 @@ int main(void)
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
 
+
+
     while (!glfwWindowShouldClose(window))
     {  
 		now = glfwGetTime();
@@ -605,21 +620,21 @@ int main(void)
 		// Poll for and process events
 		glfwPollEvents();
 
-		//Feed input to dear imgui, start new frame
-		
 		// Draws the UI
 		menu(salir);
 
 		// Update transforms and objects
 		//Update();
 
-		//glm::mat4 luzRot = glm::rotate(glm::mat4(1.0f), glm::radians(0.2f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		//direccionSol = glm::vec3(luzRot * glm::vec4(direccionSol,0));
 
-		// Crida a OnPaint() per redibuixar l'escena
+		po.renderPicking();
+		
+
 		luz.RenderShadows(direccionSol);
 		luz.RenderGame(customShaderID);
+
+		//po.debug();
 
 		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, mainCamara.getProjection(), mainCamara.getView());
 		dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, mainCamara.getProjection(), mainCamara.getView());

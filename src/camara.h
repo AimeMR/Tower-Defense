@@ -19,6 +19,8 @@ public:
 	glm::mat4 m_projectionMatrix;
 	glm::mat4 m_viewMatrix;
 
+	glm::vec3 m_position;
+	glm::mat4 m_rotation;
 
 private:
 	
@@ -27,6 +29,4 @@ private:
 	double m_zoom;
 
 
-	glm::vec3 m_position;
-	glm::mat4 m_rotation;
 };

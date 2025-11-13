@@ -12,7 +12,7 @@ void Iluminacion::InitIluminacion(int width, int height)
 
 	glGenTextures(1, &m_depthMap); //textura depth
 	glBindTexture(GL_TEXTURE_2D, m_depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 2048, 2048, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -48,18 +48,18 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir)
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(2.0f, 5.0f); // Valores comunes que suelen funcionar
 
-	float boxSize = 20;
+	float boxSize = 25;
 	float near_plane = 1.0f, far_plane = 100.0f;
 	m_lightDirection = lightDir;
 
 	glm::mat4 lightProjection = glm::ortho(-boxSize, boxSize, -boxSize, boxSize, near_plane, far_plane);
-	glm::mat4 lightView = glm::lookAt(m_lightDirection * 10.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightView = glm::lookAt(m_lightDirection * 20.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	m_lightSpaceMatrix = lightProjection * lightView;
 
 	glUseProgram(m_shadowShaderID);
 	glUniformMatrix4fv(glGetUniformLocation(m_shadowShaderID, "lightSpaceMatrix"), 1, GL_FALSE, &m_lightSpaceMatrix[0][0]);
 
-	glViewport(0, 0, 1024, 1024);
+	glViewport(0, 0, 2048, 2048);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glCullFace(GL_FRONT);

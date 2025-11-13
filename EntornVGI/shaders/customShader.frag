@@ -34,7 +34,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 		return 0.0;
 
 	float currentDepth = projCoords.z;
-	float bias = max(0.005 * (1.0 - dot(normalize(normal), normalize(lightDirection))), 0.0005);
+	float bias = max(0.001 * (1.0 - dot(normalize(normal), normalize(lightDirection))), 0.0005);
     
 	float shadow = 0.0;
     

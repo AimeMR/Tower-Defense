@@ -11,6 +11,7 @@
 #include "gameObject.h"
 #include "iluminacion.h"
 #include "camara.h"
+#include "pickingObjects.h"
 #include <vector>
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
 
@@ -23,10 +24,16 @@ Shader customShader;
 
 
 
+
+
 float deltaTime;
 float frameTimer = 0;
+int awa = 0;
 
-
+//picking objects
+PickingObjects3D po;
+Shader poShader;
+GLuint poShaderID;
 
 //ILUMINACION
 Iluminacion luz;

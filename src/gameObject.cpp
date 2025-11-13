@@ -13,8 +13,19 @@ GameObject::GameObject(COBJModel* objModel)
 
 void GameObject::dibuixarObjecte(GLuint shaderID)
 {
+	CColor white;
+	white.r = 1;
+	white.g = 1;
+	white.b = 1;
+	white.a = 1;
 
-	//SeleccionaMaterial(shaderID, 0, sw_mat);
+
+	int id = pickingID;
+
+	int r = (id & 0x000000FF) >> 0;
+	int g = (id & 0x0000FF00) >> 8;
+	int b = (id & 0x00FF0000) >> 16;
+	glUniform4f(glGetUniformLocation(shaderID, "PickingColor"), r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
 
 	glm::mat4 model(1.0f), normal(1.0f);
 

@@ -35,6 +35,7 @@
     <ClCompile Include="..\src\material.cpp" />
     <ClCompile Include="..\src\menu.cpp" />
     <ClCompile Include="..\src\objLoader.cpp" />
+    <ClCompile Include="..\src\pickingObjects.cpp" />
     <ClCompile Include="..\src\player.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\visualitzacio.cpp" />
@@ -58,6 +59,7 @@
     <ClInclude Include="..\src\material.h" />
     <ClInclude Include="..\src\menu.h" />
     <ClInclude Include="..\src\objLoader.h" />
+    <ClInclude Include="..\src\pickingObjects.h" />
     <ClInclude Include="..\src\player.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\stdafx.h" />
