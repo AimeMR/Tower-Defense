@@ -54,38 +54,52 @@ void Enemy::setUpEnemyStats(float difficulty)
 	m_offset = (((float)rand() / (float)RAND_MAX) * 2.0 - 1.0) * m_maxOffset;
 }
 
-void Enemy::move(float deltaTime) 
+void Enemy::move(float deltaTime, float timer)
 {
+	animate(timer);
+	
 	if (!m_target) return;
+	
 	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * m_speed * deltaTime;
-	animate();
-	glm::vec2 dirToPoint = glm::vec2(m_pos.x, m_pos.y) - m_targetPos;
-	if (glm::dot(dirToPoint, m_bisector) > 0.0f)
+	
+	//Rotar
+
+	glm::vec2 relPos = glm::vec2(m_pos) - m_targetPos;
+
+	if (glm::dot(relPos, m_bisector) >= 0.0f)
 		reachPathEnd();
+}
+
+void Enemy::startMoving() 
+{
+	m_dir = m_target->getNextDir();
+	m_speed = m_defSpeed * m_target->getSpeedMultiplier();
+	m_bisector = m_target->getBisector();
+	m_targetPos = m_target->getPos();
 }
 
 void Enemy::reachPathEnd() 
 {
-	m_dir = m_target->getNextDir();
 	m_target = m_target->getNextPath();
+
 	if (m_target == nullptr) 
 	{
 		//Restar vida al jugador
 		//Explota
 		delete this;
 	}
-	else
-	{
-		m_speed = m_defSpeed * m_target->getSpeedMultiplier();
-		m_bisector = m_target->getBisector();
-		m_targetPos = m_target->getPos();
-	}
+
+	startMoving();
 }
 
-void Enemy::animate() 
+void Enemy::animate(float timer) 
 {
 	//De moment farem una animació per cada enemic, però podem crear variants pels líquids o terres trencats
 	switch (m_type) {
+	case 1:
+		m_bodyParts[0]->setParent(m_parentMatrix);
+		m_bodyParts[0]->translate(glm::vec3(m_pos.x + sin(timer * 5) * 0.3f, m_pos.y, m_pos.z));
+
 	default:
 		break;
 	}
@@ -116,4 +130,11 @@ void Enemy::die()
 		delete this;
 		break;
 	}
+}
+
+void Enemy::draw(GLuint shader)
+{
+	this->dibuixarObjecte(shader);
+	for (GameObject* g : m_bodyParts)
+		g->dibuixarObjecte(shader);
 }

@@ -1,6 +1,5 @@
 #pragma once
-#include "material.h"
-#include "objLoader.h"
+#include "modelManager.h"
 
 class GameObject
 {
@@ -12,6 +11,7 @@ public:
 	glm::mat4 getRot() { return m_rot; }
 	void scale(glm::vec3 scale) { m_scale = scale; }
 	void setId(int id) { objectID = id; }
+	void setParent(glm::mat4 pm) { m_parentMatrix = pm; }
 	int getId() { return objectID; }
 	glm::mat4 getModelMatrix();
 	glm::mat4 getNormalMatrix();

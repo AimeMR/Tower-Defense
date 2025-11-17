@@ -12,22 +12,18 @@
 #include "iluminacion.h"
 #include "camara.h"
 #include <vector>
+#include "modelManager.h"
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
 
-COBJModel* mapaModel;
 std::vector<Enemy*> enemies;
 std::vector<GameObject*> objects;
-std::vector<COBJModel*> models;
+std::vector<Path*> path;
 
 GLuint customShaderID;	
 Shader customShader;
 
-
-
 float deltaTime;
 float frameTimer = 0;
-
-
 
 //ILUMINACION
 Iluminacion luz;
@@ -38,6 +34,9 @@ Camara mainCamara;
 float yawCamera, pitchCamera;
 float distancia;
 float sensibilidad;
+
+//Modelos
+modelManager mm;
 
 
 
@@ -225,22 +224,20 @@ float sensibilidad;
 
 
 //-------------- Entorn VGI: Declaració funcions main
-// Carregar models
-	void loadModels();
-
 // Inicialització variables de control
 	void InitGL();	
 	
 	void InitAPI();
 // Creació i destrucció d'objectes
-	GameObject* createObject(int model);
+	GameObject* createObject(COBJModel* model);
+	Enemy* spawnEnemy(int type);
 	void destroyObject(GameObject* obj);
 // Entorn VGI: Control de l'EVENT ONSIZE
 	void OnSize(GLFWwindow* window, int width, int height);
 	void dibuixa_Escena();
 	void OnPaint(GLFWwindow* window);
 // Loop del juego
-	void Update();
+	void Update(float timer, float deltaTime);
 	// Desplegable VISTA
 	void OnVistaSkyBox();
 // Entorn VGI: Control de l'EVENT MOUSE

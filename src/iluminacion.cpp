@@ -70,11 +70,14 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir)
 	{
 		obj->dibuixarObjecte(m_shadowShaderID);
 	}
+	for (Enemy* en : *enemigos)
+	{
+		en->draw(m_shadowShaderID);
+	}
 
 	glDisable(GL_POLYGON_OFFSET_FILL);
 	glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 }
 
 
@@ -107,6 +110,11 @@ void Iluminacion::RenderGame(GLuint shaderID)
 	for (GameObject* obj : *objetos)
 	{
 		obj->dibuixarObjecte(shaderID);
+	}
+
+	for (Enemy* en : *enemigos)
+	{
+		en->draw(shaderID);
 	}
 
 }

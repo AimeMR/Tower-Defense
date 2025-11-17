@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "visualitzacio.h"
-#include "gameObject.h"
+#include "Enemy.h"
 #include "shader.h"
 #include "camara.h"
 
@@ -14,13 +14,12 @@ public:
 	void InitIluminacion(int width, int height);
 	void UpdateWindow(int width, int height);
 
-
-
 	void RenderShadows(glm::vec3 lightDir);
 	void RenderGame(GLuint shaderID);
 
 	Camara* m_cam;
 	std::vector<GameObject*>* objetos;
+	std::vector<Enemy*>* enemigos;
 
 
 private:

@@ -18,14 +18,6 @@
 #include "escena.h"
 #include "main.h"
 #include "menu.h"
-#include "material.h"
-
-void loadModels() 
-{
-	COBJModel* newModel = new COBJModel();
-	newModel->LoadModel(".\\modelos\\MAPAV2.obj");
-	models.push_back(newModel);
-}
 
 void InitGL()
 {
@@ -102,15 +94,15 @@ void InitGL()
 	//OPV.R = 15.0;		OPV.alfa = 0.0;		OPV.beta = 0.0;										// Origen PV en esf�riques
 	Vis_Polar = POLARZ;	oPolars = -1;
 
-
-
 // Entorn VGI: Altres variables
 	mida = 1.0;			nom = "";		buffer = "";
-
-	loadModels();
-
-	createObject(0);
 	
+	//Carga modelos
+	mm = modelManager();
+	mm.initialSetup();
+
+	createObject(mm.getMapa());
+
 	mainCamara = Camara();
 	distancia = 25;
 	mainCamara.UpdateWindow(w, h);
@@ -122,10 +114,10 @@ void InitGL()
 	direccionSol = glm::vec3(-1, -1, 1);
 	luz.m_cam = &mainCamara;
 	luz.objetos = &objects;
+	luz.enemigos = &enemies;
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
-
 
 void InitAPI()
 {
@@ -212,12 +204,63 @@ void InitAPI()
 	glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)wglGetProcAddress("glVertexAttribPointer");
 }
 
-GameObject* createObject(int model)
+Enemy* spawnEnemy(int type)
 {
-	GameObject* newObject = new GameObject(models[model]);
+	Enemy* newEnemy = new Enemy(mm.getEnemy(type), type);
+	enemies.push_back(newEnemy);
+
+	Path* start = path.front();
+
+	newEnemy->translate(glm::vec3(start->getPos(), 0));
+	if (type == 3)
+		newEnemy->setTarget(path.back());
+
+	else 
+		newEnemy->setTarget(start->getNextPath());
+
+	newEnemy->startMoving();
+
+	return newEnemy;
+}
+
+GameObject* createObject(COBJModel* model)
+{
+	GameObject* newObject = new GameObject(model);
 	newObject->setId(objects.size());
 	objects.push_back(newObject);
 	return newObject;
+}
+
+Path* createPath(glm::vec2 pos)
+{
+	Path* newPath = new Path(pos);
+
+	if (!path.empty())
+	{
+		Path* prev = path.back();
+		prev->setNextPath(newPath);
+		newPath->setPreviousPath(prev);
+
+		prev->calculateBisector();
+	}
+
+	newPath->calculateBisector();
+
+	path.push_back(newPath);
+
+	return newPath;
+}
+
+void setUpPath() 
+{
+	//Path positions
+	createPath(glm::vec2(0, 0));
+	createPath(glm::vec2(0, 5));
+	createPath(glm::vec2(10, 5));
+	createPath(glm::vec2(10, 10));
+	createPath(glm::vec2(-10, 10));
+	createPath(glm::vec2(-10, 0));
+	createPath(glm::vec2(0, 0));
 }
 
 void destroyObject(GameObject* obj)
@@ -468,7 +511,13 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 
 //-----------------Variables globales
 
-
+void Update(float timer, float deltaTime) 
+{
+	for (Enemy* e : enemies) 
+	{
+		e->move(deltaTime, timer);
+	}
+}
 
 
 int main(void)
@@ -590,6 +639,9 @@ int main(void)
 		}
 	}
 
+	setUpPath();
+	spawnEnemy(1);
+
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
 
@@ -611,7 +663,7 @@ int main(void)
 		menu(salir);
 
 		// Update transforms and objects
-		//Update();
+		Update(frameTimer, deltaTime);
 
 		//glm::mat4 luzRot = glm::rotate(glm::mat4(1.0f), glm::radians(0.2f), glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -644,9 +696,6 @@ int main(void)
 
 	for (Enemy* en : enemies)
 		delete en;
-
-	for (COBJModel* mod : models)
-		delete mod;
 
 	// Entorn VGI.ImGui: Cleanup ImGui
 	ImGui_ImplOpenGL3_Shutdown();
