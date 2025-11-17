@@ -56,10 +56,10 @@ void Enemy::setUpEnemyStats(float difficulty)
 
 void Enemy::move(float deltaTime, float timer)
 {
+	if (!alive || !m_target) return;
+
 	animate(timer);
-	
-	if (!m_target) return;
-	
+		
 	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * m_speed * deltaTime;
 	
 	//Rotar
@@ -72,7 +72,18 @@ void Enemy::move(float deltaTime, float timer)
 
 void Enemy::startMoving() 
 {
-	m_dir = m_target->getNextDir();
+	glm::vec2 delta = m_target->getPos() - glm::vec2(m_pos);
+
+	if (glm::length(delta) < 0.001f)  // si estás EXACTAMENTE en el nodo
+	{
+		// avanzar al siguiente nodo automáticamente
+		m_target = m_target->getNextPath();
+		if (!m_target) return; // fin del camino
+
+		delta = m_target->getPos() - glm::vec2(m_pos);
+	}
+
+	m_dir = glm::normalize(delta);
 	m_speed = m_defSpeed * m_target->getSpeedMultiplier();
 	m_bisector = m_target->getBisector();
 	m_targetPos = m_target->getPos();
@@ -86,7 +97,9 @@ void Enemy::reachPathEnd()
 	{
 		//Restar vida al jugador
 		//Explota
-		delete this;
+		//Eliminar enemigo
+		alive = false;
+		return;
 	}
 
 	startMoving();

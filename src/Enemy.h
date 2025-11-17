@@ -36,7 +36,7 @@ private:
 	int m_damage, m_reward, m_type, m_weight;
 	float m_health, m_defSpeed, m_speed, baseHealth = 10.0f, baseSpeed = 5.0f, m_offset = 0.0f, m_maxOffset = 3.0f;
 	glm::vec2 m_dir, m_bisector, m_targetPos;
-	double timer = 0;
+	bool alive = true;
 	
 	std::vector<GameObject*> m_bodyParts;
 

@@ -210,13 +210,11 @@ Enemy* spawnEnemy(int type)
 	enemies.push_back(newEnemy);
 
 	Path* start = path.front();
-
 	newEnemy->translate(glm::vec3(start->getPos(), 0));
-	if (type == 3)
-		newEnemy->setTarget(path.back());
 
-	else 
-		newEnemy->setTarget(start->getNextPath());
+	// target = siguiente nodo si existe, sino mismo
+	Path* firstTarget = start->getNextPath() ? start->getNextPath() : start;
+	newEnemy->setTarget(firstTarget);
 
 	newEnemy->startMoving();
 
