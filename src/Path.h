@@ -11,6 +11,7 @@ public:
 	Path* getNextPath() { return m_nextPath; }
 	void setPreviousPath(Path* path) { m_prevPath = path; }
 	void setNextPath(Path* path) { m_nextPath = path; }
+	void setspeedMultiplier(float vel) { m_speedMultiplier = vel; }
 	void calculateBisector()
 	{
 		if (m_prevPath && m_nextPath)

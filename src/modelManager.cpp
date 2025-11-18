@@ -1,4 +1,15 @@
 #include "modelManager.h"
+#include "Enemy.h"
+#define Basic 0
+#define Rapid 1
+#define Tanc 2
+#define Volador 3
+#define Accelerador 4
+#define Divisible 5
+#define AcceleradorACT 6
+#define DivisibleDIV 7
+
+
 
 modelManager::modelManager()
 {
@@ -15,14 +26,14 @@ modelManager::~modelManager()
 void modelManager::initialSetup()
 {
 	//Setup Mapa
-	m_modelMapa = loadModel("Mapas\\MAPAV2.obj");
+	m_modelMapa = loadModel("Mapas\\MAPAFINAL.obj");
 
 	//Setup Enemics, modelos en intérvalos [x, y] incluídos
 	//Enemic1
 
 	//Enemic2, [0,1]
-	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorINMOVIL.obj")); //Cuerpo
-	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorMOVIL.obj")); //Rueda
+	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorINMOVIL4.obj")); //Cuerpo
+	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorMOVIL4.obj")); //Rueda
 }
 
 COBJModel* modelManager::loadModel(const std::string& filename)
@@ -50,10 +61,22 @@ std::vector<COBJModel*> modelManager::getModelRange(const std::vector<COBJModel*
 std::vector<COBJModel*> modelManager::getEnemy(int type)
 {
 	switch (type) {
-	case 0:
+	case Basic:
+		return getModelRange(m_modelsEnemics, 0, 1);  // Carga las piezas 0... hasta la 1
+	case Rapid:
+		return getModelRange(m_modelsEnemics, 0, 1);  // Carga las piezas 0... hasta la 1
+	case Tanc:
 		break;
-	case 1:
-		return getModelRange(m_modelsEnemics, 0, 1);
+	case Volador:
+		break;
+	case Accelerador:
+		return getModelRange(m_modelsEnemics, 0, 1);  // Carga las piezas 0... hasta la 1
+	case Divisible:
+		break;
+	case AcceleradorACT:
+		break;
+	case DivisibleDIV:
+		break;
 	default:
 		break;
 	}

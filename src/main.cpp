@@ -30,7 +30,7 @@ void InitGL()
 	statusB = false;
 
 // Entorn VGI: Variables de control per Men� Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
-	fullscreen = true;
+	fullscreen = false;
 	eixos = true;
 
 // Entorn VGI: Variables de control Skybox Cube
@@ -210,7 +210,7 @@ Enemy* spawnEnemy(int type)
 	enemies.push_back(newEnemy);
 
 	Path* start = path.front();
-	newEnemy->translate(glm::vec3(start->getPos(), 0));
+	newEnemy->translate(glm::vec3(start->getPos(), 0.5f));
 
 	// target = siguiente nodo si existe, sino mismo
 	Path* firstTarget = start->getNextPath() ? start->getNextPath() : start;
@@ -249,16 +249,38 @@ Path* createPath(glm::vec2 pos)
 	return newPath;
 }
 
+
+
 void setUpPath() 
 {
+	//PRIMERO EJE ROJO (perpendicular)
+	
 	//Path positions
-	createPath(glm::vec2(0, 0));
-	createPath(glm::vec2(0, 5));
-	createPath(glm::vec2(10, 5));
-	createPath(glm::vec2(10, 10));
-	createPath(glm::vec2(-10, 10));
-	createPath(glm::vec2(-10, 0));
-	createPath(glm::vec2(0, 0));
+	createPath(glm::vec2(10, 0));
+	createPath(glm::vec2(5, 0));
+	createPath(glm::vec2(5, -4));
+	createPath(glm::vec2(0.9, -4)); 
+	createPath(glm::vec2(0.9, 4.5))->setspeedMultiplier(1.5); // CAMINO ACEITE
+	createPath(glm::vec2(8.25, 4.75));
+	createPath(glm::vec2(8.25, 8.75));
+	createPath(glm::vec2(-3.35, 8.75))->setspeedMultiplier(0.5);  // CAMINO NUCLEAR
+
+	//////////////////////
+	createPath(glm::vec2(-3.35, 4.75)); // CHAPUZA PARA QUE VAYA   
+	createPath(glm::vec2(-3.34, -3.0))->setspeedMultiplier(0.5); // CHAPUZA PARA QUE VAYA // CAMINO bachesssssss
+	createPath(glm::vec2(-3.35, -6.75)); // CAMINO BACHES
+	//////////////////////
+
+	createPath(glm::vec2(-14.75, -6.75));
+	createPath(glm::vec2(-14.75, -2.5));
+	createPath(glm::vec2(-7.5, -2.5))->setspeedMultiplier(1.5); // CAMINO ACEITE
+	createPath(glm::vec2(-7.5, 1.5)); 
+	createPath(glm::vec2(-20, 1.5));
+	createPath(glm::vec2(-20, 1.49)); // CHAPUZA PARA QUE VAYA;
+
+
+
+
 }
 
 void destroyObject(GameObject* obj)
@@ -638,7 +660,7 @@ int main(void)
 	}
 
 	setUpPath();
-	spawnEnemy(1);
+	spawnEnemy(1); /////////////////////////////// ENEMIGO
 
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;

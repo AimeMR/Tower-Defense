@@ -3,44 +3,44 @@
 void Enemy::setUpEnemyStats(float difficulty)
 {
 	switch (m_type) {
-	case 0:
+	case Basic:
 		m_health = baseHealth * 0.6f;
 		m_defSpeed = baseSpeed * 0.6f;
 		m_damage = 1;
 		m_weight = 1;
 		break;
-	case 1:
+	case Rapid:
 		m_health = baseHealth * 0.3f;
 		m_defSpeed = baseSpeed * 1.0f;
 		m_damage = 1;
 		m_weight = 2;
 		break;
-	case 2:
+	case Tanc:
 		m_health = baseHealth * 1.0f;
 		m_defSpeed = baseSpeed * 0.4f;
 		m_damage = 2;
 		m_weight = 3;
 		break;
-	case 3:
+	case Volador:
 		m_health = baseHealth * 0.4f;
 		m_defSpeed = baseSpeed * 0.5f;
 		m_damage = 2;
 		m_weight = 3;
 		break;
-	case 4:
+	case Accelerador:
 		m_health = baseHealth * 0.3f;
 		m_defSpeed = baseSpeed * 0.4f;
 		m_damage = 2;
 		m_weight = 3;
 		break;
-	case 5:
+	case Divisible:
 		m_health = baseHealth * 0.5f;
 		m_defSpeed = baseSpeed * 0.4f;
 		m_damage = 2;
 		m_weight = 4;
 		break;
 	//Per donar l'efecte de transició en el l'enemic 5, l'eliminem i creem un nou. L'espai 6 està ocupat per identificar enemics 4 accelerats.
-	case 7: //Enemic 5 dividit
+	case DivisibleDIV: //Enemic 5 dividit
 		m_health = baseHealth * 0.3f;
 		m_defSpeed = baseSpeed * 0.4f;
 		m_damage = 1;
@@ -111,7 +111,16 @@ void Enemy::animate(float timer)
 	switch (m_type) {
 	case 1:
 		m_bodyParts[0]->setParent(m_parentMatrix);
-		m_bodyParts[0]->translate(glm::vec3(m_pos.x + sin(timer * 5) * 0.3f, m_pos.y, m_pos.z));
+		m_bodyParts[0]->translate(glm::vec3(m_pos.x, m_pos.y, m_pos.z));
+
+		// 3. Crear y aplicar la matriz de rotación
+		glm::mat4 matriz_rotacion = glm::rotate(
+			glm::mat4(1.0f),            // Matriz inicial (identidad)
+			5.0f*timer,                     // El ángulo de rotación (velocidad * timer)
+			glm::vec3(1.0f, 0.0f, 0.0f) // El eje de rotación (Eje Z)
+		);
+
+		m_bodyParts[0]->rotate(matriz_rotacion); // Aplicar la rotación
 
 	default:
 		break;
@@ -121,19 +130,19 @@ void Enemy::animate(float timer)
 void Enemy::die() 
 {
 	switch (m_type) {
-	case 0: case 1: case 2: case 3: case 6: case 7:
+	case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
 		//Pagar al jugador reward
 		//Explota
 		delete this;
 		break;
-	case 4:
+	case Accelerador:
 		//No paguem
 		m_health = baseHealth * 0.3f;
 		m_defSpeed = baseSpeed * 0.9f;
 		m_damage = 1;
 		m_type = 6;
 		break;
-	case 5:
+	case Divisible:
 		//No paguem
 		//Explota
 		//Creem 2 enemics 7 a la seva posició actual amb la seva direcció actual

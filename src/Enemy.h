@@ -3,6 +3,16 @@
 #include "Path.h"
 #include <vector>
 
+#define Basic 0
+#define Rapid 1
+#define Tanc 2
+#define Volador 3
+#define Accelerador 4
+#define Divisible 5
+#define AcceleradorACT 6
+#define DivisibleDIV 7
+
+
 class Enemy : public GameObject {
 public:
 	Enemy(std::vector<COBJModel*> objModels, int enemyType) : GameObject(objModels[0])
@@ -10,13 +20,13 @@ public:
 		m_type = enemyType;
 		setUpEnemyStats(1.0f); // Leer dificultad de Player.h y actualizar
 
-		for (auto it = ++objModels.begin(); it != objModels.end(); ++it){
+		for (auto it = ++objModels.begin(); it != objModels.end(); ++it) {
 			GameObject* newBodyPart = new GameObject(*it);
 			m_bodyParts.push_back(newBodyPart);
 		}
 	}
 
-	~Enemy() 
+	~Enemy()
 	{
 		for (GameObject* obj : m_bodyParts)
 			delete obj;
@@ -37,7 +47,7 @@ private:
 	float m_health, m_defSpeed, m_speed, baseHealth = 10.0f, baseSpeed = 5.0f, m_offset = 0.0f, m_maxOffset = 3.0f;
 	glm::vec2 m_dir, m_bisector, m_targetPos;
 	bool alive = true;
-	
+
 	std::vector<GameObject*> m_bodyParts;
 
 	Path* m_target;
