@@ -14,9 +14,9 @@
 
 #define Normal 0
 #define Aceite 1
-#define Aceite2 2
-#define Nuclear 3
-#define Baches 4
+#define Nuclear 2
+#define Baches 3
+
 
 
 class Enemy : public GameObject {
@@ -46,7 +46,7 @@ public:
 	void setUpEnemyStats(float difficulty);
 	void setTarget(Path* path) { m_target = path; }
 	void setStartPoint(glm::vec2 startPoint);
-	void animate(float timer);
+	void animate(float timer, float deltaTime);
 	void move(float deltaTime, float timer);
 	void reachPathEnd();
 	void takeDamage(float damage);
@@ -54,10 +54,11 @@ public:
 	void draw(GLuint shader);
 	void startMoving();
 	bool isAlive() { return m_alive; };
+	void kill() { m_alive = false; }
 
 private:
 	int m_damage, m_reward, m_type, m_weight, m_pathType = 0;
-	float m_health, m_defSpeed, m_speed, m_baseHealth, m_offset = 0.0f, m_maxOffset = 0.5f, m_rotation = 0.0f;
+	float m_health, m_defSpeed, m_speed, m_baseHealth, m_maxOffset = 0.5f, m_rotation = 0.0f;
 	glm::vec2 m_dir, m_bisector, m_targetPos, m_prevTargetPos;
 	bool m_alive = true;
 

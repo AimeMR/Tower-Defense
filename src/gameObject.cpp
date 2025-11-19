@@ -49,8 +49,6 @@ void GameObject::dibuixarObjecte(GLuint shaderID)
 	m_objModel->draw_TriVAO_OBJ(shaderID);
 }
 
-
-	
 glm::mat4 GameObject::getModelMatrix()
 {
 	glm::mat4 transMatrix = glm::mat4(1.0f);

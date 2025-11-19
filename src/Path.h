@@ -19,18 +19,7 @@ public:
 			glm::vec2 dir1 = glm::normalize(m_pos - m_prevPath->m_pos);
 			glm::vec2 dir2 = glm::normalize(m_nextPath->m_pos - m_pos);
 
-			glm::vec2 bis = dir1 - dir2;
-
-			if (glm::length(bis) < 0.1f)
-			{
-				bis = glm::vec2(-dir1.y, dir1.x);
-			}
-			else
-			{
-				bis = glm::normalize(bis);
-				if(glm::dot(bis, dir1) < 0.0f)
-					bis = -bis;
-			} 
+			glm::vec2 bis = glm::normalize(dir1 + dir2);
 
 			m_bisectorNormal = bis;
 		}
