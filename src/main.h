@@ -27,6 +27,12 @@ float deltaTime;
 float frameTimer = 0;
 int awa = 0;
 
+//picking objects
+PickingObjects3D po;
+Shader poShader;
+GLuint poShaderID;
+
+
 //ILUMINACION
 Iluminacion luz;
 glm::vec3 direccionSol;
