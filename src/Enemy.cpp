@@ -106,14 +106,49 @@ void Enemy::reachPathEnd()
 	m_speed = m_defSpeed * m_target->getSpeedMultiplier();
 	m_bisector = m_target->getBisector();
 	m_targetPos = m_target->getPos();
+	int newPType = m_target->getTipus();
+	if (newPType != m_pathType) 
+	{
+		m_pathType = newPType;
+		//Esto se ejecuta solo en las transiciones entre diferentes tipos de caminos
+		switch (m_type) {
+		case Basic:
+			break;
+		case Rapid:
+			break;
+		case Tanc:
+			break;
+		case Volador:
+			break;
+		case Accelerador:
+			translate(glm::vec3(m_pos.x, m_pos.y, 0.5));
+			break;
+		case Divisible: case DivisibleDIV:
+			break;
+
+		default:
+			break;
+		}
+	}
+
+
 }
 
 void Enemy::animate(float timer) 
 {
 	//De moment farem una animació per cada enemic, però podem crear variants pels líquids o terres trencats
 	switch (m_type) {
-	case 1:
-		// 3. Crear y aplicar la matriz de rotación
+	case Basic:
+		break;
+	case Rapid:
+		break;
+	case Tanc:
+		break;
+	case Volador:
+		break;
+	case Accelerador:
+		
+		// Crear y aplicar la matriz de rotación
 		glm::mat4 matriz_rotacion = glm::rotate(
 			glm::mat4(1.0f),            // Matriz inicial (identidad)
 			-5.0f * timer * m_speed / m_defSpeed,                     // El ángulo de rotación (velocidad * timer)
@@ -122,6 +157,18 @@ void Enemy::animate(float timer)
 
 		m_bodyParts[0]->rotate(matriz_rotacion); // Aplicar la rotación
 
+		if (m_pathType == Aceite) {
+			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.005f, m_pos.y, m_pos.z));
+		}
+		else {
+			if(m_pathType == Baches){
+				translate(glm::vec3(m_pos.x, m_pos.y, 0.5 + abs(sin(timer * 10) * 0.2f))); // PONER ABSOLUTO
+			}
+		}
+		break;
+
+	case Divisible: case DivisibleDIV:   
+		break;
 
 	default:
 		break;

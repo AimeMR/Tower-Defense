@@ -12,6 +12,11 @@
 #define AcceleradorACT 6
 #define DivisibleDIV 7
 
+#define Normal 0
+#define Aceite 1
+#define Nuclear 2
+#define Baches 3
+
 
 class Enemy : public GameObject {
 public:
@@ -45,7 +50,7 @@ public:
 	void startMoving();
 
 private:
-	int m_damage, m_reward, m_type, m_weight;
+	int m_damage, m_reward, m_type, m_weight, m_pathType = 0;
 	float m_health, m_defSpeed, m_speed, baseHealth = 10.0f, baseSpeed = 5.0f, m_offset = 0.0f, m_maxOffset = 0.5f, m_rotation = 0.0f;
 	glm::vec2 m_dir, m_bisector, m_targetPos, m_prevTargetPos;
 	bool alive = true;

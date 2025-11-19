@@ -2,10 +2,11 @@
 
 class Path {
 public:
-	Path(glm::vec2 pos = glm::vec2(0, 0), float sm = 1)
+	Path(glm::vec2 pos = glm::vec2(0, 0), float sm = 1, int tipo = 0)
 	{
 		m_pos = pos;
 		m_speedMultiplier = sm;
+		m_tipo = tipo;
 	}
 	Path* getNextPath() { return m_nextPath; }
 	void setPreviousPath(Path* path) { m_prevPath = path; }
@@ -41,11 +42,14 @@ public:
 	glm::vec2 getBisector() { return m_bisectorNormal; }
 	glm::vec2 getNextDir() { return glm::normalize(m_pos - m_prevPath->m_pos); }
 	glm::vec2 getPos() { return m_pos; }
+	int getTipus() { return m_tipo; }
 	float getSpeedMultiplier() { return m_speedMultiplier; }
 
 private:
 	float m_speedMultiplier = 1;
 	glm::vec2 m_pos;
+	int m_tipo;
+
 
 	Path* m_prevPath = nullptr;
 	Path* m_nextPath = nullptr;

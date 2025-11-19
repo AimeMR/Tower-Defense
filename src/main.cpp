@@ -19,6 +19,22 @@
 #include "main.h"
 #include "menu.h"
 
+#define Basic 0
+#define Rapid 1
+#define Tanc 2
+#define Volador 3
+#define Accelerador 4
+#define Divisible 5
+#define AcceleradorACT 6
+#define DivisibleDIV 7
+
+#define Normal 0
+#define Aceite 1
+#define Nuclear 2
+#define Baches 3
+
+
+
 void InitGL()
 {
 // TODO: agregar aqu� el c�digo de construcci�n
@@ -228,9 +244,9 @@ GameObject* createObject(COBJModel* model)
 	return newObject;
 }
 
-Path* createPath(glm::vec2 pos, float speedMultiplier = 1.0f)
+Path* createPath(glm::vec2 pos, float speedMultiplier = 1.0f, int tipo = 0)
 {
-	Path* newPath = new Path(pos, speedMultiplier);
+	Path* newPath = new Path(pos, speedMultiplier, tipo);
 
 	if (!path.empty())
 	{
@@ -255,24 +271,24 @@ void setUpPath()
 	//PRIMERO EJE ROJO (perpendicular)
 	
 	//Path positions
-	createPath(glm::vec2(10, 0));
-	createPath(glm::vec2(5, 0));
+	createPath(glm::vec2(10, 0.5));
+	createPath(glm::vec2(5, 0.5));
 	createPath(glm::vec2(5, -4));
 	createPath(glm::vec2(0.9, -4)); 
-	createPath(glm::vec2(0.9, 4.5), 1.5); // CAMINO ACEITE
+	createPath(glm::vec2(0.9, 4.5), 1.25, 1); // CAMINO ACEITE
 	createPath(glm::vec2(8.25, 4.75));
 	createPath(glm::vec2(8.25, 8.75));
-	createPath(glm::vec2(-3.35, 8.75), 0.5);  // CAMINO NUCLEAR
+	createPath(glm::vec2(-3.35, 8.75), 0.75, 2);  // CAMINO NUCLEAR
 
 	//////////////////////
 	createPath(glm::vec2(-3.35, 4.75));
-	createPath(glm::vec2(-3.35, -3.0), 0.5);  // CAMINO bachesssssss
+	createPath(glm::vec2(-3.35, -3.0), 0.75, 3);  // CAMINO bachesssssss
 	createPath(glm::vec2(-3.35, -6.75));
 	//////////////////////
 
 	createPath(glm::vec2(-14.75, -6.75));
 	createPath(glm::vec2(-14.75, -2.5));
-	createPath(glm::vec2(-7.5, -2.5), 1.5); // CAMINO ACEITE
+	createPath(glm::vec2(-7.5, -2.5), 1.25, 1); // CAMINO ACEITE
 	createPath(glm::vec2(-7.5, 1.5)); 
 	createPath(glm::vec2(-20, 1.5));
 
@@ -655,7 +671,7 @@ int main(void)
 	}
 
 	setUpPath();
-	spawnEnemy(1); /////////////////////////////// ENEMIGO
+	spawnEnemy(Accelerador); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
 
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
