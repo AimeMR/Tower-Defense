@@ -32,8 +32,8 @@ void modelManager::initialSetup()
 	//Enemic1
 
 	//Enemic2, [0,1]
-	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorINMOVIL4.obj")); //Cuerpo
-	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorMOVIL4.obj")); //Rueda
+	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorINMOVIL.obj")); //Cuerpo
+	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorMOVIL.obj")); //Rueda
 }
 
 COBJModel* modelManager::loadModel(const std::string& filename)

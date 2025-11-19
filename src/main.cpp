@@ -223,6 +223,7 @@ void InitAPI()
 Enemy* spawnEnemy(int type)
 {
 	Enemy* newEnemy = new Enemy(mm.getEnemy(type), type);
+	newEnemy->setId(enemies.size());
 	enemies.push_back(newEnemy);
 
 	Path* start = path.front();
@@ -234,6 +235,24 @@ Enemy* spawnEnemy(int type)
 	newEnemy->startMoving();
 
 	return newEnemy;
+}
+
+void destroyEnemies(Enemy* en)
+{
+	if (en->isAlive()) return;
+	int id = en->getId();
+	int vectorSize = enemies.size();
+
+	if (id < vectorSize)
+	{
+		Enemy* lastEnemy = enemies.back();
+		if (id != vectorSize - 1)
+			lastEnemy->setId(id);
+
+		std::swap(objects[id], objects.back());
+		enemies.pop_back();
+		delete(en);
+	}
 }
 
 GameObject* createObject(COBJModel* model)
@@ -441,6 +460,10 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	case GLFW_KEY_F:
 		OnFull_Screen(primary, window);
 		break;
+	case GLFW_KEY_D:
+		for (Enemy* e : enemies)
+			e->takeDamage(0.25f);
+		break;
 	default:
 		break;
 	}
@@ -547,6 +570,7 @@ void Update(float timer, float deltaTime)
 	for (Enemy* e : enemies) 
 	{
 		e->move(deltaTime, timer);
+		destroyEnemies(e);
 	}
 }
 

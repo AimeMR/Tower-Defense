@@ -2,47 +2,49 @@
 
 void Enemy::setUpEnemyStats(float difficulty)
 {
+	float baseH = 10.0f;
+	float baseS = 5.0f;
 	switch (m_type) {
 	case Basic:
-		m_health = baseHealth * 0.6f;
-		m_defSpeed = baseSpeed * 0.6f;
+		m_baseHealth = baseH * 0.6f;
+		m_defSpeed = baseS * 0.6f;
 		m_damage = 1;
 		m_weight = 1;
 		break;
 	case Rapid:
-		m_health = baseHealth * 0.3f;
-		m_defSpeed = baseSpeed * 1.0f;
+		m_baseHealth = baseH * 0.3f;
+		m_defSpeed = baseS * 1.0f;
 		m_damage = 1;
 		m_weight = 2;
 		break;
 	case Tanc:
-		m_health = baseHealth * 1.0f;
-		m_defSpeed = baseSpeed * 0.4f;
+		m_baseHealth = baseH * 1.0f;
+		m_defSpeed = baseS * 0.4f;
 		m_damage = 2;
 		m_weight = 3;
 		break;
 	case Volador:
-		m_health = baseHealth * 0.4f;
-		m_defSpeed = baseSpeed * 0.5f;
+		m_baseHealth = baseH * 0.4f;
+		m_defSpeed = baseS * 0.5f;
 		m_damage = 2;
 		m_weight = 3;
 		break;
 	case Accelerador:
-		m_health = baseHealth * 0.3f;
-		m_defSpeed = baseSpeed * 0.4f;
+		m_baseHealth = baseH * 0.3f;
+		m_defSpeed = baseS * 0.4f;
 		m_damage = 2;
 		m_weight = 3;
 		break;
 	case Divisible:
-		m_health = baseHealth * 0.5f;
-		m_defSpeed = baseSpeed * 0.4f;
+		m_baseHealth = baseH * 0.5f;
+		m_defSpeed = baseS * 0.4f;
 		m_damage = 2;
 		m_weight = 4;
 		break;
 	//Per donar l'efecte de transició en el l'enemic 5, l'eliminem i creem un nou. L'espai 6 està ocupat per identificar enemics 4 accelerats.
 	case DivisibleDIV: //Enemic 5 dividit
-		m_health = baseHealth * 0.3f;
-		m_defSpeed = baseSpeed * 0.4f;
+		m_baseHealth = baseH * 0.3f;
+		m_defSpeed = baseS * 0.4f;
 		m_damage = 1;
 		m_weight = 2;
 		break;
@@ -50,12 +52,13 @@ void Enemy::setUpEnemyStats(float difficulty)
 		die();
 	}
 
+	m_health = m_baseHealth;
 	m_reward = (int)((float)m_weight * difficulty * 100.0f);
 }
 
 void Enemy::move(float deltaTime, float timer)
 {
-	if (!alive || !m_target) return;
+	if (!m_alive || !m_target) return;
 		
 	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * m_speed * deltaTime;
 	
@@ -98,7 +101,7 @@ void Enemy::reachPathEnd()
 		//Restar vida al jugador
 		//Explota
 		//Eliminar enemigo
-		alive = false;
+		die();
 		return;
 	}
 
@@ -197,31 +200,44 @@ void Enemy::animate(float timer)
 	}
 }
 
+void Enemy::takeDamage(float damage) 
+{ 
+	m_health -= damage; 
+	if (m_health <= 0) 
+	{
+		die();
+	}
+	else 
+	{
+		m_colorBase = glm::vec4(1 - (m_health / m_baseHealth), 0, 0, 1);
+	}
+}
+
 void Enemy::die() 
 {
 	switch (m_type) {
 	case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
 		//Pagar al jugador reward
 		//Explota
-		delete this;
 		break;
 	case Accelerador:
 		//No paguem
-		m_health = baseHealth * 0.3f;
-		m_defSpeed = baseSpeed * 0.9f;
+		m_health = m_baseHealth;
+		m_defSpeed = m_defSpeed * 1.5f;
 		m_damage = 1;
 		m_type = 6;
-		break;
+		return;
 	case Divisible:
 		//No paguem
 		//Explota
 		//Creem 2 enemics 7 a la seva posició actual amb la seva direcció actual
-		delete this;
 		break;
 	default:
 		delete this;
 		break;
 	}
+
+	m_alive = false;
 }
 
 void Enemy::draw(GLuint shader)

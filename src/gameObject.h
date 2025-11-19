@@ -33,6 +33,4 @@ private:
 	int objectID;
 	int pickingID;
 	GameObject* m_parent = nullptr;
-
-
 };

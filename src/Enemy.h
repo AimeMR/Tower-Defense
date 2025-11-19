@@ -23,6 +23,7 @@ class Enemy : public GameObject {
 public:
 	Enemy(std::vector<COBJModel*> objModels, int enemyType) : GameObject(objModels[0])
 	{
+		m_alive = true;
 		m_type = enemyType;
 		setUpEnemyStats(1.0f); // Leer dificultad de Player.h y actualizar
 
@@ -48,16 +49,17 @@ public:
 	void animate(float timer);
 	void move(float deltaTime, float timer);
 	void reachPathEnd();
-	void takeDamage(float damage) { m_health -= m_damage; if (m_health <= 0) die(); }
+	void takeDamage(float damage);
 	void die();
 	void draw(GLuint shader);
 	void startMoving();
+	bool isAlive() { return m_alive; };
 
 private:
 	int m_damage, m_reward, m_type, m_weight, m_pathType = 0;
-	float m_health, m_defSpeed, m_speed, baseHealth = 10.0f, baseSpeed = 5.0f, m_offset = 0.0f, m_maxOffset = 0.5f, m_rotation = 0.0f;
+	float m_health, m_defSpeed, m_speed, m_baseHealth, m_offset = 0.0f, m_maxOffset = 0.5f, m_rotation = 0.0f;
 	glm::vec2 m_dir, m_bisector, m_targetPos, m_prevTargetPos;
-	bool alive = true;
+	bool m_alive = true;
 
 	std::vector<GameObject*> m_bodyParts;
 
