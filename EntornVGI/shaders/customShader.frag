@@ -9,6 +9,8 @@ struct Material
 };
 
 uniform Material material;
+uniform vec4 baseColor;
+uniform bool maskColor;
 
 uniform vec3 lightColor;
 uniform vec3 lightDirection;
@@ -34,7 +36,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 		return 0.0;
 
 	float currentDepth = projCoords.z;
-	float bias = max(0.005 * (1.0 - dot(normalize(normal), normalize(lightDirection))), 0.0005);
+	float bias = max(0.001 * (1.0 - dot(normalize(normal), normalize(lightDirection))), 0.0005);
     
 	float shadow = 0.0;
     
@@ -70,6 +72,14 @@ void main()
 	
 	float shadow = ShadowCalculation(FragPosLightSpace);
 
-	vec3 result = (ambient + (1.0- shadow) * diffuse) * material.diffuse.rgb;
+	vec3 finalMaterialColor;
+	
+	if (material.diffuse.r == 0 && material.diffuse.g ==0 && material.diffuse.b ==0 && maskColor){
+		finalMaterialColor = baseColor.rgb;
+	} else {
+		finalMaterialColor = material.diffuse.rgb;
+	} 
+
+	vec3 result = (ambient + (1.0- shadow) * diffuse) * finalMaterialColor.rgb;
 	FragColor = vec4(result, 1.0);
 }

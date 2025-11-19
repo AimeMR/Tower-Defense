@@ -24,10 +24,15 @@ protected:
 	glm::mat4 m_rot;
 	glm::vec3 m_scale;
 
+	glm::vec4 m_colorBase;
+	bool m_maskColor;
 private:
+
 	COBJModel* m_objModel;
 	bool m_texture = false;
 	int objectID;
 	int pickingID;
 	GameObject* m_parent = nullptr;
+
+
 };

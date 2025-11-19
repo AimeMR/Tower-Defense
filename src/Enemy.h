@@ -31,6 +31,9 @@ public:
 			newBodyPart->setParent(this);
 			m_bodyParts.push_back(newBodyPart);
 		}
+
+		m_maskColor = true;
+		m_colorBase = glm::vec4(0, 0, 0, 1);
 	}
 
 	~Enemy()

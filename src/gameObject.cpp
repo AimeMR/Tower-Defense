@@ -11,6 +11,8 @@ GameObject::GameObject(COBJModel* objModel)
 	pickingID = -1;
 	m_texture = false;
 	m_parent = nullptr;
+	m_maskColor = false;
+	m_colorBase = glm::vec4(1, 1, 1, 1);
 }
 
 void GameObject::translate(glm::vec3 pos) 
@@ -26,10 +28,16 @@ void GameObject::rotate(glm::mat4 rot)
 void GameObject::dibuixarObjecte(GLuint shaderID)
 {
 
-	//SeleccionaMaterial(shaderID, 0, sw_mat);
+	int r = (pickingID & 0x000000FF) >> 0;
+	int g = (pickingID & 0x0000FF00) >> 8;
+	int b = (pickingID & 0x00FF0000) >> 16;
+	glUniform4f(glGetUniformLocation(shaderID, "PickingColor"), r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
 
 	glm::mat4 model(1.0f), normal(1.0f);
 
+
+	glUniform1i(glGetUniformLocation(shaderID, "maskColor"), m_maskColor ? 1 : 0);
+	glUniform4f(glGetUniformLocation(shaderID, "baseColor"), m_colorBase.r, m_colorBase.g, m_colorBase.b, m_colorBase.a);
 
 	model = getModelMatrix();
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "modelMatrix"), 1, GL_FALSE, &model[0][0]);
