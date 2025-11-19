@@ -31,10 +31,13 @@ void modelManager::initialSetup()
 	//Setup Enemics, modelos en intérvalos [x, y] incluídos
 	//Enemic1 [0,6]
 	m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoINMOVIL.obj")); //Cuerpo
-	for (int i = 0; i < 6;i++) {
+	for (int i = 0; i < 3;i++) {
 		m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoMOVIL.obj")); //Rueda
 	}
-
+	for (int i = 0; i < 3; i++) {
+		m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoMOVIL2.obj")); //Rueda
+	}
+	
 
 	//Enemic2, [7,8]
 	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorINMOVIL.obj")); //Cuerpo

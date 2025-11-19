@@ -267,12 +267,14 @@ Path* createPath(glm::vec2 pos, float speedMultiplier = 1.0f, int tipo = 0)
 
 void setUpPath() 
 {
+	/*
 	createPath(glm::vec2(10, 0.5));
 	createPath(glm::vec2(5, 0.5));
-	createPath(glm::vec2(5, -4));
-	createPath(glm::vec2(0.9, -4));
 
-	/*
+	//createPath(glm::vec2(5, -4));
+	//createPath(glm::vec2(0.9, -4));
+
+	*/
 
 	//PRIMERO EJE ROJO (perpendicular)
 	
@@ -298,7 +300,7 @@ void setUpPath()
 	createPath(glm::vec2(-7.5, 1.5)); 
 	createPath(glm::vec2(-20, 1.5));
 
-	*/
+	
 }
 
 void destroyObject(GameObject* obj)
