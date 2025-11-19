@@ -286,7 +286,6 @@ Path* createPath(glm::vec2 pos, float speedMultiplier = 1.0f, int tipo = 0)
 
 void setUpPath() 
 {
-	/*
 	createPath(glm::vec2(10, 0.5));
 	createPath(glm::vec2(5, 0.5));
 	createPath(glm::vec2(5, -4));

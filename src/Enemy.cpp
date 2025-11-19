@@ -56,6 +56,14 @@ void Enemy::setUpEnemyStats(float difficulty)
 	m_reward = (int)((float)m_weight * difficulty * 100.0f);
 }
 
+//Función auxiliar para el lerp de rotación
+float normalizeAngle(float a) {
+	a = fmod(a, 2.0f * PI);
+	if (a <= -PI) a += 2.0f * PI;
+	else if (a > PI) a -= 2.0f * PI;
+	return a;
+}
+
 void Enemy::move(float deltaTime, float timer)
 {
 	if (!m_alive || !m_target) return;
@@ -63,8 +71,8 @@ void Enemy::move(float deltaTime, float timer)
 	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * m_speed * deltaTime;
 	
 	//Rotar
-	float targetAngle = atan2(m_dir.y, m_dir.x) - glm::half_pi<float>();
-	m_rotation = m_rotation + (fmod(targetAngle - m_rotation + PI, 2.0f * PI) - PI) * 5.0f * deltaTime;
+	float angleDiff = normalizeAngle(atan2(m_dir.y, m_dir.x) - glm::half_pi<float>() - m_rotation);
+	m_rotation = normalizeAngle(m_rotation + angleDiff * 7.5f * deltaTime);
 	m_rot = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0, 0, 1));
 
 	animate(timer, deltaTime);
