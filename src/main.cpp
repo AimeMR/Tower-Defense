@@ -30,7 +30,7 @@ void InitGL()
 	statusB = false;
 
 // Entorn VGI: Variables de control per Men� Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
-	fullscreen = false;
+	fullscreen = true;
 	eixos = true;
 
 // Entorn VGI: Variables de control Skybox Cube
@@ -210,12 +210,11 @@ Enemy* spawnEnemy(int type)
 	enemies.push_back(newEnemy);
 
 	Path* start = path.front();
-	newEnemy->translate(glm::vec3(start->getPos(), 0.5f));
+	newEnemy->setStartPoint(start->getPos());
 
 	// target = siguiente nodo si existe, sino mismo
-	Path* firstTarget = start->getNextPath() ? start->getNextPath() : start;
-	newEnemy->setTarget(firstTarget);
-
+	start = start->getNextPath() ? start->getNextPath() : nullptr;
+	newEnemy->setTarget(start);
 	newEnemy->startMoving();
 
 	return newEnemy;
@@ -229,9 +228,9 @@ GameObject* createObject(COBJModel* model)
 	return newObject;
 }
 
-Path* createPath(glm::vec2 pos)
+Path* createPath(glm::vec2 pos, float speedMultiplier = 1.0f)
 {
-	Path* newPath = new Path(pos);
+	Path* newPath = new Path(pos, speedMultiplier);
 
 	if (!path.empty())
 	{
@@ -260,26 +259,22 @@ void setUpPath()
 	createPath(glm::vec2(5, 0));
 	createPath(glm::vec2(5, -4));
 	createPath(glm::vec2(0.9, -4)); 
-	createPath(glm::vec2(0.9, 4.5))->setspeedMultiplier(1.5); // CAMINO ACEITE
+	createPath(glm::vec2(0.9, 4.5), 1.5); // CAMINO ACEITE
 	createPath(glm::vec2(8.25, 4.75));
 	createPath(glm::vec2(8.25, 8.75));
-	createPath(glm::vec2(-3.35, 8.75))->setspeedMultiplier(0.5);  // CAMINO NUCLEAR
+	createPath(glm::vec2(-3.35, 8.75), 0.5);  // CAMINO NUCLEAR
 
 	//////////////////////
-	createPath(glm::vec2(-3.35, 4.75)); // CHAPUZA PARA QUE VAYA   
-	createPath(glm::vec2(-3.34, -3.0))->setspeedMultiplier(0.5); // CHAPUZA PARA QUE VAYA // CAMINO bachesssssss
-	createPath(glm::vec2(-3.35, -6.75)); // CAMINO BACHES
+	createPath(glm::vec2(-3.35, 4.75));
+	createPath(glm::vec2(-3.35, -3.0), 0.5);  // CAMINO bachesssssss
+	createPath(glm::vec2(-3.35, -6.75));
 	//////////////////////
 
 	createPath(glm::vec2(-14.75, -6.75));
 	createPath(glm::vec2(-14.75, -2.5));
-	createPath(glm::vec2(-7.5, -2.5))->setspeedMultiplier(1.5); // CAMINO ACEITE
+	createPath(glm::vec2(-7.5, -2.5), 1.5); // CAMINO ACEITE
 	createPath(glm::vec2(-7.5, 1.5)); 
 	createPath(glm::vec2(-20, 1.5));
-	createPath(glm::vec2(-20, 1.49)); // CHAPUZA PARA QUE VAYA;
-
-
-
 
 }
 

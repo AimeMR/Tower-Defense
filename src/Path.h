@@ -2,10 +2,9 @@
 
 class Path {
 public:
-	Path(glm::vec2 pos = glm::vec2(0, 0), Path* np = nullptr, float sm = 1)
+	Path(glm::vec2 pos = glm::vec2(0, 0), float sm = 1)
 	{
 		m_pos = pos;
-		m_nextPath = np;
 		m_speedMultiplier = sm;
 	}
 	Path* getNextPath() { return m_nextPath; }
@@ -19,10 +18,18 @@ public:
 			glm::vec2 dir1 = glm::normalize(m_pos - m_prevPath->m_pos);
 			glm::vec2 dir2 = glm::normalize(m_nextPath->m_pos - m_pos);
 
-			glm::vec2 bis = glm::normalize(dir1 - dir2);
+			glm::vec2 bis = dir1 - dir2;
 
-			if (glm::dot(bis, dir1) < 0.0f)
-				bis = -bis;
+			if (glm::length(bis) < 0.1f)
+			{
+				bis = glm::vec2(-dir1.y, dir1.x);
+			}
+			else
+			{
+				bis = glm::normalize(bis);
+				if(glm::dot(bis, dir1) < 0.0f)
+					bis = -bis;
+			} 
 
 			m_bisectorNormal = bis;
 		}
@@ -32,7 +39,7 @@ public:
 		}
 	}
 	glm::vec2 getBisector() { return m_bisectorNormal; }
-	glm::vec2 getNextDir() { return glm::normalize(m_nextPath->m_pos - m_pos); }
+	glm::vec2 getNextDir() { return glm::normalize(m_pos - m_prevPath->m_pos); }
 	glm::vec2 getPos() { return m_pos; }
 	float getSpeedMultiplier() { return m_speedMultiplier; }
 

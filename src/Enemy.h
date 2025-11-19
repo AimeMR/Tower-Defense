@@ -22,6 +22,7 @@ public:
 
 		for (auto it = ++objModels.begin(); it != objModels.end(); ++it) {
 			GameObject* newBodyPart = new GameObject(*it);
+			newBodyPart->setParent(this);
 			m_bodyParts.push_back(newBodyPart);
 		}
 	}
@@ -34,6 +35,7 @@ public:
 
 	void setUpEnemyStats(float difficulty);
 	void setTarget(Path* path) { m_target = path; }
+	void setStartPoint(glm::vec2 startPoint);
 	void animate(float timer);
 	void move(float deltaTime, float timer);
 	void reachPathEnd();
@@ -44,8 +46,8 @@ public:
 
 private:
 	int m_damage, m_reward, m_type, m_weight;
-	float m_health, m_defSpeed, m_speed, baseHealth = 10.0f, baseSpeed = 5.0f, m_offset = 0.0f, m_maxOffset = 3.0f;
-	glm::vec2 m_dir, m_bisector, m_targetPos;
+	float m_health, m_defSpeed, m_speed, baseHealth = 10.0f, baseSpeed = 5.0f, m_offset = 0.0f, m_maxOffset = 0.5f, m_rotation = 0.0f;
+	glm::vec2 m_dir, m_bisector, m_targetPos, m_prevTargetPos;
 	bool alive = true;
 
 	std::vector<GameObject*> m_bodyParts;

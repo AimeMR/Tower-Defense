@@ -10,6 +10,7 @@ GameObject::GameObject(COBJModel* objModel)
 	objectID = -1;
 	pickingID = -1;
 	m_texture = false;
+	m_parent = nullptr;
 }
 
 void GameObject::translate(glm::vec3 pos) 
@@ -44,16 +45,16 @@ void GameObject::dibuixarObjecte(GLuint shaderID)
 	
 glm::mat4 GameObject::getModelMatrix()
 {
-	glm::mat4 TransMatrix;
+	glm::mat4 transMatrix = glm::mat4(1.0f);
 
-	TransMatrix = glm::scale(m_parentMatrix, m_scale);
+	transMatrix = glm::translate(transMatrix, m_pos);   // mover al lugar
+	transMatrix = transMatrix * m_rot;                  // rotar alrededor del centro
+	transMatrix = glm::scale(transMatrix, m_scale);     // escalar
 
-	TransMatrix = m_rot * TransMatrix;
+	if (m_parent)
+		transMatrix = m_parent->getModelMatrix() * transMatrix;     // aplicar transformaciones del padre
 
-	TransMatrix = glm::translate(glm::mat4(1.0f), m_pos) * TransMatrix;
-
-
-	return TransMatrix;
+	return transMatrix;
 }
 
 glm::mat4 GameObject::getNormalMatrix()

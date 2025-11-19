@@ -51,46 +51,46 @@ void Enemy::setUpEnemyStats(float difficulty)
 	}
 
 	m_reward = (int)((float)m_weight * difficulty * 100.0f);
-	m_offset = (((float)rand() / (float)RAND_MAX) * 2.0 - 1.0) * m_maxOffset;
 }
 
 void Enemy::move(float deltaTime, float timer)
 {
 	if (!alive || !m_target) return;
-
-	animate(timer);
 		
 	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * m_speed * deltaTime;
 	
 	//Rotar
+	float targetAngle = atan2(m_dir.y, m_dir.x) - glm::half_pi<float>();
+	m_rotation = m_rotation + (fmod(targetAngle - m_rotation + PI, 2.0f * PI) - PI) * 5.0f * deltaTime;
+	m_rot = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0, 0, 1));
 
-	glm::vec2 relPos = glm::vec2(m_pos) - m_targetPos;
+	animate(timer);
 
-	if (glm::dot(relPos, m_bisector) >= 0.0f)
+	//Sistema de detección de giros temporal
+	glm::vec2 diff = m_targetPos - m_prevTargetPos;
+	glm::vec2 relPos = glm::vec2(m_pos) - m_prevTargetPos;
+	float t = glm::dot(relPos, diff) / glm::dot(diff, diff);
+
+	if (t >= 1.0f)
 		reachPathEnd();
 }
 
 void Enemy::startMoving() 
 {
-	glm::vec2 delta = m_target->getPos() - glm::vec2(m_pos);
+	if (!m_target) return;
 
-	if (glm::length(delta) < 0.001f)  // si estás EXACTAMENTE en el nodo
-	{
-		// avanzar al siguiente nodo automáticamente
-		m_target = m_target->getNextPath();
-		if (!m_target) return; // fin del camino
-
-		delta = m_target->getPos() - glm::vec2(m_pos);
-	}
-
-	m_dir = glm::normalize(delta);
+	m_dir = m_target->getNextDir();
 	m_speed = m_defSpeed * m_target->getSpeedMultiplier();
 	m_bisector = m_target->getBisector();
 	m_targetPos = m_target->getPos();
+
+	m_rotation = atan2(m_dir.y, m_dir.x) - glm::half_pi<float>();
+	m_rot = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0, 0, 1));
 }
 
 void Enemy::reachPathEnd() 
 {
+	m_prevTargetPos = m_targetPos;
 	m_target = m_target->getNextPath();
 
 	if (m_target == nullptr) 
@@ -102,7 +102,10 @@ void Enemy::reachPathEnd()
 		return;
 	}
 
-	startMoving();
+	m_dir = m_target->getNextDir();
+	m_speed = m_defSpeed * m_target->getSpeedMultiplier();
+	m_bisector = m_target->getBisector();
+	m_targetPos = m_target->getPos();
 }
 
 void Enemy::animate(float timer) 
@@ -110,17 +113,15 @@ void Enemy::animate(float timer)
 	//De moment farem una animació per cada enemic, però podem crear variants pels líquids o terres trencats
 	switch (m_type) {
 	case 1:
-		m_bodyParts[0]->setParent(m_parentMatrix);
-		m_bodyParts[0]->translate(glm::vec3(m_pos.x, m_pos.y, m_pos.z));
-
 		// 3. Crear y aplicar la matriz de rotación
 		glm::mat4 matriz_rotacion = glm::rotate(
 			glm::mat4(1.0f),            // Matriz inicial (identidad)
-			5.0f*timer,                     // El ángulo de rotación (velocidad * timer)
+			-5.0f * timer * m_speed / m_defSpeed,                     // El ángulo de rotación (velocidad * timer)
 			glm::vec3(1.0f, 0.0f, 0.0f) // El eje de rotación (Eje Z)
 		);
 
 		m_bodyParts[0]->rotate(matriz_rotacion); // Aplicar la rotación
+
 
 	default:
 		break;
@@ -159,4 +160,11 @@ void Enemy::draw(GLuint shader)
 	this->dibuixarObjecte(shader);
 	for (GameObject* g : m_bodyParts)
 		g->dibuixarObjecte(shader);
+}
+
+void Enemy::setStartPoint(glm::vec2 startPoint) 
+{ 
+	m_prevTargetPos = startPoint;
+	m_offset = (((float)rand() / (float)RAND_MAX) * 2.0 - 1.0) * m_maxOffset;
+	m_pos = glm::vec3(startPoint.x, startPoint.y + m_offset, 0.5f); 
 }
