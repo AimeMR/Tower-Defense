@@ -9,6 +9,8 @@ struct Material
 };
 
 uniform Material material;
+uniform vec4 baseColor;
+uniform bool maskColor;
 
 uniform vec3 lightColor;
 uniform vec3 lightDirection;
@@ -70,6 +72,14 @@ void main()
 	
 	float shadow = ShadowCalculation(FragPosLightSpace);
 
-	vec3 result = (ambient + (1.0- shadow) * diffuse) * material.diffuse.rgb;
+	vec3 finalMaterialColor;
+	
+	if (material.diffuse.r == 0 && material.diffuse.g ==0 && material.diffuse.b ==0 && maskColor){
+		finalMaterialColor = baseColor.rgb;
+	} else {
+		finalMaterialColor = material.diffuse.rgb;
+	} 
+
+	vec3 result = (ambient + (1.0- shadow) * diffuse) * finalMaterialColor.rgb;
 	FragColor = vec4(result, 1.0);
 }

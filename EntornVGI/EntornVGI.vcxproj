@@ -27,6 +27,7 @@
     <ClCompile Include="..\include\ImGui\imgui_tables.cpp" />
     <ClCompile Include="..\include\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="..\src\camara.cpp" />
+    <ClCompile Include="..\src\Enemy.cpp" />
     <ClCompile Include="..\src\escena.cpp" />
     <ClCompile Include="..\src\gameObject.cpp" />
     <ClCompile Include="..\src\glut_geometry.cpp" />
@@ -34,6 +35,7 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\material.cpp" />
     <ClCompile Include="..\src\menu.cpp" />
+    <ClCompile Include="..\src\modelManager.cpp" />
     <ClCompile Include="..\src\objLoader.cpp" />
     <ClCompile Include="..\src\pickingObjects.cpp" />
     <ClCompile Include="..\src\player.cpp" />
@@ -51,6 +53,7 @@
     <ClInclude Include="..\include\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\src\camara.h" />
     <ClInclude Include="..\src\constants.h" />
+    <ClInclude Include="..\src\Enemy.h" />
     <ClInclude Include="..\src\escena.h" />
     <ClInclude Include="..\src\gameObject.h" />
     <ClInclude Include="..\src\glut_geometry.h" />
@@ -58,9 +61,12 @@
     <ClInclude Include="..\src\main.h" />
     <ClInclude Include="..\src\material.h" />
     <ClInclude Include="..\src\menu.h" />
+    <ClInclude Include="..\src\modelManager.h" />
     <ClInclude Include="..\src\objLoader.h" />
+    <ClInclude Include="..\src\Path.h" />
     <ClInclude Include="..\src\pickingObjects.h" />
     <ClInclude Include="..\src\player.h" />
+    <ClInclude Include="..\src\quatern.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\stdafx.h" />
     <ClInclude Include="..\src\visualitzacio.h" />

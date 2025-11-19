@@ -18,14 +18,22 @@
 #include "escena.h"
 #include "main.h"
 #include "menu.h"
-#include "material.h"
 
-void loadModels() 
-{
-	COBJModel* newModel = new COBJModel();
-	newModel->LoadModel(".\\modelos\\MAPA.obj");
-	models.push_back(newModel);
-}
+#define Basic 0
+#define Rapid 1
+#define Tanc 2
+#define Volador 3
+#define Accelerador 4
+#define Divisible 5
+#define AcceleradorACT 6
+#define DivisibleDIV 7
+
+#define Normal 0
+#define Aceite 1
+#define Nuclear 2
+#define Baches 3
+
+
 
 void InitGL()
 {
@@ -38,7 +46,7 @@ void InitGL()
 	statusB = false;
 
 // Entorn VGI: Variables de control per Men� Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
-	fullscreen = true;
+	fullscreen = false;
 	eixos = true;
 
 // Entorn VGI: Variables de control Skybox Cube
@@ -107,16 +115,15 @@ void InitGL()
 	//OPV.R = 15.0;		OPV.alfa = 0.0;		OPV.beta = 0.0;										// Origen PV en esf�riques
 	Vis_Polar = POLARZ;	oPolars = -1;
 
-
-
 // Entorn VGI: Altres variables
 	mida = 1.0;			nom = "";		buffer = "";
-
-	loadModels();
-
-	createObject(0);
-
 	
+	//Carga modelos
+	mm = modelManager();
+	mm.initialSetup();
+
+	createObject(mm.getMapa());
+
 	mainCamara = Camara();
 	distancia = 25;
 	mainCamara.UpdateWindow(w, h);
@@ -128,6 +135,7 @@ void InitGL()
 	direccionSol = glm::vec3(-1, -1, 1);
 	luz.m_cam = &mainCamara;
 	luz.objetos = &objects;
+	luz.enemigos = &enemies;
 
 	po = PickingObjects3D(w, h, poShaderID);
 	po.m_cam = &mainCamara;
@@ -136,7 +144,6 @@ void InitGL()
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
-
 
 void InitAPI()
 {
@@ -223,9 +230,44 @@ void InitAPI()
 	glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)wglGetProcAddress("glVertexAttribPointer");
 }
 
-GameObject* createObject(int model)
+Enemy* spawnEnemy(int type)
 {
-	GameObject* newObject = new GameObject(models[model]);
+	Enemy* newEnemy = new Enemy(mm.getEnemy(type), type);
+	newEnemy->setId(enemies.size());
+	enemies.push_back(newEnemy);
+
+	Path* start = path.front();
+	newEnemy->setStartPoint(start->getPos());
+
+	// target = siguiente nodo si existe, sino mismo
+	start = start->getNextPath() ? start->getNextPath() : nullptr;
+	newEnemy->setTarget(start);
+	newEnemy->startMoving();
+
+	return newEnemy;
+}
+
+void destroyEnemies(Enemy* en)
+{
+	if (en->isAlive()) return;
+	int id = en->getId();
+	int vectorSize = enemies.size();
+
+	if (id < vectorSize)
+	{
+		Enemy* lastEnemy = enemies.back();
+		if (id != vectorSize - 1)
+			lastEnemy->setId(id);
+
+		std::swap(objects[id], objects.back());
+		enemies.pop_back();
+		delete(en);
+	}
+}
+
+GameObject* createObject(COBJModel* model)
+{
+	GameObject* newObject = new GameObject(model);
 	newObject->setId(objects.size());
 	
 
@@ -233,9 +275,54 @@ GameObject* createObject(int model)
 	return newObject;
 }
 
+Path* createPath(glm::vec2 pos, float speedMultiplier = 1.0f, int tipo = 0)
+{
+	Path* newPath = new Path(pos, speedMultiplier, tipo);
+
+	if (!path.empty())
+	{
+		Path* prev = path.back();
+		prev->setNextPath(newPath);
+		newPath->setPreviousPath(prev);
+
+		prev->calculateBisector();
+	}
+
+	newPath->calculateBisector();
+
+	path.push_back(newPath);
+
+	return newPath;
+}
+
+
+void setUpPath() 
+{
+	createPath(glm::vec2(10, 0.5));
+	createPath(glm::vec2(5, 0.5));
+	createPath(glm::vec2(5, -4));
+	createPath(glm::vec2(0.9, -4)); 
+	createPath(glm::vec2(0.9, 4.5), 1.25, Aceite); // CAMINO ACEITE
+	createPath(glm::vec2(8.25, 4.75));
+	createPath(glm::vec2(8.25, 8.75));
+	createPath(glm::vec2(-3.35, 8.75), 0.75, Nuclear);  // CAMINO NUCLEAR
+
+	//////////////////////
+	createPath(glm::vec2(-3.35, 4.75));
+	createPath(glm::vec2(-3.35, -3.0), 0.75, Baches);  // CAMINO bachesssssss
+	createPath(glm::vec2(-3.35, -6.75));
+	//////////////////////
+
+	createPath(glm::vec2(-14.75, -6.75));
+	createPath(glm::vec2(-14.75, -2.5));
+	createPath(glm::vec2(-7.5, -2.5), 1.25, Aceite); // CAMINO ACEITE
+	createPath(glm::vec2(-7.5, 1.5)); 
+	createPath(glm::vec2(-20, 1.5));
+}
+
 void destroyObject(GameObject* obj)
 {
-	int id = obj->objectID;
+	int id = obj->getId();
 	int vectorSize = objects.size();
 
 	if (id < vectorSize)
@@ -381,6 +468,10 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	case GLFW_KEY_F:
 		OnFull_Screen(primary, window);
 		break;
+	case GLFW_KEY_D:
+		for (Enemy* e : enemies)
+			e->takeDamage(0.25f);
+		break;
 	default:
 		break;
 	}
@@ -482,7 +573,14 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 
 //-----------------Variables globales
 
-
+void Update(float timer, float deltaTime) 
+{
+	for (Enemy* e : enemies) 
+	{
+		e->move(deltaTime, timer);
+		destroyEnemies(e);
+	}
+}
 
 
 int main(void)
@@ -604,6 +702,11 @@ int main(void)
 		}
 	}
 
+	setUpPath();
+	spawnEnemy(Accelerador); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
+
+
+
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
 
@@ -625,7 +728,7 @@ int main(void)
 		menu(salir);
 
 		// Update transforms and objects
-		//Update();
+		Update(frameTimer, deltaTime);
 
 
 
@@ -656,10 +759,14 @@ int main(void)
 
 	// Delete all the objects in the scene
 	for (GameObject* obj : objects)
-		delete obj;
+		DeleteObject(obj);
 
-	for (COBJModel* mod : models)
-		delete mod;
+	for (Enemy* en : enemies) 
+	{
+		en->kill();
+		destroyEnemies(en);
+	}
+		
 
 	// Entorn VGI.ImGui: Cleanup ImGui
 	ImGui_ImplOpenGL3_Shutdown();
