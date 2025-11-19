@@ -115,6 +115,7 @@ void Enemy::reachPathEnd()
 		//Esto se ejecuta solo en las transiciones entre diferentes tipos de caminos
 		switch (m_type) {
 		case Basic:
+			translate(glm::vec3(m_pos.x, m_pos.y, 0.3));
 			break;
 		case Rapid:
 			break;
@@ -139,10 +140,53 @@ void Enemy::reachPathEnd()
 void Enemy::animate(float timer, float deltaTime)
 {
 	//De moment farem una animació per cada enemic, però podem crear variants pels líquids o terres trencats
-	glm::mat4 matriz_rotacion;
+	glm::mat4 matriz_rotacion, matriz_rotacion_180, matriz_rotacion_rueda;
 
 	switch (m_type) {
-	case Basic:
+		translate(glm::vec3(m_pos.x, m_pos.y, 0.3));
+
+		matriz_rotacion_180 = glm::rotate(glm::mat4(1.0f), radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		matriz_rotacion_rueda = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		// --- GRUPO IZQUIERDO (Piezas 0, 1, 2)
+		// No necesitan la rotación de 180 grados (están mirando hacia adelante por defecto)
+		m_bodyParts[0]->translate(glm::vec3(-0.18, -0.077, -0.25));
+		m_bodyParts[1]->translate(glm::vec3(-0.18, 0.077, -0.25));
+		m_bodyParts[2]->translate(glm::vec3(-0.18, 0.004, -0.119));
+
+		// Aplicar la rotación continua (rueda)
+		m_bodyParts[0]->rotate(matriz_rotacion_rueda);
+		m_bodyParts[1]->rotate(matriz_rotacion_rueda);
+		m_bodyParts[2]->rotate(matriz_rotacion_rueda);
+
+		// --- GRUPO DERECHO (Piezas 3, 4, 5)
+		// Necesitan la rotación de 180 grados (para que "miren" a la izquierda, si el modelo está orientado al revés)
+
+		// 1. Posicionar
+		m_bodyParts[3]->translate(glm::vec3(0.18, -0.07, -0.25));
+		m_bodyParts[4]->translate(glm::vec3(0.18, 0.076, -0.25));
+		m_bodyParts[5]->translate(glm::vec3(0.18, 0.004, -0.12));
+
+		// 3. Aplicar la rotación continua (rueda)
+		m_bodyParts[3]->rotate(matriz_rotacion_rueda);
+		m_bodyParts[4]->rotate(matriz_rotacion_rueda);
+		m_bodyParts[5]->rotate(matriz_rotacion_rueda);
+
+		if (m_pathType == Aceite)
+		{
+			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.0015f, m_pos.y, m_pos.z));
+			glm::mat4 matriz_rotacionAceite1 = glm::rotate(glm::mat4(1.0f), sin(timer * 10.0f) * glm::radians(3.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			rotate(matriz_rotacionAceite1); // Aplicar la rotación
+		}
+		else {
+			if (m_pathType == Baches)
+			{
+				translate(glm::vec3(m_pos.x, m_pos.y, 0.3 + abs(sin(timer * 10) * 0.1f)));
+			}
+		}
+		
+
+
 		m_bodyParts[0]->translate(glm::vec3(-0.17, -0.07, -0.25));
 		m_bodyParts[1]->translate(glm::vec3(-0.17, 0.07, -0.25));
 		break;
