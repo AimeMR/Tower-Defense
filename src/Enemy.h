@@ -14,8 +14,9 @@
 
 #define Normal 0
 #define Aceite 1
-#define Nuclear 2
-#define Baches 3
+#define Aceite2 2
+#define Nuclear 3
+#define Baches 4
 
 
 class Enemy : public GameObject {

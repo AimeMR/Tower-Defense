@@ -155,14 +155,36 @@ void Enemy::animate(float timer)
 			glm::vec3(1.0f, 0.0f, 0.0f) // El eje de rotación (Eje Z)
 		);
 
+
 		m_bodyParts[0]->rotate(matriz_rotacion); // Aplicar la rotación
 
 		if (m_pathType == Aceite) {
 			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.005f, m_pos.y, m_pos.z));
+
+			glm::mat4 matriz_rotacionAceite1 = glm::rotate(
+				glm::mat4(1.0f),            // Matriz inicial (identidad)
+				sin(timer * 10.0f) * glm::radians(5.0f),                     // El ángulo de rotación (velocidad * timer)
+				glm::vec3(0.0f, 1.0f, 0.0f) 
+			);
+
+			rotate(matriz_rotacionAceite1); // Aplicar la rotación
 		}
 		else {
-			if(m_pathType == Baches){
-				translate(glm::vec3(m_pos.x, m_pos.y, 0.5 + abs(sin(timer * 10) * 0.2f))); // PONER ABSOLUTO
+			if (m_pathType == Aceite2) {
+				translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.005f, m_pos.y, m_pos.z));
+
+				glm::mat4 matriz_rotacionAceite2 = glm::rotate(
+					glm::mat4(1.0f),            // Matriz inicial (identidad)
+					sin(timer * 10.0f) * glm::radians(5.0f),                     // El ángulo de rotación (velocidad * timer)
+					glm::vec3(1.0f, 0.0f, 0.0f) 
+				);
+
+				rotate(matriz_rotacionAceite2); // Aplicar la rotación
+			}
+			else {
+				if (m_pathType == Baches) {
+					translate(glm::vec3(m_pos.x, m_pos.y, 0.5 + abs(sin(timer * 10) * 0.2f))); // PONER ABSOLUTO
+				}
 			}
 		}
 		break;

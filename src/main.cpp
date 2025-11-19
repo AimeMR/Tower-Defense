@@ -278,17 +278,17 @@ void setUpPath()
 	createPath(glm::vec2(0.9, 4.5), 1.25, 1); // CAMINO ACEITE
 	createPath(glm::vec2(8.25, 4.75));
 	createPath(glm::vec2(8.25, 8.75));
-	createPath(glm::vec2(-3.35, 8.75), 0.75, 2);  // CAMINO NUCLEAR
+	createPath(glm::vec2(-3.35, 8.75), 0.75, 3);  // CAMINO NUCLEAR
 
 	//////////////////////
 	createPath(glm::vec2(-3.35, 4.75));
-	createPath(glm::vec2(-3.35, -3.0), 0.75, 3);  // CAMINO bachesssssss
+	createPath(glm::vec2(-3.35, -3.0), 0.75, 4);  // CAMINO bachesssssss
 	createPath(glm::vec2(-3.35, -6.75));
 	//////////////////////
 
 	createPath(glm::vec2(-14.75, -6.75));
 	createPath(glm::vec2(-14.75, -2.5));
-	createPath(glm::vec2(-7.5, -2.5), 1.25, 1); // CAMINO ACEITE
+	createPath(glm::vec2(-7.5, -2.5), 1.25, 2); // CAMINO ACEITE
 	createPath(glm::vec2(-7.5, 1.5)); 
 	createPath(glm::vec2(-20, 1.5));
 
