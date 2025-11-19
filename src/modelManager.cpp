@@ -29,11 +29,16 @@ void modelManager::initialSetup()
 	m_modelMapa = loadModel("Mapas\\MAPAFINAL.obj");
 
 	//Setup Enemics, modelos en intérvalos [x, y] incluídos
-	//Enemic1
+	//Enemic1 [0,6]
+	m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoINMOVIL.obj")); //Cuerpo
+	for (int i = 0; i < 6;i++) {
+		m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoMOVIL.obj")); //Rueda
+	}
 
-	//Enemic2, [0,1]
-	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorINMOVIL4.obj")); //Cuerpo
-	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorMOVIL4.obj")); //Rueda
+
+	//Enemic2, [7,8]
+	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorINMOVIL.obj")); //Cuerpo
+	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorMOVIL.obj")); //Rueda
 }
 
 COBJModel* modelManager::loadModel(const std::string& filename)
@@ -62,7 +67,7 @@ std::vector<COBJModel*> modelManager::getEnemy(int type)
 {
 	switch (type) {
 	case Basic:
-		return getModelRange(m_modelsEnemics, 0, 1);  // Carga las piezas 0... hasta la 1
+		return getModelRange(m_modelsEnemics, 0, 6);  // Carga las piezas 0... hasta la 1
 	case Rapid:
 		return getModelRange(m_modelsEnemics, 0, 1);  // Carga las piezas 0... hasta la 1
 	case Tanc:
@@ -70,7 +75,7 @@ std::vector<COBJModel*> modelManager::getEnemy(int type)
 	case Volador:
 		break;
 	case Accelerador:
-		return getModelRange(m_modelsEnemics, 0, 1);  // Carga las piezas 0... hasta la 1
+		return getModelRange(m_modelsEnemics, 7,8);  // Carga las piezas 0... hasta la 1
 	case Divisible:
 		break;
 	case AcceleradorACT:

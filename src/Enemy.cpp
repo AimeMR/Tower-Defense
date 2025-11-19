@@ -64,7 +64,7 @@ void Enemy::move(float deltaTime, float timer)
 	m_rotation = m_rotation + (fmod(targetAngle - m_rotation + PI, 2.0f * PI) - PI) * 5.0f * deltaTime;
 	m_rot = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0, 0, 1));
 
-	animate(timer);
+	animate(timer, deltaTime);
 
 	//Sistema de detección de giros temporal
 	glm::vec2 diff = m_targetPos - m_prevTargetPos;
@@ -134,11 +134,20 @@ void Enemy::reachPathEnd()
 
 }
 
-void Enemy::animate(float timer) 
+void Enemy::animate(float timer, float deltaTime)
 {
 	//De moment farem una animació per cada enemic, però podem crear variants pels líquids o terres trencats
+	glm::mat4 matriz_rotacion;
+
 	switch (m_type) {
 	case Basic:
+		translate(glm::vec3(m_pos.x, m_pos.y, 0.3));
+		m_bodyParts[0]->translate(glm::vec3(-0.17, -0.07, -0.25));
+		m_bodyParts[1]->translate(glm::vec3(-0.17, 0.07, -0.25));
+		
+		
+
+
 		break;
 	case Rapid:
 		break;
@@ -146,45 +155,22 @@ void Enemy::animate(float timer)
 		break;
 	case Volador:
 		break;
-	case Accelerador:
-		
+	case Accelerador: case AcceleradorACT:
+
 		// Crear y aplicar la matriz de rotación
-		glm::mat4 matriz_rotacion = glm::rotate(
-			glm::mat4(1.0f),            // Matriz inicial (identidad)
-			-5.0f * timer * m_speed / m_defSpeed,                     // El ángulo de rotación (velocidad * timer)
-			glm::vec3(1.0f, 0.0f, 0.0f) // El eje de rotación (Eje Z)
-		);
-
-
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 		m_bodyParts[0]->rotate(matriz_rotacion); // Aplicar la rotación
 
-		if (m_pathType == Aceite) {
-			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.005f, m_pos.y, m_pos.z));
-
-			glm::mat4 matriz_rotacionAceite1 = glm::rotate(
-				glm::mat4(1.0f),            // Matriz inicial (identidad)
-				sin(timer * 10.0f) * glm::radians(5.0f),                     // El ángulo de rotación (velocidad * timer)
-				glm::vec3(0.0f, 1.0f, 0.0f) 
-			);
-
+		if (m_pathType == Aceite) 
+		{
+			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.0025f, m_pos.y, m_pos.z));
+			glm::mat4 matriz_rotacionAceite1 = glm::rotate(glm::mat4(1.0f),sin(timer * 10.0f) * glm::radians(5.0f),glm::vec3(0.0f, 1.0f, 0.0f) );
 			rotate(matriz_rotacionAceite1); // Aplicar la rotación
 		}
 		else {
-			if (m_pathType == Aceite2) {
-				translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.005f, m_pos.y, m_pos.z));
-
-				glm::mat4 matriz_rotacionAceite2 = glm::rotate(
-					glm::mat4(1.0f),            // Matriz inicial (identidad)
-					sin(timer * 10.0f) * glm::radians(5.0f),                     // El ángulo de rotación (velocidad * timer)
-					glm::vec3(1.0f, 0.0f, 0.0f) 
-				);
-
-				rotate(matriz_rotacionAceite2); // Aplicar la rotación
-			}
-			else {
-				if (m_pathType == Baches) {
-					translate(glm::vec3(m_pos.x, m_pos.y, 0.5 + abs(sin(timer * 10) * 0.2f))); // PONER ABSOLUTO
-				}
+			if (m_pathType == Baches)
+			{
+				translate(glm::vec3(m_pos.x, m_pos.y, 0.5 + abs(sin(timer * 10) * 0.2f))); 
 			}
 		}
 		break;

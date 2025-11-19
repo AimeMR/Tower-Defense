@@ -46,7 +46,7 @@ void InitGL()
 	statusB = false;
 
 // Entorn VGI: Variables de control per Men� Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
-	fullscreen = true;
+	fullscreen = false;
 	eixos = true;
 
 // Entorn VGI: Variables de control Skybox Cube
@@ -265,9 +265,15 @@ Path* createPath(glm::vec2 pos, float speedMultiplier = 1.0f, int tipo = 0)
 }
 
 
-
 void setUpPath() 
 {
+	createPath(glm::vec2(10, 0.5));
+	createPath(glm::vec2(5, 0.5));
+	createPath(glm::vec2(5, -4));
+	createPath(glm::vec2(0.9, -4));
+
+	/*
+
 	//PRIMERO EJE ROJO (perpendicular)
 	
 	//Path positions
@@ -275,23 +281,24 @@ void setUpPath()
 	createPath(glm::vec2(5, 0.5));
 	createPath(glm::vec2(5, -4));
 	createPath(glm::vec2(0.9, -4)); 
-	createPath(glm::vec2(0.9, 4.5), 1.25, 1); // CAMINO ACEITE
+	createPath(glm::vec2(0.9, 4.5), 1.25, Aceite); // CAMINO ACEITE
 	createPath(glm::vec2(8.25, 4.75));
 	createPath(glm::vec2(8.25, 8.75));
-	createPath(glm::vec2(-3.35, 8.75), 0.75, 3);  // CAMINO NUCLEAR
+	createPath(glm::vec2(-3.35, 8.75), 0.75, Nuclear);  // CAMINO NUCLEAR
 
 	//////////////////////
 	createPath(glm::vec2(-3.35, 4.75));
-	createPath(glm::vec2(-3.35, -3.0), 0.75, 4);  // CAMINO bachesssssss
+	createPath(glm::vec2(-3.35, -3.0), 0.75, Baches);  // CAMINO bachesssssss
 	createPath(glm::vec2(-3.35, -6.75));
 	//////////////////////
 
 	createPath(glm::vec2(-14.75, -6.75));
 	createPath(glm::vec2(-14.75, -2.5));
-	createPath(glm::vec2(-7.5, -2.5), 1.25, 2); // CAMINO ACEITE
+	createPath(glm::vec2(-7.5, -2.5), 1.25, Aceite); // CAMINO ACEITE
 	createPath(glm::vec2(-7.5, 1.5)); 
 	createPath(glm::vec2(-20, 1.5));
 
+	*/
 }
 
 void destroyObject(GameObject* obj)
@@ -671,7 +678,9 @@ int main(void)
 	}
 
 	setUpPath();
-	spawnEnemy(Accelerador); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
+	spawnEnemy(Basic); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
+
+
 
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
