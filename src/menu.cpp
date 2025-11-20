@@ -4,81 +4,57 @@
 #include "ImGui\imgui_impl_opengl3.h"
 #include "ImGui\nfd.h" // Native File Dialog
 
-
 #include "stdafx.h"
 #include "shader.h"
 #include "visualitzacio.h"
 #include "escena.h"
 #include "menu.h"
 
+// --- Variables Globales ---
 bool show_menu_inicio = true;
 bool show_menu_ajustes = false;
 bool show_jugar = false;
 bool show_menu_creditos = false;
 bool juego_pausado = false;
 
-
-//--------------------- A PARTIR D'AQUÍ EL NOSTRE CODI
-void menu(bool& salir) 
+//--------------------- A PARTIR D'AQUÍ EL NOSTRE CODI ---------------------
+void menu(bool& salir)
 {
-
-	// Inizializa frame
+	// Inicializa frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
+	// Obtenemos viewport para posicionar ventanas
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// =========================================================
+	// 1. MENÚ DE INICIO (Pantalla Completa)
+	// =========================================================
 	if (show_menu_inicio)
 	{
-		static bool show_app_debug_log = true;
-		
+		// Configuración ventana fullscreen
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
 
-		//if(show_another_window)
-
-		static bool use_work_area = true;
-	
-		//static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 		static ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
-	
-		// We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
-		// Based on your use case you may want one of the other.
-		const ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
-		ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
 
-		//Menu de incio
-	
-		if (ImGui::Begin("Example: Fullscreen window", &show_menu_inicio, flags))
+		if (ImGui::Begin("Menu_Principal_Fullscreen", &show_menu_inicio, flags))
 		{
-			/*
-			ImGui::Checkbox("Use work area instead of main area", &use_work_area);
-			ImGui::SameLine();
-			//HelpMarker("Main Area = entire viewport,\nWork Area = entire viewport minus sections used by the main menu bars, task bars etc.\n\nEnable the main-menu bar in Examples menu to see the difference.");
-
-			ImGui::CheckboxFlags("ImGuiWindowFlags_NoBackground", &flags, ImGuiWindowFlags_NoBackground);
-			ImGui::CheckboxFlags("ImGuiWindowFlags_NoDecoration", &flags, ImGuiWindowFlags_NoDecoration);
-			ImGui::Indent();
-			ImGui::CheckboxFlags("ImGuiWindowFlags_NoTitleBar", &flags, ImGuiWindowFlags_NoTitleBar);
-			ImGui::CheckboxFlags("ImGuiWindowFlags_NoCollapse", &flags, ImGuiWindowFlags_NoCollapse);
-			ImGui::CheckboxFlags("ImGuiWindowFlags_NoScrollbar", &flags, ImGuiWindowFlags_NoScrollbar);
-			ImGui::Unindent();*/
-
-			//if (show_app_debug_log)
-				//ImGui::ShowDebugLogWindow(&show_app_debug_log);
-
+			// Aplicamos estilos y fuente grande
 			cambiarEstiloBotones();
 			ImGui::SetWindowFontScale(1.5f);
 
 			// --- BOTÓN JUGAR ---
-			// Lo ponemos un poco más arriba del centro (ej. 40% de altura)
 			ImVec2 btnSize = colocarBoton(0.5f, 0.40f);
 			if (ImGui::Button("Jugar", btnSize))
 			{
 				show_menu_inicio = false;
 				show_jugar = true;
+				juego_pausado = false;
 			}
 
 			// --- BOTÓN AJUSTES ---
-			// Lo ponemos un poco más abajo (ej. 55% de altura)
-			// Nota: Como usamos SetCursorPos, NO importa que haya un botón antes.
 			btnSize = colocarBoton(0.5f, 0.55f);
 			if (ImGui::Button("Ajustes", btnSize))
 			{
@@ -87,7 +63,6 @@ void menu(bool& salir)
 			}
 
 			// --- BOTÓN CREDITOS ---
-			// Más abajo (ej. 70% de altura)
 			btnSize = colocarBoton(0.5f, 0.70f);
 			if (ImGui::Button("Creditos", btnSize))
 			{
@@ -95,9 +70,7 @@ void menu(bool& salir)
 				show_menu_creditos = true;
 			}
 
-			// --- BOTÓN SALIR ---
-			// Esquina inferior izquierda (ej. 10% X, 90% Y)
-			// Ojo: Tu código original tenía centrarBotonMenu(0.05, 0.95), ajusta según gusto
+			// --- BOTÓN SALIR --- (Esquina inferior izquierda)
 			btnSize = colocarBoton(0.1f, 0.90f);
 			if (ImGui::Button("Salir", btnSize))
 			{
@@ -105,22 +78,26 @@ void menu(bool& salir)
 				salir = true;
 			}
 
+			// Restauramos estilos y fuente
 			ImGui::SetWindowFontScale(1.0f);
 			regresarEstiloBotones();
 		}
 		ImGui::End();
 	}
-	//Iniciar juego
+	// =========================================================
+	// 2. JUEGO (HUD + PAUSA)
+	// =========================================================
 	else if (show_jugar)
 	{
 		iniciarPartida(salir);
 	}
-	//Menu ajustes
+	// =========================================================
+	// 3. OTROS MENÚS
+	// =========================================================
 	else if (show_menu_ajustes)
 	{
 		menuAjustes();
 	}
-	//Menu settings
 	else if (show_menu_creditos)
 	{
 		menuCreditos();
@@ -129,42 +106,20 @@ void menu(bool& salir)
 	ImGui::Render();
 }
 
-void cambiarEstiloBotones()
-{
-	// a) Colores (para opacidad, color de fondo, y borde)
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.3f, 0.6f, 1.0f)); // Fondo opaco (Alpha=1.0f)
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.4f, 0.7f, 1.0f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.2f, 0.5f, 1.0f));
-	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 0.0f, 1.0f)); // Borde amarillo
-
-	// b) Variables (para el grosor del borde)
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f); // Grosor del borde de 2px
-}
-
-void regresarEstiloBotones()
-{
-	// Sacamos 4 colores (Button, ButtonHovered, ButtonActive, Border)
-	ImGui::PopStyleColor(4);
-
-	// Sacamos 1 variable (FrameBorderSize)
-	ImGui::PopStyleVar(1);
-
-}
-
+// Función auxiliar para posicionar botones centrados en porcentaje
 ImVec2 colocarBoton(float porX, float porY)
 {
 	// 1. Definir tamaño del botón
 	ImVec2 button_size(200, 50);
 
-	// 2. Obtener tamaño de la ventana actual (donde dibujas el menú)
+	// 2. Obtener tamaño de la ventana actual
 	ImVec2 window_size = ImGui::GetWindowSize();
 
 	// 3. Calcular posición ABSOLUTA
-	// Formula: (AnchoVentana * Porcentaje) - (MitadAnchoBoton)
 	float posX = (window_size.x * porX) - (button_size.x * 0.5f);
 	float posY = (window_size.y * porY) - (button_size.y * 0.5f);
 
-	// 4. FORZAR la posición del cursor (sin sumar a la anterior)
+	// 4. FORZAR la posición del cursor
 	ImGui::SetCursorPos(ImVec2(posX, posY));
 
 	return button_size;
@@ -172,85 +127,106 @@ ImVec2 colocarBoton(float porX, float porY)
 
 void iniciarPartida(bool& salir)
 {
-	// 1. DIBUJAR EL HUD (BOTÓN PAUSA)
-	// Usamos una ventana sin decoración, fondo transparente opcional, y que se auto-ajuste al tamaño
-	ImGuiWindowFlags hudFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-
-	// Calculamos la posición: Esquina superior derecha
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
-	float padding = 10.0f;
 
-	// Posicionamos "aproximadamente" a la derecha. Luego ImGui ajustará el ancho.
-	// WorkPos.x + WorkSize.x es el borde derecho. Le restamos un tamaño estimado (ej. 50px) y el padding.
-	ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->WorkSize.x - 60.0f - padding, viewport->WorkPos.y + padding), ImGuiCond_Always);
-
-	// Fondo semi-transparente para el botoncito
-	ImGui::SetNextWindowBgAlpha(0.35f);
-
-	if (ImGui::Begin("HudPausa", NULL, hudFlags))
+	// -----------------------------------------------------
+	// A) HUD (Botón Pausa) - Solo visible si NO está pausado
+	// -----------------------------------------------------
+	if (!juego_pausado)
 	{
-		// Si pulsamos el botón, activamos la pausa
-		if (ImGui::Button("||", ImVec2(50, 50))) // Botón cuadrado de 50x50
+		ImGuiWindowFlags hudFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBackground;
+		float padding = 10.0f;
+
+		ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->WorkSize.x - 60.0f - padding, viewport->WorkPos.y + padding), ImGuiCond_Always);
+
+		// Fondo totalmente invisible (Alpha 0)
+		ImGui::SetNextWindowBgAlpha(0.0f);
+
+		if (ImGui::Begin("HudPausa", NULL, hudFlags))
 		{
-			juego_pausado = !juego_pausado;
-		}
-	}
-	ImGui::End();
-
-	// 2. DIBUJAR EL MENÚ DE PAUSA (Si está pausado)
-	if (juego_pausado)
-	{
-		// Este menú SI queremos que bloquee el juego y se centre
-		ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-
-		if (ImGui::Begin("Menu Pausa", &juego_pausado, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
-		{
-			ImGui::Text("JUEGO PAUSADO");
-			ImGui::Separator();
-			ImGui::Spacing();
-
-			// Botón Continuar
-			if (ImGui::Button("Continuar", ImVec2(120, 0)))
+			cambiarEstiloBotones();
+			if (ImGui::Button("||", ImVec2(50, 50)))
 			{
-				juego_pausado = false;
+				juego_pausado = true;
 			}
-
-			// Botón Salir al Menú Principal
-			if (ImGui::Button("Salir al Menu", ImVec2(120, 0)))
-			{
-				juego_pausado = false;
-				show_jugar = false;
-				show_menu_inicio = true;
-				// Aquí deberías resetear el juego si es necesario
-			}
-
-			// Botón Salir del Programa
-			if (ImGui::Button("Salir del Juego", ImVec2(120, 0)))
-			{
-				salir = true;
-			}
+			regresarEstiloBotones();
 		}
 		ImGui::End();
 	}
 
+	// -----------------------------------------------------
+	// B) MENÚ DE PAUSA (PANTALLA COMPLETA)
+	// -----------------------------------------------------
+	if (juego_pausado)
+	{
+		// 1. Configurar ventana Fullscreen
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
+
+		// 2. FORZAR COLOR NEGRO DE FONDO (Importante porque usas tema Light)
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f)); // Negro puro
+
+		// 3. Definir Transparencia (Alpha 0.6 = 60% opaco)
+		ImGui::SetNextWindowBgAlpha(0.8f);
+
+		ImGuiWindowFlags pausaFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+
+		if (ImGui::Begin("Menu_Pausa_Fullscreen", &juego_pausado, pausaFlags))
+		{
+			// Estilos botones
+			cambiarEstiloBotones();
+			ImGui::SetWindowFontScale(1.5f);
+
+			// Título opcional
+			ImGui::SetCursorPosY(viewport->Size.y * 0.2f);
+
+			// --- BOTONES ---
+			ImVec2 btnSize = colocarBoton(0.5f, 0.40f);
+			if (ImGui::Button("Continuar", btnSize))
+			{
+				juego_pausado = false;
+			}
+
+			btnSize = colocarBoton(0.5f, 0.55f);
+			if (ImGui::Button("Menu Principal", btnSize))
+			{
+				juego_pausado = false;
+				show_jugar = false;
+				show_menu_inicio = true;
+			}
+
+			btnSize = colocarBoton(0.1f, 0.90f);
+			if (ImGui::Button("Salir Juego", btnSize))
+			{
+				salir = true;
+			}
+
+			ImGui::SetWindowFontScale(1.0f);
+			regresarEstiloBotones();
+		}
+		ImGui::End();
+
+		// IMPORTANTE: Sacar el color Negro de la pila de estilos
+		ImGui::PopStyleColor();
+	}
 }
 
 void menuAjustes()
 {
 	show_menu_inicio = false;
-	ImGui::Begin("Menu", &show_menu_ajustes);
+	ImGui::Begin("Menu Ajustes", &show_menu_ajustes);
 	if (ImGui::Button("Cerrar"))
 	{
 		show_menu_ajustes = false;
 		show_menu_inicio = true;
 	}
 	ImGui::End();
-
 }
+
 void menuCreditos()
 {
 	show_menu_inicio = false;
-	ImGui::Begin("Menu", &show_menu_creditos);
+	ImGui::Begin("Menu Creditos", &show_menu_creditos);
 	if (ImGui::Button("Cerrar"))
 	{
 		show_menu_creditos = false;
@@ -259,28 +235,28 @@ void menuCreditos()
 	ImGui::End();
 }
 
-// 3. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-/*{
-	//ventana incio 
-	
-	static float f = 0.0f;
-	static int counter = 0;
-	static float PV[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+void cambiarEstiloBotones()
+{
+	// a) Colores
+	// Botón Normal: Gris Acero / Plateado Oscuro
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.40f, 0.42f, 0.45f, 1.0f));
 
-	ImGui::Begin("Menu inicio");                          // Create a window called "Status Menu" and append into it.
+	// Botón Hover (Ratón encima): Plateado más brillante
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.55f, 0.57f, 0.60f, 1.0f));
 
-	ImGui::Text("Finestres EntornVGI:");               // Display some text (you can use a format strings too)
-	ImGui::SameLine();
-	ImGui::Checkbox("EntornVGI Window", &show_EntornVGI_window);
-	ImGui::Separator();
-	ImGui::Spacing();
+	// Botón Activo (Click): Gris oscuro (presión mecánica)
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.25f, 0.27f, 0.30f, 1.0f));
 
+	// Borde: Color COBRE (Naranja/Marrón metálico)
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.85f, 0.55f, 0.25f, 1.0f));
 
+	// b) Variables
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f); // Grosor del borde
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);   // Un ligero redondeo queda bien con metal
+}
 
-
-	ImGui::End();
-
-
-}*/
-//ImGui::OpenPopup();
-
+void regresarEstiloBotones()
+{
+	ImGui::PopStyleColor(4); // Sacamos los 4 colores
+	ImGui::PopStyleVar(2);   // Sacamos las 2 variables (Size y Rounding)
+}
