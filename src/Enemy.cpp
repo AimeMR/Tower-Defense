@@ -119,6 +119,7 @@ void Enemy::reachPathEnd()
 			translate(glm::vec3(m_pos.x, m_pos.y, 0.3));
 			break;
 		case Rapid:
+			translate(glm::vec3(m_pos.x, m_pos.y, 0.4f));
 			break;
 		case Tanc:
 			translate(glm::vec3(m_pos.x, m_pos.y, 0.22f));
@@ -127,13 +128,13 @@ void Enemy::reachPathEnd()
 			translate(glm::vec3(m_pos.x, m_pos.y, 0.5f));
 			break;
 		case Divisible: case DivisibleDIV:
+			translate(glm::vec3(m_pos.x, m_pos.y, 0.45f));
 			break;
 
 		default:
 			break;
 		}
 	}
-
 
 }
 
@@ -184,7 +185,28 @@ void Enemy::animate(float timer, float deltaTime)
 		break;
 
 	case Rapid:
+		m_bodyParts[0]->translate(glm::vec3(0, -0.33, -0.24));
+		m_bodyParts[1]->translate(glm::vec3(0, 0.54, -0.24));
+
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		m_bodyParts[0]->rotate(matriz_rotacion);
+		m_bodyParts[1]->rotate(matriz_rotacion);
+
+		if (m_pathType == Aceite)
+		{
+			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.0015f, m_pos.y, m_pos.z));
+			matriz_rotacionAceite = glm::rotate(glm::mat4(1.0f), sin(timer * 10.0f) * glm::radians(3.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			rotate(matriz_rotacionAceite); // Aplicar la rotación
+		}
+		else {
+			if (m_pathType == Baches)
+			{
+				translate(glm::vec3(m_pos.x, m_pos.y, 0.4 + abs(sin(timer * 10) * 0.1f)));
+			}
+		}
 		break;
+
 	case Tanc:
 		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -250,7 +272,58 @@ void Enemy::animate(float timer, float deltaTime)
 		}
 		break;
 
-	case Divisible: case DivisibleDIV:   
+	case Divisible:  
+		// Lado derecho
+		m_bodyParts[0]->translate(glm::vec3(-0.14, -0.2, -0.32));
+		m_bodyParts[1]->translate(glm::vec3(-0.14, 0.22, -0.32));
+
+		// Lado izquierdo
+		m_bodyParts[2]->translate(glm::vec3(0.14, -0.2, -0.32));
+		m_bodyParts[3]->translate(glm::vec3(0.14, 0.22, -0.32));
+		
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		m_bodyParts[0]->rotate(matriz_rotacion);
+		m_bodyParts[1]->rotate(matriz_rotacion);
+		m_bodyParts[2]->rotate(matriz_rotacion);
+		m_bodyParts[3]->rotate(matriz_rotacion);
+
+		if (m_pathType == Aceite)
+		{
+			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.0015f, m_pos.y, m_pos.z));
+			matriz_rotacionAceite = glm::rotate(glm::mat4(1.0f), sin(timer * 10.0f) * glm::radians(3.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			rotate(matriz_rotacionAceite); // Aplicar la rotación
+		}
+		else {
+			if (m_pathType == Baches)
+			{
+				translate(glm::vec3(m_pos.x, m_pos.y, 0.4 + abs(sin(timer * 10) * 0.1f)));
+			}
+		}	
+		break;
+
+	case DivisibleDIV:
+		m_bodyParts[0]->translate(glm::vec3(0, -0.18, -0.31));
+		m_bodyParts[1]->translate(glm::vec3(0, 0.24, -0.31));
+
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		m_bodyParts[0]->rotate(matriz_rotacion);
+		m_bodyParts[1]->rotate(matriz_rotacion);
+
+		if (m_pathType == Aceite)
+		{
+			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.0015f, m_pos.y, m_pos.z));
+			matriz_rotacionAceite = glm::rotate(glm::mat4(1.0f), sin(timer * 10.0f) * glm::radians(3.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			rotate(matriz_rotacionAceite); // Aplicar la rotación
+		}
+		else {
+			if (m_pathType == Baches)
+			{
+				translate(glm::vec3(m_pos.x, m_pos.y, 0.4 + abs(sin(timer * 10) * 0.1f)));
+			}
+		}
+
 		break;
 
 	default:
@@ -314,6 +387,9 @@ void Enemy::setStartPoint(glm::vec2 startPoint)
 	case Basic:
 		z = 0.3f;
 		break;
+	case Rapid:
+		z = 0.4f;
+		break;
 	case Volador:
 		z = 1.25;
 		break;
@@ -322,6 +398,9 @@ void Enemy::setStartPoint(glm::vec2 startPoint)
 		break;
 	case Accelerador: case AcceleradorACT:
 		z = 0.5f;
+		break;
+	case Divisible: case DivisibleDIV:
+		z = 0.45f;
 		break;
 	default:
 		z = 0.3f;

@@ -335,6 +335,8 @@ void setUpPath()
 	createPath(glm::vec2(-7.5, 1.5));
 	createPath(glm::vec2(-20, 1.75));
 	createPath(glm::vec2(-20.5, 1.75));
+	
+
 }
 
 void destroyObject(GameObject* obj)
@@ -722,7 +724,7 @@ int main(void)
 	
 
 	setUpPath();
-	spawnEnemy(Volador); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
+	spawnEnemy(Rapid); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
 
 
 
