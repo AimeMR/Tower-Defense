@@ -766,6 +766,10 @@ int main(void)
 		en->kill();
 		destroyEnemies(en);
 	}
+
+	for (Turret* tu : turrets)
+		delete tu;
+			
 		
 
 	// Entorn VGI.ImGui: Cleanup ImGui

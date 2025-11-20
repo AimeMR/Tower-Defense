@@ -40,6 +40,7 @@
     <ClCompile Include="..\src\pickingObjects.cpp" />
     <ClCompile Include="..\src\player.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
+    <ClCompile Include="..\src\Turret.cpp" />
     <ClCompile Include="..\src\visualitzacio.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +70,7 @@
     <ClInclude Include="..\src\quatern.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\stdafx.h" />
+    <ClInclude Include="..\src\Turret.h" />
     <ClInclude Include="..\src\visualitzacio.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

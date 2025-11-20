@@ -56,15 +56,25 @@ void Enemy::setUpEnemyStats(float difficulty)
 	m_reward = (int)((float)m_weight * difficulty * 100.0f);
 }
 
+//Función auxiliar rotación
+float normalizeAngle(float a) {
+	a = fmod(a, 2.0f * PI);
+	if (a <= -PI) a += 2.0f * PI;
+	else if (a > PI) a -= 2.0f * PI;
+	return a;
+}
+
 void Enemy::move(float deltaTime, float timer)
 {
 	if (!m_alive || !m_target) return;
 	
 	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * m_speed * deltaTime;
+
+	TrackPathProgress();
 	
 	//Rotar
-	float targetAngle = atan2(m_dir.y, m_dir.x) - glm::half_pi<float>();
-	m_rotation = m_rotation + (fmod(targetAngle - m_rotation + PI, 2.0f * PI) - PI) * 5.0f * deltaTime;
+	float angleDiff = normalizeAngle(atan2(m_dir.y, m_dir.x) - glm::half_pi<float>() - m_rotation);
+	m_rotation = normalizeAngle(m_rotation + angleDiff * 7.5f * deltaTime);
 	m_rot = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0, 0, 1));
 
 	animate(timer, deltaTime);
@@ -94,6 +104,7 @@ void Enemy::reachPathEnd()
 {
 	m_prevTargetPos = m_targetPos;
 	m_target = m_target->getNextPath();
+	m_nSegments ++;
 
 	if (m_target == nullptr) 
 	{
@@ -136,6 +147,16 @@ void Enemy::reachPathEnd()
 
 
 }
+
+void Enemy::TrackPathProgress() 
+{
+	glm::vec2 AB = m_targetPos - m_prevTargetPos;	
+	glm::vec2 AP = glm::vec2(m_pos.x, m_pos.y) - m_prevTargetPos;
+
+	m_segmentProgress = glm::clamp(glm::dot(AP, AB) / glm::dot(AB, AB), 0.0f, 1.0f);
+	fprintf(stderr, "Progress: %.3f\n", (float)m_nSegments + m_segmentProgress);
+}
+
 
 void Enemy::animate(float timer, float deltaTime)
 {
@@ -237,27 +258,28 @@ void Enemy::takeDamage(float damage)
 
 void Enemy::die() 
 {
-	switch (m_type) {
-	case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
-		//Pagar al jugador reward
-		//Explota
-		break;
-	case Accelerador:
-		//No paguem
-		m_health = m_baseHealth;
-		m_defSpeed *= 1.5f;
-		m_speed = m_defSpeed * m_target->getSpeedMultiplier();
-		m_damage = 1;
-		m_type = 6;
-		return;
-	case Divisible:
-		//No paguem
-		//Explota
-		//Creem 2 enemics 7 a la seva posició actual amb la seva direcció actual
-		break;
-	default:
-		break;
-	}
+	if (m_target)
+		switch (m_type) {
+		case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
+			//Pagar al jugador reward
+			//Explota
+			break;
+		case Accelerador:
+			//No paguem
+			m_health = m_baseHealth;
+			m_defSpeed *= 1.5f;
+			m_speed = m_defSpeed * m_target->getSpeedMultiplier();
+			m_damage = 1;
+			m_type = 6;
+			return;
+		case Divisible:
+			//No paguem
+			//Explota
+			//Creem 2 enemics 7 a la seva posició actual amb la seva direcció actual
+			break;
+		default:
+			break;
+		}
 
 	m_alive = false;
 }
