@@ -124,9 +124,8 @@ void InitGL()
 
 	createObject(mm.getMapa());
 
-	mainCamara = Camara();
+	mainCamara = Camara(w,h);
 	distancia = 25;
-	mainCamara.UpdateWindow(w, h);
 	yawCamera = -135;
 	pitchCamera = 45; //eje arriba
 	sensibilidad = 0.5;
@@ -489,7 +488,7 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	case GLFW_KEY_D:
 		for (Enemy* e : enemies)
 			e->takeDamage(0.25f);
-		break;
+		break;	
 	default:
 		break;
 	}

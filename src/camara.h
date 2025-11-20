@@ -6,6 +6,7 @@
 class Camara {
 public:
 	Camara();
+	Camara(int width, int height);
 	void UpdateWindow(int width, int height) { m_w = width; m_h = height; }
 
 	void translate(glm::vec3 pos) { m_position = pos; }
