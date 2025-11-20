@@ -6,6 +6,7 @@ extern bool show_menu_inicio;
 extern bool show_menu_ajustes;
 extern bool show_jugar;
 extern bool show_menu_creditos;
+extern bool juego_pausado;
 
 void menu(bool& salir);
 void iniciarPartida(bool& salir);
@@ -14,4 +15,6 @@ void menuCreditos();
 
 void cambiarEstiloBotones();
 void regresarEstiloBotones();
-ImVec2 centrarBotonMenu(float porX, float porY);
+ImVec2 colocarBoton(float porX, float porY);
+
+

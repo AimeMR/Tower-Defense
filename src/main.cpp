@@ -7,6 +7,9 @@
 
 
 // Entorn VGI.ImGui: Includes llibreria ImGui
+//#define STB_IMAGE_IMPLEMENTATION  // <--- ESTO ES VITAL
+//#include "stb_image.h"
+
 #include "ImGui\imgui.h"
 #include "ImGui\imgui_impl_glfw.h"
 #include "ImGui\imgui_impl_opengl3.h"
@@ -712,14 +715,15 @@ int main(void)
 
 
 
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window) and !salir)
     {  
 		now = glfwGetTime();
 		delta = now - previous;
 		previous = now;
 		deltaTime = delta;
 
-		frameTimer += deltaTime;
+		// --- ERROR EN TU CÓDIGO ORIGINAL ---
+		// frameTimer += deltaTime;  <-- BORRA ESTO DE AQUÍ (si lo dejas, el tiempo avanza aunque estés en pausa)
 
 		// Poll for and process events
 		glfwPollEvents();
@@ -727,10 +731,14 @@ int main(void)
 		// Draws the UI
 		menu(salir);
 
-		// Update transforms and objects
-		Update(frameTimer, deltaTime);
+		// SOLO ACTUALIZAMOS SI NO ESTÁ PAUSADO
+		if (!juego_pausado && show_jugar)
+		{
+			Update(frameTimer, deltaTime);
 
-
+			// Aumentamos el timer SOLO si el juego está corriendo
+			frameTimer += deltaTime;
+		}
 
 		po.renderPicking();
 		

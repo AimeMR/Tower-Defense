@@ -237,27 +237,28 @@ void Enemy::takeDamage(float damage)
 
 void Enemy::die() 
 {
-	switch (m_type) {
-	case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
-		//Pagar al jugador reward
-		//Explota
-		break;
-	case Accelerador:
-		//No paguem
-		m_health = m_baseHealth;
-		m_defSpeed *= 1.5f;
-		m_speed = m_defSpeed * m_target->getSpeedMultiplier();
-		m_damage = 1;
-		m_type = 6;
-		return;
-	case Divisible:
-		//No paguem
-		//Explota
-		//Creem 2 enemics 7 a la seva posició actual amb la seva direcció actual
-		break;
-	default:
-		break;
-	}
+	if(m_target)
+		switch (m_type) {
+		case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
+			//Pagar al jugador reward
+			//Explota
+			break;
+		case Accelerador:
+			//No paguem
+			m_health = m_baseHealth;
+			m_defSpeed *= 1.5f;
+			m_speed = m_defSpeed * m_target->getSpeedMultiplier();
+			m_damage = 1;
+			m_type = 6;
+			return;
+		case Divisible:
+			//No paguem
+			//Explota
+			//Creem 2 enemics 7 a la seva posició actual amb la seva direcció actual
+			break;
+		default:
+			break;
+		}
 
 	m_alive = false;
 }
