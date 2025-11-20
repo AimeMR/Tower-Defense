@@ -15,8 +15,12 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport);
 void menuAjustes();
 void menuCreditos();
 
+void aplicarEfectoBrillo();
 void cambiarEstiloBotones();
 void regresarEstiloBotones();
 ImVec2 colocarBoton(float porX, float porY);
+void cambiarEstiloSlider();
+void regresarEstiloSlider();
+
 
 
