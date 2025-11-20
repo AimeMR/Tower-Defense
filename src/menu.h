@@ -8,8 +8,10 @@ extern bool show_jugar;
 extern bool show_menu_creditos;
 extern bool juego_pausado;
 
+
 void menu(bool& salir);
 void iniciarPartida(bool& salir);
+void menuPausa(bool& salir, const ImGuiViewport* viewport);
 void menuAjustes();
 void menuCreditos();
 

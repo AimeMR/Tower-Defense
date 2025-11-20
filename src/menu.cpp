@@ -17,23 +17,25 @@ bool show_jugar = false;
 bool show_menu_creditos = false;
 bool juego_pausado = false;
 
+
+
 //--------------------- A PARTIR D'AQUÍ EL NOSTRE CODI ---------------------
 void menu(bool& salir)
 {
-	// Inicializa frame
+	// Inicializa frame de ImGui
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	// Obtenemos viewport para posicionar ventanas
+	// Obtenemos viewport para posicionar ventana
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	// =========================================================
-	// 1. MENÚ DE INICIO (Pantalla Completa)
+	// MENÚ DE INICIO (Pantalla Completa)
 	// =========================================================
 	if (show_menu_inicio)
 	{
-		// Configuración ventana fullscreen
+		// Configuración ventana fullscreen transparente
 		ImGui::SetNextWindowPos(viewport->Pos);
 		ImGui::SetNextWindowSize(viewport->Size);
 
@@ -41,7 +43,7 @@ void menu(bool& salir)
 
 		if (ImGui::Begin("Menu_Principal_Fullscreen", &show_menu_inicio, flags))
 		{
-			// Aplicamos estilos y fuente grande
+			// Aplicamos estilos y fuente 
 			cambiarEstiloBotones();
 			ImGui::SetWindowFontScale(1.5f);
 
@@ -78,26 +80,29 @@ void menu(bool& salir)
 				salir = true;
 			}
 
-			// Restauramos estilos y fuente
+			// Restauramos estilos y fuente normal
 			ImGui::SetWindowFontScale(1.0f);
 			regresarEstiloBotones();
 		}
 		ImGui::End();
 	}
 	// =========================================================
-	// 2. JUEGO (HUD + PAUSA)
+	// ESTADO DE JUEGO (HUD + PAUSA)
 	// =========================================================
 	else if (show_jugar)
 	{
 		iniciarPartida(salir);
 	}
 	// =========================================================
-	// 3. OTROS MENÚS
+	// MENU AJUSTES
 	// =========================================================
 	else if (show_menu_ajustes)
 	{
 		menuAjustes();
 	}
+	// =========================================================
+	// CREDITOS
+	// =========================================================
 	else if (show_menu_creditos)
 	{
 		menuCreditos();
@@ -106,20 +111,20 @@ void menu(bool& salir)
 	ImGui::Render();
 }
 
-// Función auxiliar para posicionar botones centrados en porcentaje
+// Posicionar botones centrados en porcentaje relativo a la ventana
 ImVec2 colocarBoton(float porX, float porY)
 {
-	// 1. Definir tamaño del botón
+	// Tamaño del botón
 	ImVec2 button_size(200, 50);
 
-	// 2. Obtener tamaño de la ventana actual
+	// Obtener tamaño de la ventana actual
 	ImVec2 window_size = ImGui::GetWindowSize();
 
-	// 3. Calcular posición ABSOLUTA
+	// Calcular posición absoluta
 	float posX = (window_size.x * porX) - (button_size.x * 0.5f);
 	float posY = (window_size.y * porY) - (button_size.y * 0.5f);
 
-	// 4. FORZAR la posición del cursor
+	// Posición del cursor
 	ImGui::SetCursorPos(ImVec2(posX, posY));
 
 	return button_size;
@@ -130,16 +135,18 @@ void iniciarPartida(bool& salir)
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	// -----------------------------------------------------
-	// A) HUD (Botón Pausa) - Solo visible si NO está pausado
+	// HUD (Botón Pausa)
+	// Solo visible si NO está pausado para no superponerse
 	// -----------------------------------------------------
 	if (!juego_pausado)
 	{
 		ImGuiWindowFlags hudFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBackground;
 		float padding = 10.0f;
 
+		// Posicionamiento esquina superior derecha
 		ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->WorkSize.x - 60.0f - padding, viewport->WorkPos.y + padding), ImGuiCond_Always);
 
-		// Fondo totalmente invisible (Alpha 0)
+		// Fondo invisible
 		ImGui::SetNextWindowBgAlpha(0.0f);
 
 		if (ImGui::Begin("HudPausa", NULL, hudFlags))
@@ -154,61 +161,65 @@ void iniciarPartida(bool& salir)
 		ImGui::End();
 	}
 
-	// -----------------------------------------------------
-	// B) MENÚ DE PAUSA (PANTALLA COMPLETA)
-	// -----------------------------------------------------
 	if (juego_pausado)
 	{
-		// 1. Configurar ventana Fullscreen
-		ImGui::SetNextWindowPos(viewport->Pos);
-		ImGui::SetNextWindowSize(viewport->Size);
-
-		// 2. FORZAR COLOR NEGRO DE FONDO (Importante porque usas tema Light)
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f)); // Negro puro
-
-		// 3. Definir Transparencia (Alpha 0.6 = 60% opaco)
-		ImGui::SetNextWindowBgAlpha(0.8f);
-
-		ImGuiWindowFlags pausaFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
-
-		if (ImGui::Begin("Menu_Pausa_Fullscreen", &juego_pausado, pausaFlags))
-		{
-			// Estilos botones
-			cambiarEstiloBotones();
-			ImGui::SetWindowFontScale(1.5f);
-
-			// Título opcional
-			ImGui::SetCursorPosY(viewport->Size.y * 0.2f);
-
-			// --- BOTONES ---
-			ImVec2 btnSize = colocarBoton(0.5f, 0.40f);
-			if (ImGui::Button("Continuar", btnSize))
-			{
-				juego_pausado = false;
-			}
-
-			btnSize = colocarBoton(0.5f, 0.55f);
-			if (ImGui::Button("Menu Principal", btnSize))
-			{
-				juego_pausado = false;
-				show_jugar = false;
-				show_menu_inicio = true;
-			}
-
-			btnSize = colocarBoton(0.1f, 0.90f);
-			if (ImGui::Button("Salir Juego", btnSize))
-			{
-				salir = true;
-			}
-
-			ImGui::SetWindowFontScale(1.0f);
-			regresarEstiloBotones();
-		}
-		ImGui::End();
-
-		// IMPORTANTE: Sacar el color Negro de la pila de estilos
-		ImGui::PopStyleColor();
+		menuPausa(salir, viewport);
 	}
+}
+
+void menuPausa(bool& salir, const ImGuiViewport* viewport)
+{
+	// Configuración ventana Fullscreen
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+
+	// Fondo negro menu
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+	// Transparencia del fondo (0.8 = bastante opaco)
+	ImGui::SetNextWindowBgAlpha(0.8f);
+
+	ImGuiWindowFlags pausaFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+
+	if (ImGui::Begin("Menu_Pausa_Fullscreen", &juego_pausado, pausaFlags))
+	{
+		// Establece estilos de botones personalizados
+		cambiarEstiloBotones();
+		ImGui::SetWindowFontScale(1.5f);
+
+		// Ajuste vertical para el contenido
+		ImGui::SetCursorPosY(viewport->Size.y * 0.2f);
+
+		// --- BOTONES DEL MENÚ DE PAUSA ---
+
+		ImVec2 btnSize = colocarBoton(0.5f, 0.40f);
+		if (ImGui::Button("Continuar", btnSize))
+		{
+			juego_pausado = false;
+		}
+
+		btnSize = colocarBoton(0.5f, 0.55f);
+		if (ImGui::Button("Menu Principal", btnSize))
+		{
+			juego_pausado = false;
+			show_jugar = false;
+			show_menu_inicio = true;
+		}
+
+		btnSize = colocarBoton(0.1f, 0.90f);
+		if (ImGui::Button("Salir Juego", btnSize))
+		{
+			salir = true;
+		}
+
+		// Devuelve estilo original a la fuente y botones
+		ImGui::SetWindowFontScale(1.0f);
+		regresarEstiloBotones();
+	}
+	ImGui::End();
+
+	//Quita el fondo de color negro y deja el pre-establecido (claro)
+	ImGui::PopStyleColor();
 }
 
 void menuAjustes()
@@ -235,28 +246,35 @@ void menuCreditos()
 	ImGui::End();
 }
 
+
+//////////////////////////////////////////////////////////////////
+//					Funciones de diseño							//
+//////////////////////////////////////////////////////////////////
+
 void cambiarEstiloBotones()
 {
-	// a) Colores
-	// Botón Normal: Gris Acero / Plateado Oscuro
+	// --- COLORES ---
+
+	// Botón Normal: Plateado Oscuro
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.40f, 0.42f, 0.45f, 1.0f));
-
-	// Botón Hover (Ratón encima): Plateado más brillante
+	// Botón Hover (Ratón encima): Plateado más claro
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.55f, 0.57f, 0.60f, 1.0f));
-
-	// Botón Activo (Click): Gris oscuro (presión mecánica)
+	// Botón Activo (Click): Gris oscuro 
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.25f, 0.27f, 0.30f, 1.0f));
-
-	// Borde: Color COBRE (Naranja/Marrón metálico)
+	// Borde: Color cobre 
 	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.85f, 0.55f, 0.25f, 1.0f));
 
-	// b) Variables
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f); // Grosor del borde
-	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);   // Un ligero redondeo queda bien con metal
+	// --- VARIABLES ---
+	// Grosor del borde
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 4.0f);
+	// Redondeo de esquinas
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 }
 
 void regresarEstiloBotones()
 {
-	ImGui::PopStyleColor(4); // Sacamos los 4 colores
-	ImGui::PopStyleVar(2);   // Sacamos las 2 variables (Size y Rounding)
+	// Sacamos los 4 colores empujados
+	ImGui::PopStyleColor(4);
+	// Sacamos las 2 variables empujadas
+	ImGui::PopStyleVar(2);
 }
