@@ -95,12 +95,13 @@ void Enemy::reachPathEnd()
 	m_prevTargetPos = m_targetPos;
 	m_target = m_target->getNextPath();
 
+	
 	if (m_target == nullptr) 
 	{
 		//Restar vida al jugador
 		//Explota
 		//Eliminar enemigo
-		die();
+		
 		return;
 	}
 
@@ -120,8 +121,7 @@ void Enemy::reachPathEnd()
 		case Rapid:
 			break;
 		case Tanc:
-			break;
-		case Volador:
+			translate(glm::vec3(m_pos.x, m_pos.y, 0.22f));
 			break;
 		case Accelerador:
 			translate(glm::vec3(m_pos.x, m_pos.y, 0.5f));
@@ -140,13 +140,11 @@ void Enemy::reachPathEnd()
 void Enemy::animate(float timer, float deltaTime)
 {
 	//De moment farem una animació per cada enemic, però podem crear variants pels líquids o terres trencats
-	glm::mat4 matriz_rotacion, matriz_rotacion_180, matriz_rotacion_rueda;
+	glm::mat4 matriz_rotacion, matriz_rotacionAceite, MatrizCuerpo;
 
 	switch (m_type) {
-		translate(glm::vec3(m_pos.x, m_pos.y, 0.3));
-
-		matriz_rotacion_180 = glm::rotate(glm::mat4(1.0f), radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		matriz_rotacion_rueda = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+	case Basic:
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		// --- GRUPO IZQUIERDO (Piezas 0, 1, 2)
 		// No necesitan la rotación de 180 grados (están mirando hacia adelante por defecto)
@@ -155,12 +153,11 @@ void Enemy::animate(float timer, float deltaTime)
 		m_bodyParts[2]->translate(glm::vec3(-0.18, 0.004, -0.119));
 
 		// Aplicar la rotación continua (rueda)
-		m_bodyParts[0]->rotate(matriz_rotacion_rueda);
-		m_bodyParts[1]->rotate(matriz_rotacion_rueda);
-		m_bodyParts[2]->rotate(matriz_rotacion_rueda);
+		m_bodyParts[0]->rotate(matriz_rotacion);
+		m_bodyParts[1]->rotate(matriz_rotacion);
+		m_bodyParts[2]->rotate(matriz_rotacion);
 
 		// --- GRUPO DERECHO (Piezas 3, 4, 5)
-		// Necesitan la rotación de 180 grados (para que "miren" a la izquierda, si el modelo está orientado al revés)
 
 		// 1. Posicionar
 		m_bodyParts[3]->translate(glm::vec3(0.18, -0.07, -0.25));
@@ -168,15 +165,15 @@ void Enemy::animate(float timer, float deltaTime)
 		m_bodyParts[5]->translate(glm::vec3(0.18, 0.004, -0.12));
 
 		// 3. Aplicar la rotación continua (rueda)
-		m_bodyParts[3]->rotate(matriz_rotacion_rueda);
-		m_bodyParts[4]->rotate(matriz_rotacion_rueda);
-		m_bodyParts[5]->rotate(matriz_rotacion_rueda);
+		m_bodyParts[3]->rotate(matriz_rotacion);
+		m_bodyParts[4]->rotate(matriz_rotacion);
+		m_bodyParts[5]->rotate(matriz_rotacion);
 
 		if (m_pathType == Aceite)
 		{
 			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.0015f, m_pos.y, m_pos.z));
-			glm::mat4 matriz_rotacionAceite1 = glm::rotate(glm::mat4(1.0f), sin(timer * 10.0f) * glm::radians(3.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			rotate(matriz_rotacionAceite1); // Aplicar la rotación
+			matriz_rotacionAceite = glm::rotate(glm::mat4(1.0f), sin(timer * 10.0f) * glm::radians(3.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			rotate(matriz_rotacionAceite); // Aplicar la rotación
 		}
 		else {
 			if (m_pathType == Baches)
@@ -184,20 +181,59 @@ void Enemy::animate(float timer, float deltaTime)
 				translate(glm::vec3(m_pos.x, m_pos.y, 0.3 + abs(sin(timer * 10) * 0.1f)));
 			}
 		}
-		
-
-
-		m_bodyParts[0]->translate(glm::vec3(-0.17, -0.07, -0.25));
-		m_bodyParts[1]->translate(glm::vec3(-0.17, 0.07, -0.25));
 		break;
+
 	case Rapid:
 		break;
 	case Tanc:
-		break;
-	case Volador:
-		break;
-	case Accelerador: case AcceleradorACT:
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
+		// --- GRUPO IZQUIERDO (Piezas 0, 1)
+		// No necesitan la rotación de 180 grados (están mirando hacia adelante por defecto)
+		m_bodyParts[0]->scale(glm::vec3(1.8, 1.8, 1.8));
+		m_bodyParts[0]->translate(glm::vec3(-0.35, 0.5, -0.12));
+		m_bodyParts[1]->scale(glm::vec3(3, 3, 3));
+		m_bodyParts[1]->translate(glm::vec3(-0.35, -0.18, 0));
+		// Aplicar la rotación continua (rueda)
+		m_bodyParts[0]->rotate(matriz_rotacion);
+		m_bodyParts[1]->rotate(matriz_rotacion);
+		// --- GRUPO DERECHO (Piezas 3, 4)
+		// 1. Posicionar
+		m_bodyParts[2]->scale(glm::vec3(1.8, 1.8, 1.8));
+		m_bodyParts[2]->translate(glm::vec3(0.35, 0.5, -0.12));
+		m_bodyParts[3]->scale(glm::vec3(3, 3, 3));
+		m_bodyParts[3]->translate(glm::vec3(0.35, -0.18, 0));
+		// 3. Aplicar la rotación continua (rueda)
+		m_bodyParts[2]->rotate(matriz_rotacion);
+		m_bodyParts[3]->rotate(matriz_rotacion);
+		if (m_pathType == Aceite)
+		{
+			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.0015f, m_pos.y, m_pos.z));
+			matriz_rotacionAceite = glm::rotate(glm::mat4(1.0f), sin(timer * 10.0f) * glm::radians(3.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			rotate(matriz_rotacionAceite); // Aplicar la rotación
+		}
+		break;
+
+	case Volador:
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -2.0f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(0.0f, 0.0f, 1.0f));
+
+		m_bodyParts[0]->translate(glm::vec3(-0.4, -0.55, 0.05)); 
+		m_bodyParts[1]->translate(glm::vec3(-0.35, 0.5, 0.05));  
+ 		m_bodyParts[2]->translate(glm::vec3(0.37, -0.55, 0.05));  
+		m_bodyParts[3]->translate(glm::vec3(0.37, 0.5, 0.05)); 
+
+		m_bodyParts[0]->rotate(matriz_rotacion);
+		m_bodyParts[1]->rotate(matriz_rotacion);
+		m_bodyParts[2]->rotate(matriz_rotacion);
+		m_bodyParts[3]->rotate(matriz_rotacion);
+
+		//MatrizCuerpo = glm::rotate(glm::mat4(1.0f), sin(timer * 10.0f) * glm::radians(10.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		//rotate(MatrizCuerpo);
+		translate(glm::vec3(m_pos.x, m_pos.y, m_pos.z + sin(timer * 2.5) * 0.0025f));
+
+		break;
+
+	case Accelerador: case AcceleradorACT:
 		// Crear y aplicar la matriz de rotación
 		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 		m_bodyParts[0]->rotate(matriz_rotacion); // Aplicar la rotación
@@ -205,8 +241,8 @@ void Enemy::animate(float timer, float deltaTime)
 		if (m_pathType == Aceite) 
 		{
 			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.0025f, m_pos.y, m_pos.z));
-			glm::mat4 matriz_rotacionAceite1 = glm::rotate(glm::mat4(1.0f),sin(timer * 10.0f) * glm::radians(5.0f),glm::vec3(0.0f, 1.0f, 0.0f) );
-			rotate(matriz_rotacionAceite1); // Aplicar la rotación
+			matriz_rotacionAceite = glm::rotate(glm::mat4(1.0f),sin(timer * 10.0f) * glm::radians(5.0f),glm::vec3(0.0f, 1.0f, 0.0f) );
+			rotate(matriz_rotacionAceite); // Aplicar la rotación
 		}
 		else if(m_pathType == Baches)
 		{
@@ -276,9 +312,16 @@ void Enemy::setStartPoint(glm::vec2 startPoint)
 	float z;
 	switch (m_type) {
 	case Basic:
-		z = 1.0f;
+		z = 0.3f;
+		break;
+	case Volador:
+		z = 1.25;
+		break;
+	case Tanc:
+		z = 0.22f;
+		break;
 	case Accelerador: case AcceleradorACT:
-		z = 1.0f;
+		z = 0.5f;
 		break;
 	default:
 		z = 0.3f;

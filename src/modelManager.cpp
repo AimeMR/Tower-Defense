@@ -29,7 +29,7 @@ void modelManager::initialSetup()
 	m_modelMapa = loadModel("Mapas\\MAPAFINAL.obj");
 
 	//Setup Enemics, modelos en intérvalos [x, y] incluídos
-	//Enemic1 [0,6]
+	//Basic [0,6]
 	m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoINMOVIL.obj")); //Cuerpo
 	for (int i = 0; i < 3;i++) {
 		m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoMOVIL.obj")); //Rueda
@@ -37,9 +37,23 @@ void modelManager::initialSetup()
 	for (int i = 0; i < 3; i++) {
 		m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoMOVIL2.obj")); //Rueda
 	}
-	
 
-	//Enemic2, [7,8]
+	//Tanc [7,11]
+	m_modelsEnemics.push_back(loadModel("Enemigos\\TanqueINMOVIL.obj")); //Cuerpo
+	for (int i = 0; i < 2; i++) {
+		m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoMOVIL.obj")); //Rueda
+	}
+	for (int i = 0; i < 2; i++) {
+		m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoMOVIL2.obj")); //Rueda
+	}
+
+	// Volador [12,16]
+	m_modelsEnemics.push_back(loadModel("Enemigos\\VoladorINMOVIL.obj")); //Cuerpo
+	for (int i = 0; i < 4; i++) {
+		m_modelsEnemics.push_back(loadModel("Enemigos\\VoladorMOVIL.obj")); //Rueda
+	}
+
+	//Accelerador/corredor, [17,18]
 	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorINMOVIL.obj")); //Cuerpo
 	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorMOVIL.obj")); //Rueda
 }
@@ -72,13 +86,13 @@ std::vector<COBJModel*> modelManager::getEnemy(int type)
 	case Basic:
 		return getModelRange(m_modelsEnemics, 0, 6);  // Carga las piezas 0... hasta la 1
 	case Rapid:
-		return getModelRange(m_modelsEnemics, 0, 1);  // Carga las piezas 0... hasta la 1
+		break;
 	case Tanc:
-		break;
+		return getModelRange(m_modelsEnemics, 7, 11);  // Carga las piezas 0... hasta la 1
 	case Volador:
-		break;
+		return getModelRange(m_modelsEnemics, 12, 16);  // Carga las piezas 0... hasta la 1
 	case Accelerador:
-		return getModelRange(m_modelsEnemics, 7,8);  // Carga las piezas 0... hasta la 1
+		return getModelRange(m_modelsEnemics, 17,18);  // Carga las piezas 0... hasta la 1
 	case Divisible:
 		break;
 	case AcceleradorACT:

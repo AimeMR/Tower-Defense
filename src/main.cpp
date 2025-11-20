@@ -240,8 +240,13 @@ Enemy* spawnEnemy(int type)
 	newEnemy->setStartPoint(start->getPos());
 
 	// target = siguiente nodo si existe, sino mismo
-	start = start->getNextPath() ? start->getNextPath() : nullptr;
-	newEnemy->setTarget(start);
+	if (type == 3) 	newEnemy->setTarget(path[path.size() - 2]);
+	else
+	{
+		start = start->getNextPath() ? start->getNextPath() : nullptr;
+		newEnemy->setTarget(start);
+	}
+
 	newEnemy->startMoving();
 
 	return newEnemy;
@@ -298,26 +303,39 @@ Path* createPath(glm::vec2 pos, float speedMultiplier = 1.0f, int tipo = 0)
 
 void setUpPath() 
 {
+
 	createPath(glm::vec2(10, 0.5));
 	createPath(glm::vec2(5, 0.5));
 	createPath(glm::vec2(5, -4));
 	createPath(glm::vec2(0.9, -4)); 
-	createPath(glm::vec2(0.9, 4.5), 1.25, Aceite); // CAMINO ACEITE
+	createPath(glm::vec2(0.9, -3.5));
+
+	
+	createPath(glm::vec2(0.9, 4), 1.25, Aceite); // CAMINO ACEITE
+	createPath(glm::vec2(0.9, 4.5)); 
+
 	createPath(glm::vec2(8.25, 4.75));
 	createPath(glm::vec2(8.25, 8.75));
-	createPath(glm::vec2(-3.35, 8.75), 0.75, Nuclear);  // CAMINO NUCLEAR
+
+	createPath(glm::vec2(8, 8.75));
+	createPath(glm::vec2(-3, 8.75), 0.75, Nuclear);  // CAMINO NUCLEAR
+	createPath(glm::vec2(-3.25, 8.75));
 
 	//////////////////////
 	createPath(glm::vec2(-3.35, 4.75));
-	createPath(glm::vec2(-3.35, -3.0), 0.75, Baches);  // CAMINO bachesssssss
+	createPath(glm::vec2(-3.35, -3.0), 0.75, Baches);  // CAMINO BACHES
 	createPath(glm::vec2(-3.35, -6.75));
 	//////////////////////
 
 	createPath(glm::vec2(-14.75, -6.75));
 	createPath(glm::vec2(-14.75, -2.5));
+
+	createPath(glm::vec2(-14, -2.5)); 
 	createPath(glm::vec2(-7.5, -2.5), 1.25, Aceite); // CAMINO ACEITE
-	createPath(glm::vec2(-7.5, 1.5)); 
-	createPath(glm::vec2(-20, 1.5));
+
+	createPath(glm::vec2(-7.5, 1.5));
+	createPath(glm::vec2(-20, 1.75));
+	createPath(glm::vec2(-20.5, 1.75));
 }
 
 void destroyObject(GameObject* obj)
@@ -702,8 +720,10 @@ int main(void)
 		}
 	}
 
+	
+
 	setUpPath();
-	spawnEnemy(Accelerador); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
+	spawnEnemy(Volador); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
 
 
 
