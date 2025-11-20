@@ -56,13 +56,12 @@ void menu(bool& salir)
 		ImGui::SetNextWindowPos(viewport->Pos);
 		ImGui::SetNextWindowSize(viewport->Size);
 
-		// AQUI ESTABA EL PROBLEMA: Faltaba NoResize y NoScrollbar
 		static ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground |
 			ImGuiWindowFlags_NoTitleBar |
 			ImGuiWindowFlags_NoMove |
-			ImGuiWindowFlags_NoResize |      // <--- QUITA LA PESTAÑA DE TAMAÑO
-			ImGuiWindowFlags_NoScrollbar |   // <--- QUITA BARRAS DE SCROLL
-			ImGuiWindowFlags_NoCollapse |    // <--- EVITA COLAPSAR
+			ImGuiWindowFlags_NoResize |      
+			ImGuiWindowFlags_NoScrollbar |   
+			ImGuiWindowFlags_NoCollapse |    
 			ImGuiWindowFlags_NoSavedSettings;
 
 		if (ImGui::Begin("Menu_Principal_Fullscreen", &show_menu_inicio, flags))
@@ -144,14 +143,14 @@ void iniciarPartida(bool& salir)
 	// -----------------------------------------------------
 	if (!juego_pausado)
 	{
-		// Flags para el HUD (Aseguramos NoResize aquí también)
+		// Flags para el HUD
 		ImGuiWindowFlags hudFlags = ImGuiWindowFlags_NoDecoration |
 			ImGuiWindowFlags_AlwaysAutoResize |
 			ImGuiWindowFlags_NoSavedSettings |
 			ImGuiWindowFlags_NoFocusOnAppearing |
 			ImGuiWindowFlags_NoNav |
 			ImGuiWindowFlags_NoBackground |
-			ImGuiWindowFlags_NoResize; // <--- Seguridad extra
+			ImGuiWindowFlags_NoResize; 
 
 		float padding = 10.0f;
 
@@ -249,7 +248,6 @@ void menuAjustes()
 	// Transparencia del fondo
 	ImGui::SetNextWindowBgAlpha(0.0f);
 
-	// Usamos NoDecoration para asegurar que no haya pestañas de resize
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
 	if (ImGui::Begin("Menu_Ajustes_Fullscreen", &show_menu_ajustes, flags))
