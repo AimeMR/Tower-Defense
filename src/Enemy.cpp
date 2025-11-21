@@ -58,7 +58,8 @@ void Enemy::setUpEnemyStats(float difficulty)
 
 void Enemy::move(float deltaTime, float timer)
 {
-	if (!m_alive || !m_target) return;
+	dieAnimation(deltaTime);
+	if (!m_Move || !m_target) return;
 	
 	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * m_speed * deltaTime;
 	
@@ -74,6 +75,16 @@ void Enemy::move(float deltaTime, float timer)
 	if (glm::dot(relPos, m_bisector) >= 0.0f)
 		reachPathEnd();
 }
+
+void Enemy::dieAnimation(float deltatime) {
+	if (m_Move) return;
+	m_scale = glm::lerp(m_scale, glm::vec3(0.01f), 7.5f * deltatime);
+	
+	if (m_scale.x <= 0.1f)
+		m_alive = false;
+}
+
+
 
 void Enemy::startMoving() 
 {
@@ -344,20 +355,22 @@ void Enemy::takeDamage(float damage)
 	}
 }
 
-void Enemy::die() 
+void Enemy::die()
 {
 	switch (m_type) {
 	case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
-		//Pagar al jugador reward
+		//Pagar al jugador rewardS
 		//Explota
 		break;
 	case Accelerador:
+
 		//No paguem
 		m_health = m_baseHealth;
 		m_defSpeed *= 1.5f;
 		m_speed = m_defSpeed * m_target->getSpeedMultiplier();
 		m_damage = 1;
 		m_type = 6;
+		//Crear un nuevo enemigo ACCELERADORACT
 		return;
 	case Divisible:
 		//No paguem
@@ -367,8 +380,7 @@ void Enemy::die()
 	default:
 		break;
 	}
-
-	m_alive = false;
+	m_Move = false;
 }
 
 void Enemy::draw(GLuint shader)

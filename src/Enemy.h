@@ -47,6 +47,7 @@ public:
 	void setTarget(Path* path) { m_target = path; }
 	void setStartPoint(glm::vec2 startPoint);
 	void animate(float timer, float deltaTime);
+	void dieAnimation(float Deltatime);
 	void move(float deltaTime, float timer);
 	void reachPathEnd();
 	void takeDamage(float damage);
@@ -61,6 +62,7 @@ private:
 	float m_health, m_defSpeed, m_speed, m_baseHealth, m_maxOffset = 0.5f, m_rotation = 0.0f;
 	glm::vec2 m_dir, m_bisector, m_targetPos, m_prevTargetPos;
 	bool m_alive = true;
+	bool m_Move = true;
 
 	std::vector<GameObject*> m_bodyParts;
 

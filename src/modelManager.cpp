@@ -34,9 +34,9 @@ void modelManager::initialSetup()
 	
 	/////////////////////////////////////////////////////////////////// Basic [0,6] ///////////////////////////////////////////////////////////////////
 
-	m_modelsEnemics.push_back(loadModel("Enemigos\\BasicoINMOVIL.obj")); //Cuerpo
-	COBJModel* ruedaDer = loadModel("Enemigos\\BasicoMOVIL.obj");
-	COBJModel* ruedaIzq = loadModel("Enemigos\\BasicoMOVIL2.obj");
+	m_modelsEnemics.push_back(loadModel("Enemigos\\Basico.obj")); //Cuerpo
+	COBJModel* ruedaDer = loadModel("Enemigos\\RuedaDER.obj");
+	COBJModel* ruedaIzq = loadModel("Enemigos\\RuedaIZQ.obj");
 
 	for (int i = 0; i < 3;i++) {
 		m_modelsEnemics.push_back(ruedaDer); //Rueda
@@ -45,15 +45,15 @@ void modelManager::initialSetup()
 		m_modelsEnemics.push_back(ruedaIzq); //Rueda
 	}
 	/////////////////////////////////////////////////////////////////// Rapid [7,9] ///////////////////////////////////////////////////////////////////
-	COBJModel* ruedaTipo2 = loadModel("Enemigos\\RuedaTIPO2.obj");
+	COBJModel* ruedaTipo2 = loadModel("Enemigos\\Rueda.obj");
 
-	m_modelsEnemics.push_back(loadModel("Enemigos\\RapidoINMOVIL.obj")); //Cuerpo
+	m_modelsEnemics.push_back(loadModel("Enemigos\\Rapido.obj")); //Cuerpo
 	for (int i = 0; i < 2; i++) {
 		m_modelsEnemics.push_back(ruedaTipo2); //Rueda
 	}
 
 	/////////////////////////////////////////////////////////////////// Tanc [10,14] ///////////////////////////////////////////////////////////////////
-	m_modelsEnemics.push_back(loadModel("Enemigos\\TanqueINMOVIL.obj")); //Cuerpo
+	m_modelsEnemics.push_back(loadModel("Enemigos\\Tanque.obj")); //Cuerpo
 	for (int i = 0; i < 2; i++) {
 		m_modelsEnemics.push_back(ruedaDer); //Rueda
 	}
@@ -62,15 +62,17 @@ void modelManager::initialSetup()
 	}
 
 	/////////////////////////////////////////////////////////////////// Volador [15,19]  ///////////////////////////////////////////////////////////////////
-	COBJModel* helize = loadModel("Enemigos\\VoladorINMOVIL.obj");
-	m_modelsEnemics.push_back(helize); //Cuerpo
+	COBJModel* helize = loadModel("Enemigos\\Helice.obj");
+
+	m_modelsEnemics.push_back(loadModel("Enemigos\\Volador.obj")); //Cuerpo
 	for (int i = 0; i < 4; i++) {
 		m_modelsEnemics.push_back(helize); //Rueda
 	}
 
 	/////////////////////////////////////////////////////////////////// Accelerador/corredor [20,21] ///////////////////////////////////////////////////////////////////
-	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorINMOVIL.obj")); //Cuerpo
-	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorMOVIL.obj")); //Rueda
+	COBJModel* accelerador = loadModel("Enemigos\\Accelerador.obj");
+	m_modelsEnemics.push_back(accelerador); //Cuerpo
+	m_modelsEnemics.push_back(loadModel("Enemigos\\AcceleradorM1.obj")); //Rueda
 
 	/////////////////////////////////////////////////////////////////// Divisible [22,26] ///////////////////////////////////////////////////////////////////
 	m_modelsEnemics.push_back(loadModel("Enemigos\\Divisible.obj")); //Cuerpo
@@ -82,6 +84,10 @@ void modelManager::initialSetup()
 	for (int i = 0; i < 2; i++) {
 		m_modelsEnemics.push_back(ruedaTipo2); //Rueda
 	}
+	/////////////////////////////////////////////////////////////////// AcceleradorACT [20,21] ///////////////////////////////////////////////////////////////////
+	m_modelsEnemics.push_back(accelerador); //Cuerpo
+	m_modelsEnemics.push_back(loadModel("Enemigos\\AcceleradorM2.obj")); //Rueda
+
 }
 
 COBJModel* modelManager::loadModel(const std::string& filename)
@@ -110,19 +116,21 @@ std::vector<COBJModel*> modelManager::getEnemy(int type)
 {
 	switch (type) {
 	case Basic:
-		return getModelRange(m_modelsEnemics, 0, 6);  // Carga las piezas 0... hasta la 1
+		return getModelRange(m_modelsEnemics, 0, 6);  // Carga las piezas 0... hasta la 6
 	case Rapid:
-		return getModelRange(m_modelsEnemics, 7, 9);  // Carga las piezas 0... hasta la 1
+		return getModelRange(m_modelsEnemics, 7, 9);  
 	case Tanc:
-		return getModelRange(m_modelsEnemics, 10, 14);  // Carga las piezas 0... hasta la 1
+		return getModelRange(m_modelsEnemics, 10, 14);  
 	case Volador:
-		return getModelRange(m_modelsEnemics, 15, 19);  // Carga las piezas 0... hasta la 1
+		return getModelRange(m_modelsEnemics, 15, 19);  
 	case Accelerador:
-		return getModelRange(m_modelsEnemics, 20,21);  // Carga las piezas 0... hasta la 1
+		return getModelRange(m_modelsEnemics, 20,21);  
 	case Divisible:
-		return getModelRange(m_modelsEnemics, 22, 26);  // Carga las piezas 0... hasta la 1
+		return getModelRange(m_modelsEnemics, 22, 26);  
 	case DivisibleDIV:
-		return getModelRange(m_modelsEnemics, 27, 29);  // Carga las piezas 0... hasta la 1
+		return getModelRange(m_modelsEnemics, 27, 29);  
+	case AcceleradorACT:
+		return getModelRange(m_modelsEnemics, 30, 31);  
 	default:
 		break;
 	}

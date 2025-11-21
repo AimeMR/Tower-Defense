@@ -8,6 +8,7 @@ public:
 	void translate(glm::vec3 pos);
 	glm::vec3 getPos() { return m_pos; }
 	void rotate(glm::mat4 rot);
+	void setRotation(glm::mat4 rot) { m_rot = rot; }
 	glm::mat4 getRot() { return m_rot; }
 	void scale(glm::vec3 scale) { m_scale = scale; }
 	void setId(int id) { objectID = id; }

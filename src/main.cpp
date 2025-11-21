@@ -491,6 +491,9 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 		for (Enemy* e : enemies)
 			e->takeDamage(0.25f);
 		break;	
+	case GLFW_KEY_1:
+		spawnEnemy(DivisibleDIV);
+		break;
 	default:
 		break;
 	}
@@ -724,7 +727,7 @@ int main(void)
 	
 
 	setUpPath();
-	spawnEnemy(Rapid); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
+	spawnEnemy(DivisibleDIV); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
 
 
 
