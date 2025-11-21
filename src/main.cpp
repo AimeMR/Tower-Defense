@@ -744,10 +744,10 @@ int main(void)
 	setUpTurrets();
 	luz.TurretsWereLoaded();
 	modifyTurret(0, 1);
-	modifyTurret(1, 2);
-	modifyTurret(2, 0);
-	modifyTurret(3, 4);
-	modifyTurret(4, 3);
+	modifyTurret(1, -1);
+	modifyTurret(2, -1);
+	modifyTurret(3, -1);
+	modifyTurret(4, -1);
 	modifyTurret(5, -1);
 	modifyTurret(6, -1);
 	modifyTurret(7, -1);

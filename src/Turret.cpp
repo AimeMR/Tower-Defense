@@ -104,13 +104,14 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		m_damage = 0.2f;
 		m_defCD = 1.0f;
 		m_range = 6;
-		zHead = 1.25f;
+		zBase = -0.05f;
+		zHead = 0.75f;
 		break;
 	case FRANCOTIRADORA:
 		m_damage = 2.5f;
 		m_defCD = 2.5f;
 		m_range = 12;
-		zHead = 1.25f;
+		zHead = 2.42f;
 		break;
 	default:
 		return;
@@ -234,12 +235,12 @@ void Turret::deleteAuxObj()
 
 void Turret::shootAnimation() 
 {
+	glm::vec3 headPos = m_headObj->getPos();
+	glm::vec3 worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
+	glm::vec3 recoilOffset = worldBackward * 0.25f;
 	switch (m_type) {
 	case METRALLADORA:
 		auxBool = true; // Control de retroceso
-		glm::vec3 headPos = m_headObj->getPos();
-		glm::vec3 worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
-		glm::vec3 recoilOffset = worldBackward * 0.25f;
 
 		m_headObj->translate(headPos + recoilOffset);
 
@@ -255,10 +256,25 @@ void Turret::shootAnimation()
 
 		//Et deixo un esquelet del codi entre aquesta funció i la de animate: 
 		// 
-		//spawnAuxObj(0);
-		//m_auxObj.translate(glm::vec3(m_pos, 0));
-		//m_auxObj.scale(0.1f, 0.1f, 1);
+		spawnAuxObj(0);
+		m_auxObject->translate(glm::vec3(m_pos, 0));
+		m_auxObject->scale(glm::vec3(0.1f, 0.1f, 1));
 		return;
+	case LASER:
+		return;
+	case VERI:
+		return;
+	case FRANCOTIRADORA:
+		auxBool = true; // Control de retroceso
+
+		m_headObj->translate(headPos + recoilOffset);
+
+		spawnAuxObj(0);
+		m_auxObject->translate(glm::vec3(m_pos, 1.0f) - worldBackward * 10.0f);
+		m_auxObject->scale(glm::vec3(0.1f, 0.1f, 0.1f));
+
+		return;
+
 	default: 
 		return;
 	}
@@ -270,10 +286,10 @@ void Turret::animate(float deltaTime)
 	case METRALLADORA:
 		if (auxBool) 
 		{
-			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 1.25f), 3.0f * deltaTime));
-			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, 1.25f)) < 0.001f)
+			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 0.8f), 3.0f * deltaTime));
+			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, 0.8f)) < 0.001f)
 			{
-				m_headObj->translate(glm::vec3(m_pos, 1.25f));
+				m_headObj->translate(glm::vec3(m_pos, 0.8f));
 				auxBool = false;
 			}
 		}
@@ -290,12 +306,12 @@ void Turret::animate(float deltaTime)
 		
 		// Esto combinado con lo del shootAnimation debería funcionar
 		
-		// if(m_auxObjActive == false) return;
-		//
-		// m_auxObject->scale(glm::lerp(m_auxObject->getScale(), glm::vec3(m_range, m_range, 1)), 2.5f * deltaTime);
-		//
-		// if(m_scalr.x > m_range - 0.25f)
-		//    deleteAuxObject();
+		if (m_auxObject == nullptr) return;
+		
+		m_auxObject->scale(glm::lerp(m_auxObject->getScale(), glm::vec3(m_range, m_range, 1), 2.5f * deltaTime));
+
+		if (m_auxObject->getScale().x > m_range - 0.25f)
+			deleteAuxObj();
 
 
 		return;
@@ -306,6 +322,22 @@ void Turret::animate(float deltaTime)
 
 		return;
 	case FRANCOTIRADORA:
+		if (auxBool)
+		{
+			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 2.42f), deltaTime));
+			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, 2.42f)) < 0.001f)
+			{
+				m_headObj->translate(glm::vec3(m_pos, 2.42f));
+				auxBool = false;
+			}
+		}
+
+		if (m_auxObject)
+		{
+			m_auxObject->translate(glm::lerp(m_auxObject->getPos(), auxVec3, 25.0f * deltaTime));
+			if (glm::length(m_auxObject->getPos() - auxVec3) < 0.1f)
+				deleteAuxObj();
+		}
 
 		return;
 	default:
