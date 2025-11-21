@@ -32,6 +32,7 @@
 #define Aceite 1
 #define Nuclear 2
 #define Baches 3
+#define Esquina 4
 
 
 
@@ -303,36 +304,52 @@ Path* createPath(glm::vec2 pos, float speedMultiplier = 1.0f, int tipo = 0)
 void setUpPath() 
 {
 
-	createPath(glm::vec2(10, 0.5));
-	createPath(glm::vec2(5, 0.5));
-	createPath(glm::vec2(5, -4));
-	createPath(glm::vec2(0.9, -4)); 
+	createPath(glm::vec2(10, 0.25));
+
+	createPath(glm::vec2(7, 0.25));
+	createPath(glm::vec2(5.5, 0.25), 0.8, Esquina);
+
+	createPath(glm::vec2(5.5, -3));
+	createPath(glm::vec2(5.5, -4), 0.8, Esquina);
+
+	createPath(glm::vec2(2, -4));
+	createPath(glm::vec2(0.9, -4), 0.8, Esquina);
+
+
 	createPath(glm::vec2(0.9, -3.5));
-
-	
 	createPath(glm::vec2(0.9, 4), 1.25, Aceite); // CAMINO ACEITE
-	createPath(glm::vec2(0.9, 4.5)); 
+	createPath(glm::vec2(0.9, 4.5), 0.8, Esquina);
 
-	createPath(glm::vec2(8.25, 4.75));
-	createPath(glm::vec2(8.25, 8.75));
+	createPath(glm::vec2(7.25, 4.75));
+	createPath(glm::vec2(8.25, 4.75), 0.8, Esquina);
+
+	createPath(glm::vec2(8.25, 7.75));
+	createPath(glm::vec2(8.25, 8.75), 0.8, Esquina);
 
 	createPath(glm::vec2(8, 8.75));
-	createPath(glm::vec2(-3, 8.75), 0.75, Nuclear);  // CAMINO NUCLEAR
-	createPath(glm::vec2(-3.25, 8.75));
+	createPath(glm::vec2(-2.75, 8.75), 0.7, Nuclear);  // CAMINO NUCLEAR
+	createPath(glm::vec2(-3, 8.75), 0.8, Esquina);
 
 	//////////////////////
-	createPath(glm::vec2(-3.35, 4.75));
-	createPath(glm::vec2(-3.35, -3.0), 0.75, Baches);  // CAMINO BACHES
-	createPath(glm::vec2(-3.35, -6.75));
+	createPath(glm::vec2(-3.25, 4.75));
+	createPath(glm::vec2(-3.25, -3.0), 0.7, Baches);  // CAMINO BACHES
+	createPath(glm::vec2(-3.25, -5.75));
+	createPath(glm::vec2(-3.25, -6.6), 0.8, Esquina);
 	//////////////////////
 
-	createPath(glm::vec2(-14.75, -6.75));
-	createPath(glm::vec2(-14.75, -2.5));
+	createPath(glm::vec2(-13.75, -6.7));
+	createPath(glm::vec2(-14.75, -6.7), 0.8, Esquina);
+
+	createPath(glm::vec2(-14.75, -3.5));
+	createPath(glm::vec2(-14.75, -2.5), 0.8, Esquina);
 
 	createPath(glm::vec2(-14, -2.5)); 
-	createPath(glm::vec2(-7.5, -2.5), 1.25, Aceite); // CAMINO ACEITE
+	createPath(glm::vec2(-9.5, -2.5), 1.25, Aceite); // CAMINO ACEITE
+	createPath(glm::vec2(-8, -2.5), 0.8, Esquina);
 
-	createPath(glm::vec2(-7.5, 1.5));
+	createPath(glm::vec2(-8, 0.5));
+	createPath(glm::vec2(-8, 1.5), 0.8, Esquina);
+
 	createPath(glm::vec2(-20, 1.75));
 	createPath(glm::vec2(-20.5, 1.75));
 	
@@ -492,6 +509,24 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			e->takeDamage(0.25f);
 		break;	
 	case GLFW_KEY_1:
+		spawnEnemy(Basic);
+		break;
+	case GLFW_KEY_2:
+		spawnEnemy(Rapid);
+		break;
+	case GLFW_KEY_3:
+		spawnEnemy(Tanc);
+		break;
+	case GLFW_KEY_4:
+		spawnEnemy(Volador);
+		break;
+	case GLFW_KEY_5:
+		spawnEnemy(Accelerador);
+		break;
+	case GLFW_KEY_6:
+		spawnEnemy(Divisible);
+		break;
+	case GLFW_KEY_7:
 		spawnEnemy(DivisibleDIV);
 		break;
 	default:
