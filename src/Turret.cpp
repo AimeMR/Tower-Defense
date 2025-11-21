@@ -84,19 +84,21 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		m_damage = 0.5f;
 		m_defCD = 0.5f;
 		m_range = 8;
-		zHead = 1.25f;
+		zBase = -0.05f;
+		zHead = 0.8f;
 		break;
 	case CONGELADORA:
 		m_damage = 1.0f;
 		m_defCD = 3.0f;
 		m_range = 5;
+		zBase = -0.05f;
 		break;
 	case LASER:
 		m_damage = 0.65f;
 		m_defCD = 0.0f;
 		m_range = 5;
-		zBase = 0.0f;
-		zHead = 1.25f;
+		zBase = -0.05f;
+		zHead = 0.87f;
 		break;
 	case VERI:
 		m_damage = 0.2f;
