@@ -62,13 +62,13 @@ void modelManager::initialSetup()
 
 	//Laser
 	m_modelsTorres.push_back(loadModel("Torretas\\laser2_base.obj"));
-	m_modelsTorres.push_back(loadModel("Torretas\\laser2_barrel.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\laser2_head.obj"));
 
 	m_modelsTorres.push_back(loadModel("Torretas\\turret3_base.obj"));
 	m_modelsTorres.push_back(loadModel("Torretas\\turret3_head.obj"));
 
-	m_modelsTorres.push_back(loadModel("Torretas\\laser2_base.obj"));
-	m_modelsTorres.push_back(loadModel("Torretas\\laser2_barrel.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\turret3_base.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\turret3_head.obj"));
 }
 
 COBJModel* modelManager::loadModel(const std::string& filename)

@@ -349,15 +349,15 @@ void setUpTurrets()
 
 	//Posicions torres
 
-	pos[0] = glm::vec2(3.25f, -2.2f);
-	pos[1] = glm::vec2(0.0f, 0.0f);
-	pos[2] = glm::vec2(0.0f, 0.0f);
-	pos[3] = glm::vec2(0.0f, 0.0f);
-	pos[4] = glm::vec2(0.0f, 0.0f);
-	pos[5] = glm::vec2(0.0f, 0.0f);
-	pos[6] = glm::vec2(0.0f, 0.0f);
-	pos[7] = glm::vec2(0.0f, 0.0f);
-	pos[8] = glm::vec2(0.0f, 0.0f);
+	pos[0] = glm::vec2(3.25f, -2.1f);
+	pos[1] = glm::vec2(-1.2f, 2.35f);
+	pos[2] = glm::vec2(6.15f, 6.75f);
+	pos[3] = glm::vec2(1.85f, 11.125f);
+	pos[4] = glm::vec2(-5.45f, 6.45f);
+	pos[5] = glm::vec2(-6.2f, -9.1f);
+	pos[6] = glm::vec2(-12.75f, -4.75f);
+	pos[7] = glm::vec2(-9.9f, -0.6f);
+	pos[8] = glm::vec2(-15.5f, 3.9f);
 
 
 	for (int i = 0; i < NTURRETS; i++)
@@ -744,8 +744,17 @@ int main(void)
 	setUpTurrets();
 	luz.TurretsWereLoaded();
 	modifyTurret(0, 1);
+	modifyTurret(1, 2);
+	modifyTurret(2, 0);
+	modifyTurret(3, 0);
+	modifyTurret(4, 0);
+	modifyTurret(5, 0);
+	modifyTurret(6, 0);
+	modifyTurret(7, 0);
+	modifyTurret(8, 0);
 
-	spawnEnemy(Basic); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
+
+	spawnEnemy(Accelerador); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
 
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
