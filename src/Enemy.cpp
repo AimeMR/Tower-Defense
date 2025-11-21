@@ -68,7 +68,8 @@ void Enemy::move(float deltaTime, float timer)
 {
 	if (!m_alive || !m_target) return;
 	
-	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * m_speed * deltaTime;
+	float speed = m_speed * deltaTime * (1 - (max(m_slowCounter, 0.0f) / 3.5f));
+	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * speed;
 
 	TrackPathProgress();
 	
@@ -82,7 +83,18 @@ void Enemy::move(float deltaTime, float timer)
 	//Sistema de detección de giros temporal
 	glm::vec2 relPos = glm::vec2(m_pos) - m_targetPos;
 	if (glm::dot(relPos, m_bisector) >= 0.0f)
-		reachPathEnd();
+		reachPathEnd();	
+
+	if (m_slowCounter > 0)
+	{
+		m_slowCounter -= deltaTime;
+		m_colorBase = glm::vec4(0.5f - (m_health / m_baseHealth * 2), m_poisonCounter / 5, m_slowCounter * 2 / 5, 1);
+	}
+	if (m_poisonCounter > 0) 
+	{
+		m_poisonCounter -= deltaTime;
+		takeDamage(deltaTime * 0.5f);
+	}	
 }
 
 void Enemy::startMoving() 
@@ -154,7 +166,6 @@ void Enemy::TrackPathProgress()
 	glm::vec2 AP = glm::vec2(m_pos.x, m_pos.y) - m_prevTargetPos;
 
 	m_segmentProgress = glm::clamp(glm::dot(AP, AB) / glm::dot(AB, AB), 0.0f, 1.0f);
-	fprintf(stderr, "Progress: %.3f\n", (float)m_nSegments + m_segmentProgress);
 }
 
 
@@ -206,8 +217,6 @@ void Enemy::animate(float timer, float deltaTime)
 			}
 		}
 		
-
-
 		m_bodyParts[0]->translate(glm::vec3(-0.17, -0.07, -0.25));
 		m_bodyParts[1]->translate(glm::vec3(-0.17, 0.07, -0.25));
 		break;
@@ -252,7 +261,7 @@ void Enemy::takeDamage(float damage)
 	}
 	else 
 	{
-		m_colorBase = glm::vec4(1 - (m_health / m_baseHealth), 0, 0, 1);
+		m_colorBase = glm::vec4(0.5f - (m_health / m_baseHealth * 2.0f), m_poisonCounter / 6.0f, m_slowCounter / 4.5f, 1);
 	}
 }
 

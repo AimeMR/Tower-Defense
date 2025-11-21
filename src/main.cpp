@@ -136,6 +136,7 @@ void InitGL()
 	luz.m_cam = &mainCamara;
 	luz.objetos = &objects;
 	luz.enemigos = &enemies;
+	luz.turrets = turrets;
 
 	po = PickingObjects3D(w, h, poShaderID);
 	po.m_cam = &mainCamara;
@@ -249,20 +250,12 @@ Enemy* spawnEnemy(int type)
 
 void destroyEnemies(Enemy* en)
 {
+	auto it = std::find(enemies.begin(), enemies.end(), en);
+	if (it == enemies.end()) return;
 	if (en->isAlive()) return;
-	int id = en->getId();
-	int vectorSize = enemies.size();
 
-	if (id < vectorSize)
-	{
-		Enemy* lastEnemy = enemies.back();
-		if (id != vectorSize - 1)
-			lastEnemy->setId(id);
-
-		std::swap(objects[id], objects.back());
-		enemies.pop_back();
-		delete(en);
-	}
+	enemies.erase(it);
+	delete en;
 }
 
 GameObject* createObject(COBJModel* model)
@@ -334,6 +327,44 @@ void destroyObject(GameObject* obj)
 		std::swap(objects[id], objects.back());
 		objects.pop_back();
 		delete obj;
+	}
+}
+
+void modifyTurret(int id, int type)
+{
+	if (type == -1) 
+	{
+		turrets[id]->loadTurret(type, nullptr, nullptr);
+	}
+	else 
+	{
+		std::vector<COBJModel*> model = mm.getTurret(type);
+		turrets[id]->loadTurret(type, model[0], model[1]);
+	}
+}
+
+void setUpTurrets() 
+{
+	glm::vec2 pos[NTURRETS];
+
+	//Posicions torres
+
+	pos[0] = glm::vec2(3.25f, -2.2f);
+	pos[1] = glm::vec2(0.0f, 0.0f);
+	pos[2] = glm::vec2(0.0f, 0.0f);
+	pos[3] = glm::vec2(0.0f, 0.0f);
+	pos[4] = glm::vec2(0.0f, 0.0f);
+	pos[5] = glm::vec2(0.0f, 0.0f);
+	pos[6] = glm::vec2(0.0f, 0.0f);
+	pos[7] = glm::vec2(0.0f, 0.0f);
+	pos[8] = glm::vec2(0.0f, 0.0f);
+
+
+	for (int i = 0; i < NTURRETS; i++)
+	{
+		turrets[i] = new Turret(i);
+		turrets[i]->setPos(pos[i]);
+		turrets[i]->setEnemiesVector(&enemies);
 	}
 }
 
@@ -472,6 +503,9 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 		for (Enemy* e : enemies)
 			e->takeDamage(0.25f);
 		break;
+	case GLFW_KEY_S:
+		spawnEnemy(Accelerador);
+		break;
 	default:
 		break;
 	}
@@ -579,6 +613,10 @@ void Update(float timer, float deltaTime)
 	{
 		e->move(deltaTime, timer);
 		destroyEnemies(e);
+	}
+	for (int i = 0; i < NTURRETS; i++) 
+	{
+		turrets[i]->mainUpdate(deltaTime);
 	}
 }
 
@@ -703,9 +741,11 @@ int main(void)
 	}
 
 	setUpPath();
-	spawnEnemy(Accelerador); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
+	setUpTurrets();
+	luz.TurretsWereLoaded();
+	modifyTurret(0, 1);
 
-
+	spawnEnemy(Basic); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
 
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
@@ -762,14 +802,10 @@ int main(void)
 		DeleteObject(obj);
 
 	for (Enemy* en : enemies) 
-	{
-		en->kill();
 		destroyEnemies(en);
-	}
 
 	for (Turret* tu : turrets)
-		delete tu;
-			
+		delete tu;			
 		
 
 	// Entorn VGI.ImGui: Cleanup ImGui

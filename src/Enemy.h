@@ -50,7 +50,7 @@ public:
 	void move(float deltaTime, float timer);
 	void reachPathEnd();
 	void TrackPathProgress();
-	void takeDamage(float damage);
+	void takeDamage(float damage); 	
 	void die();
 	void draw(GLuint shader);
 	void startMoving();
@@ -58,10 +58,12 @@ public:
 	void kill() { m_alive = false; }
 	float getProgress() { return (float)m_nSegments + m_segmentProgress; }
 	float getHealth() { return m_health; }
+	void setSlow(float sC) { m_slowCounter = sC; }
+	void setPoison(float pC) { m_poisonCounter = pC; }
 
 private:
 	int m_damage, m_reward, m_type, m_weight, m_pathType = 0, m_nSegments = 0;
-	float m_health, m_defSpeed, m_speed, m_baseHealth, m_maxOffset = 0.5f, m_rotation = 0.0f, m_segmentProgress = 0.0f;
+	float m_health, m_defSpeed, m_speed, m_baseHealth, m_maxOffset = 0.5f, m_rotation = 0.0f, m_segmentProgress = 0.0f, m_poisonCounter = 0.0f, m_slowCounter = 0.0f;
 	glm::vec2 m_dir, m_bisector, m_targetPos, m_prevTargetPos;
 	bool m_alive = true;
 

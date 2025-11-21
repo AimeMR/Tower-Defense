@@ -9,6 +9,12 @@
 #define AcceleradorACT 6
 #define DivisibleDIV 7
 
+#define METRALLADORA 0
+#define CONGELADORA 1
+#define LASER 2
+#define VERI 3
+#define FRANCOTIRADORA 4
+
 
 
 modelManager::modelManager()
@@ -20,6 +26,8 @@ modelManager::~modelManager()
 {
 	delete m_modelMapa;
 	for (COBJModel* m : m_modelsEnemics)
+		delete m;
+	for (COBJModel* m : m_modelsTorres)
 		delete m;
 }
 
@@ -42,6 +50,25 @@ void modelManager::initialSetup()
 	//Enemic2, [7,8]
 	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorINMOVIL.obj")); //Cuerpo
 	m_modelsEnemics.push_back(loadModel("Enemigos\\CorredorMOVIL.obj")); //Rueda
+
+	//Setup Torretas [pares base, impares cabeza]
+	//Metralleta
+	m_modelsTorres.push_back(loadModel("Torretas\\turret3_base.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\turret3_head.obj"));
+
+	//Hielo
+	m_modelsTorres.push_back(loadModel("Torretas\\tesla2.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\empty.obj"));
+
+	//Laser
+	m_modelsTorres.push_back(loadModel("Torretas\\laser2_base.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\laser2_barrel.obj"));
+
+	m_modelsTorres.push_back(loadModel("Torretas\\turret3_base.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\turret3_head.obj"));
+
+	m_modelsTorres.push_back(loadModel("Torretas\\laser2_base.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\laser2_barrel.obj"));
 }
 
 COBJModel* modelManager::loadModel(const std::string& filename)
@@ -89,3 +116,9 @@ std::vector<COBJModel*> modelManager::getEnemy(int type)
 		break;
 	}
 }
+
+std::vector<COBJModel*> modelManager::getTurret(int type)
+{
+	return getModelRange(m_modelsTorres, type * 2, type * 2 + 1);
+}
+

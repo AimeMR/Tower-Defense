@@ -67,13 +67,14 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir)
 	//dibujar objetos
 
 	for (GameObject* obj : *objetos)
-	{
 		obj->dibuixarObjecte(m_shadowShaderID);
-	}
+
 	for (Enemy* en : *enemigos)
-	{
 		en->draw(m_shadowShaderID);
-	}
+
+	if(m_turretsLoaded)
+		for (int i = 0; i < NTURRETS; i++) 
+			turrets[i]->draw(m_shadowShaderID);
 
 	glDisable(GL_POLYGON_OFFSET_FILL);
 	glCullFace(GL_BACK);
@@ -108,13 +109,12 @@ void Iluminacion::RenderGame(GLuint shaderID)
 	glUniform3fv(glGetUniformLocation(shaderID, "lightColor"), 1, &m_lightColor[0]);
 
 	for (GameObject* obj : *objetos)
-	{
 		obj->dibuixarObjecte(shaderID);
-	}
 
 	for (Enemy* en : *enemigos)
-	{
 		en->draw(shaderID);
-	}
 
+	if (m_turretsLoaded)
+		for (int i = 0; i < NTURRETS; i++)
+			turrets[i]->draw(shaderID);
 }
