@@ -20,10 +20,11 @@ public:
 	~Turret() {
 		delete m_baseObj;
 		delete m_headObj;
+		deleteAuxObj();
 	}
 
 	void draw(GLuint shader);
-	void loadTurret(int type, COBJModel* base, COBJModel* head);
+	void loadTurret(int type, std::vector<COBJModel*> models);
 	void mainUpdate(float deltaTime);
 	int getType() { return m_type; }
 	void setEnemiesVector(std::vector<Enemy*>* e) { enemies = e; }
@@ -34,6 +35,10 @@ private:
 	void updateCannon(float deltaTime);
 	void updateIce(float deltaTime);
 	void TurnHead(float deltaTime, glm::vec3 ePos);
+	void shootAnimation();
+	void animate(float deltatime);
+	void spawnAuxObj(int id);
+	void deleteAuxObj();
 
 	Enemy* selectTarget();
 	std::vector<Enemy*> selectAllTargetsInRange();
@@ -42,7 +47,15 @@ private:
 	float m_damage = 0, m_range = 0, m_defCD = 0, m_cd = 0;
 	glm::vec2 m_pos;
 
+	//Variables auxiliars per animacions
+	float auxTimer = 0.0f;
+	glm::vec3 auxVec3 = glm::vec3(0.0f, 0.0f, 0.0f);
+	bool auxBool = false;
+
+
 	GameObject* m_baseObj = nullptr;
 	GameObject* m_headObj = nullptr;
+	GameObject* m_auxObject = nullptr;
+	std::vector<COBJModel*> m_auxModels;
 	std::vector<Enemy*>* enemies;
 };

@@ -334,12 +334,12 @@ void modifyTurret(int id, int type)
 {
 	if (type == -1) 
 	{
-		turrets[id]->loadTurret(type, nullptr, nullptr);
+		std::vector<COBJModel*> emptyModels;
+		turrets[id]->loadTurret(type, emptyModels);
 	}
 	else 
 	{
-		std::vector<COBJModel*> model = mm.getTurret(type);
-		turrets[id]->loadTurret(type, model[0], model[1]);
+		turrets[id]->loadTurret(type, mm.getTurret(type));
 	}
 }
 
@@ -743,7 +743,7 @@ int main(void)
 	setUpPath();
 	setUpTurrets();
 	luz.TurretsWereLoaded();
-	modifyTurret(0, 1);
+	modifyTurret(0, 0);
 
 	spawnEnemy(Basic); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
 
