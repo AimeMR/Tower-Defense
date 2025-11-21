@@ -15,13 +15,22 @@ bool show_menu_inicio = true;
 bool show_menu_ajustes = false;
 bool show_jugar = false;
 bool show_menu_creditos = false;
+bool show_menu_pruebas = false; 
 bool juego_pausado = false;
+
+//--------------Variables globales para modo pruebas------------------
+bool enable_debug_mode = true; // Variable de configuracion para mostrar el boton (CAMBIAR AQUI)
+bool debug_detener_tiempo = false;
+bool debug_resetear_todo = false;
+int debug_id_enemigo_spawn = 0; // ID por defecto (Basic)
+bool debug_solicitar_spawn = false;
 
 // Variable de Brillo (1.0 = Normal, 0.0 = Negro total)
 float nivelBrillo = 1.0f;
 
 // --- PROTOTIPOS DE FUNCIONES ---
 void menuPausa(bool& salir, const ImGuiViewport* viewport);
+void menuPruebas(bool& salir); // Prototipo menu pruebas
 void menuAjustes();
 void menuCreditos();
 void iniciarPartida(bool& salir);
@@ -42,6 +51,8 @@ void menu(bool& salir)
 	ImGui::NewFrame();
 
 	// 1. APLICAR EFECTO DE BRILLO (Overlay)
+	// Se dibuja antes que todo lo demás para que afecte al juego 3D de fondo
+	// pero NO a los menús que dibujamos ahora encima.
 	aplicarEfectoBrillo();
 
 	// Obtenemos viewport para posicionar ventana
@@ -56,22 +67,16 @@ void menu(bool& salir)
 		ImGui::SetNextWindowPos(viewport->Pos);
 		ImGui::SetNextWindowSize(viewport->Size);
 
-		static ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground |
-			ImGuiWindowFlags_NoTitleBar |
-			ImGuiWindowFlags_NoMove |
-			ImGuiWindowFlags_NoResize |      
-			ImGuiWindowFlags_NoScrollbar |   
-			ImGuiWindowFlags_NoCollapse |    
-			ImGuiWindowFlags_NoSavedSettings;
+		static ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
 		if (ImGui::Begin("Menu_Principal_Fullscreen", &show_menu_inicio, flags))
 		{
-			// Aplicamos estilos y fuente 
+			// Aplicamos estilos y fuente 
 			cambiarEstiloBotones();
 			ImGui::SetWindowFontScale(1.5f);
 
 			// --- BOTÓN JUGAR ---
-			ImVec2 btnSize = colocarBoton(0.5f, 0.40f);
+			ImVec2 btnSize = colocarBoton(0.5f, 0.35f);
 			if (ImGui::Button("Jugar", btnSize))
 			{
 				show_menu_inicio = false;
@@ -80,7 +85,7 @@ void menu(bool& salir)
 			}
 
 			// --- BOTÓN AJUSTES ---
-			btnSize = colocarBoton(0.5f, 0.55f);
+			btnSize = colocarBoton(0.5f, 0.50f);
 			if (ImGui::Button("Ajustes", btnSize))
 			{
 				show_menu_inicio = false;
@@ -88,11 +93,25 @@ void menu(bool& salir)
 			}
 
 			// --- BOTÓN CREDITOS ---
-			btnSize = colocarBoton(0.5f, 0.70f);
+			btnSize = colocarBoton(0.5f, 0.65f);
 			if (ImGui::Button("Creditos", btnSize))
 			{
 				show_menu_inicio = false;
 				show_menu_creditos = true;
+			}
+
+			// --- BOTÓN MODO PRUEBAS (SOLO SI ESTA ACTIVO) ---
+			if (enable_debug_mode)
+			{
+				btnSize = colocarBoton(0.5f, 0.80f);
+				// Cambiamos color para diferenciarlo
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
+				if (ImGui::Button("Modo Pruebas", btnSize))
+				{
+					show_menu_inicio = false;
+					show_menu_pruebas = true;
+				}
+				ImGui::PopStyleColor();
 			}
 
 			// --- BOTÓN SALIR --- (Esquina inferior izquierda)
@@ -115,6 +134,13 @@ void menu(bool& salir)
 	else if (show_jugar)
 	{
 		iniciarPartida(salir);
+	}
+	// =========================================================
+	// MODO PRUEBAS
+	// =========================================================
+	else if (show_menu_pruebas)
+	{
+		menuPruebas(salir);
 	}
 	// =========================================================
 	// MENU AJUSTES
@@ -140,18 +166,11 @@ void iniciarPartida(bool& salir)
 
 	// -----------------------------------------------------
 	// HUD (Botón Pausa)
+	// Solo visible si NO está pausado para no superponerse
 	// -----------------------------------------------------
 	if (!juego_pausado)
 	{
-		// Flags para el HUD
-		ImGuiWindowFlags hudFlags = ImGuiWindowFlags_NoDecoration |
-			ImGuiWindowFlags_AlwaysAutoResize |
-			ImGuiWindowFlags_NoSavedSettings |
-			ImGuiWindowFlags_NoFocusOnAppearing |
-			ImGuiWindowFlags_NoNav |
-			ImGuiWindowFlags_NoBackground |
-			ImGuiWindowFlags_NoResize; 
-
+		ImGuiWindowFlags hudFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBackground;
 		float padding = 10.0f;
 
 		// Posicionamiento esquina superior derecha
@@ -178,6 +197,92 @@ void iniciarPartida(bool& salir)
 	}
 }
 
+void menuPruebas(bool& salir)
+{
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// Flags para panel lateral derecho
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize;
+
+	// Dimensiones del panel lateral
+	float panelWidth = 220.0f;
+	float panelHeight = 450.0f; // Aumentamos un poco la altura para que quepa el input
+
+	// Posicionamiento pegado a la derecha, centrado verticalmente
+	ImGui::SetNextWindowPos(ImVec2(viewport->WorkSize.x - panelWidth, (viewport->WorkSize.y - panelHeight) * 0.5f));
+	ImGui::SetNextWindowSize(ImVec2(panelWidth, panelHeight));
+
+	// Fondo semitransparente
+	ImGui::SetNextWindowBgAlpha(0.5f);
+
+	if (ImGui::Begin("PanelPruebas", NULL, flags))
+	{
+		cambiarEstiloBotones();
+		ImGui::SetWindowFontScale(1.2f);
+
+		// Titulo panel
+		ImGui::Text("Debug Tools");
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		// Tamaño fijo botones
+		ImVec2 btnSize(180, 40);
+
+		// --- BOTON 1: PAUSAR / ACTIVAR TIMER ---
+		const char* txtBoton = debug_detener_tiempo ? "REANUDAR TIMER" : "PAUSAR TIMER";
+		if (ImGui::Button(txtBoton, btnSize))
+		{
+			debug_detener_tiempo = !debug_detener_tiempo;
+		}
+		ImGui::Spacing();
+
+		// --- BOTON 2: RESETEAR Y MATAR ---
+		if (ImGui::Button("MATAR Y REINICIAR", btnSize))
+		{
+			debug_resetear_todo = true;
+			debug_detener_tiempo = false;
+		}
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		// --- BOTON 3: SPAWN ENEMIGO (MODIFICADO) ---
+		ImGui::Text("Spawn Manual:");
+
+		// Hueco interactuable para el ID (Input Int)
+		// PushItemWidth ajusta el ancho de la caja de texto
+		ImGui::PushItemWidth(180);
+		// "##ID" oculta la etiqueta pero sirve de identificador unico
+		ImGui::InputInt("##ID_Enemigo", &debug_id_enemigo_spawn);
+		ImGui::PopItemWidth();
+
+		// Boton para ejecutar la orden usando el numero de arriba
+		if (ImGui::Button("SPAWNEAR ID", btnSize))
+		{
+			debug_solicitar_spawn = true; // Activa la bandera para el main
+		}
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		// Boton 4 (Vacio por ahora)
+		if (ImGui::Button("Test 4: Reset", btnSize)) {}
+
+		ImGui::Spacing();
+
+		// Boton volver
+		if (ImGui::Button("Volver Menu", btnSize))
+		{
+			show_menu_pruebas = false;
+			show_menu_inicio = true;
+		}
+
+		ImGui::SetWindowFontScale(1.0f);
+		regresarEstiloBotones();
+	}
+	ImGui::End();
+}
 void menuPausa(bool& salir, const ImGuiViewport* viewport)
 {
 	// Configuración ventana Fullscreen
@@ -190,7 +295,6 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport)
 	// Transparencia del fondo (0.8 = bastante opaco)
 	ImGui::SetNextWindowBgAlpha(0.8f);
 
-	// NoDecoration ya incluye NoResize, así que esto debería estar bien, pero lo dejo explícito
 	ImGuiWindowFlags pausaFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
 	if (ImGui::Begin("Menu_Pausa_Fullscreen", &juego_pausado, pausaFlags))
@@ -230,7 +334,7 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport)
 	}
 	ImGui::End();
 
-	//Quita el fondo de color negro
+	//Quita el fondo de color negro y deja el pre-establecido (claro)
 	ImGui::PopStyleColor();
 }
 
@@ -246,86 +350,57 @@ void menuAjustes()
 	// Fondo negro menu
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
 	// Transparencia del fondo
-	ImGui::SetNextWindowBgAlpha(0.0f);
+	ImGui::SetNextWindowBgAlpha(0.8f);
 
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
 	if (ImGui::Begin("Menu_Ajustes_Fullscreen", &show_menu_ajustes, flags))
 	{
-		// --- TÍTULO GRANDE ---
-		ImGui::SetWindowFontScale(3.0f); // Fuente muy grande
+		ImGui::SetWindowFontScale(1.5f);
+
+		// --- TÍTULO ---
 		const char* titulo = "CONFIGURACION";
 		ImVec2 textSize = ImGui::CalcTextSize(titulo);
-
-		// Centrar título arriba
-		ImGui::SetCursorPos(ImVec2((viewport->Size.x - textSize.x) * 0.5f, viewport->Size.y * 0.15f));
+		ImGui::SetCursorPos(ImVec2((viewport->Size.x - textSize.x) * 0.5f, viewport->Size.y * 0.2f));
 		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), titulo);
 
-		ImGui::SetWindowFontScale(1.0f); // Restaurar fuente
 		ImGui::Spacing();
 
+		// --- SLIDER DE BRILLO ---
+		// Centramos el slider
+		float sliderWidth = 300.0f;
+		ImGui::SetCursorPos(ImVec2((viewport->Size.x - sliderWidth) * 0.5f, viewport->Size.y * 0.4f));
+		ImGui::PushItemWidth(sliderWidth);
 
-		// --- RECUADRO DE AJUSTES (PANEL) ---
-		// Definimos tamaño del panel
-		ImVec2 panelSize(500, 200);
-		// Posicionamos el panel en el centro
-		ImGui::SetCursorPos(ImVec2((viewport->Size.x - panelSize.x) * 0.5f, viewport->Size.y * 0.40f));
+		// Aplicamos estilo personalizado al slider (Cobre y con Borde)
+		cambiarEstiloSlider();
 
-		// Estilo del Panel (Recuadro): Fondo Gris oscuro metalizado y Borde Cobre
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.15f, 0.15f, 0.17f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.85f, 0.55f, 0.25f, 1.0f)); // Cobre
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f); // Esquinas redondeadas
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 3.0f); // Borde grueso visible
+		// Etiqueta encima del slider
+		ImGui::Text("Brillo de Pantalla");
+		ImGui::SetCursorPosX((viewport->Size.x - sliderWidth) * 0.5f); // Recolocamos X porque Text mueve cursor
 
-		// Creamos el Child (El true activa el borde)
-		if (ImGui::BeginChild("PanelBrillo", panelSize, true))
-		{
-			// Centrado vertical de los elementos dentro del panel
-			ImGui::SetCursorPosY(panelSize.y * 0.25f);
+		ImGui::SliderFloat("##brillo", &nivelBrillo, 0.1f, 1.0f, "Brillo: %.2f");
 
-			// --- ESTILO DEL SLIDER Y TEXTO ---
-			cambiarEstiloSlider();
-			ImGui::SetWindowFontScale(1.5f); // Texto mediano
+		regresarEstiloSlider();
+		ImGui::PopItemWidth();
 
-			// Etiqueta "Brillo de Pantalla" centrada
-			const char* txtBrillo = "Brillo de Pantalla";
-			ImVec2 txtSize = ImGui::CalcTextSize(txtBrillo);
-			ImGui::SetCursorPosX((panelSize.x - txtSize.x) * 0.5f);
-			ImGui::Text(txtBrillo);
 
-			ImGui::Spacing();
-
-			// Slider centrado
-			float sliderWidth = panelSize.x * 0.8f;
-			ImGui::SetCursorPosX((panelSize.x - sliderWidth) * 0.5f);
-			ImGui::PushItemWidth(sliderWidth);
-
-			ImGui::SliderFloat("##brillo", &nivelBrillo, 0.1f, 1.0f, "%.2f");
-
-			ImGui::PopItemWidth();
-			ImGui::SetWindowFontScale(1.0f);
-			regresarEstiloSlider();
-		}
-		ImGui::EndChild();
-
-		// Restaurar estilos del panel
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor(2);
-
-		
 		// --- BOTÓN CERRAR ---
 		cambiarEstiloBotones();
+
+		// Forzamos la fuente grande para este botón
 		ImGui::SetWindowFontScale(1.5f);
-		// Usamos colocarBoton para situarlo abajo
-		ImVec2 btnSize = colocarBoton(0.5f, 0.85f);
+
+		// Usamos colocarBoton para situarlo abajo, igual que el botón "Salir"
+		ImVec2 btnSize = colocarBoton(0.5f, 0.80f);
 		if (ImGui::Button("Guardar y Cerrar", btnSize))
 		{
 			show_menu_ajustes = false;
 			show_menu_inicio = true;
 		}
-		regresarEstiloBotones();
 
 		ImGui::SetWindowFontScale(1.0f);
+		regresarEstiloBotones();
 	}
 	ImGui::End();
 
@@ -437,7 +512,7 @@ void cambiarEstiloSlider()
 	ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.30f, 0.30f, 0.30f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
 
-	// Agarradera (Knob): Color Cobre 
+	// Agarradera (Knob): Color Cobre 
 	ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4(0.85f, 0.55f, 0.25f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.95f, 0.65f, 0.35f, 1.0f));
 
@@ -456,5 +531,5 @@ void regresarEstiloSlider()
 	// Sacamos los 6 colores
 	ImGui::PopStyleColor(6);
 	// Sacamos las 3 variables
-	ImGui::PopStyleVar(3); 
+	ImGui::PopStyleVar(3);
 }
