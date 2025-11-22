@@ -20,9 +20,11 @@ modelManager::~modelManager()
 {
 	delete m_modelMapa;
 	for (COBJModel* m : m_modelsEnemics)
-		if(m!=nullptr) 
+		if (m != nullptr) 
+		{
 			delete m;
-
+			m = nullptr;
+		}
 }
 
 void modelManager::initialSetup()
