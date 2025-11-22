@@ -310,10 +310,10 @@ void setUpPath()
 	createPath(glm::vec2(5.5, 0.25), 0.8, Esquina);
 
 	createPath(glm::vec2(5.5, -3));
-	createPath(glm::vec2(5.5, -4), 0.8, Esquina);
+	createPath(glm::vec2(5.5, -4.15), 0.8, Esquina);
 
-	createPath(glm::vec2(2, -4));
-	createPath(glm::vec2(0.9, -4), 0.8, Esquina);
+	createPath(glm::vec2(2, -4.15));
+	createPath(glm::vec2(0.9, -4.15), 0.8, Esquina);
 
 
 	createPath(glm::vec2(0.9, -3.5));
@@ -333,15 +333,15 @@ void setUpPath()
 	//////////////////////
 	createPath(glm::vec2(-3.25, 4.75));
 	createPath(glm::vec2(-3.25, -3.0), 0.7, Baches);  // CAMINO BACHES
-	createPath(glm::vec2(-3.25, -5.75));
-	createPath(glm::vec2(-3.25, -6.6), 0.8, Esquina);
+	createPath(glm::vec2(-3.25, -5.5));
+	createPath(glm::vec2(-3.25, -6.7), 0.8, Esquina);
 	//////////////////////
 
 	createPath(glm::vec2(-13.75, -6.7));
-	createPath(glm::vec2(-14.75, -6.7), 0.8, Esquina);
+	createPath(glm::vec2(-14.85, -6.7), 0.8, Esquina);
 
-	createPath(glm::vec2(-14.75, -3.5));
-	createPath(glm::vec2(-14.75, -2.5), 0.8, Esquina);
+	createPath(glm::vec2(-14.85, -4));
+	createPath(glm::vec2(-14.85, -2.7), 0.8, Esquina);
 
 	createPath(glm::vec2(-14, -2.5)); 
 	createPath(glm::vec2(-9.5, -2.5), 1.25, Aceite); // CAMINO ACEITE
