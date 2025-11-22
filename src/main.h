@@ -47,6 +47,8 @@ Camara mainCamara;
 float yawCamera, pitchCamera;
 float distancia;
 float sensibilidad;
+std::vector<Camara> camaras;
+int camaraNum = 0;
 
 //Modelos
 modelManager mm;
