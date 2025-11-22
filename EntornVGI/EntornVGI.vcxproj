@@ -70,6 +70,8 @@
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\stdafx.h" />
     <ClInclude Include="..\src\visualitzacio.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="TextureHelper.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -7,6 +7,9 @@
 
 
 // Entorn VGI.ImGui: Includes llibreria ImGui
+//#define STB_IMAGE_IMPLEMENTATION  // <--- ESTO ES VITAL
+//#include "stb_image.h"
+
 #include "ImGui\imgui.h"
 #include "ImGui\imgui_impl_glfw.h"
 #include "ImGui\imgui_impl_opengl3.h"
@@ -771,14 +774,15 @@ int main(void)
 
 
 
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window) and !salir)
     {  
 		now = glfwGetTime();
 		delta = now - previous;
 		previous = now;
 		deltaTime = delta;
 
-		frameTimer += deltaTime;
+		// --- ERROR EN TU CÓDIGO ORIGINAL ---
+		// frameTimer += deltaTime;  <-- BORRA ESTO DE AQUÍ (si lo dejas, el tiempo avanza aunque estés en pausa)
 
 		// Poll for and process events
 		glfwPollEvents();
@@ -786,10 +790,45 @@ int main(void)
 		// Draws the UI
 		menu(salir);
 
-		// Update transforms and objects
-		Update(frameTimer, deltaTime);
+		// LÓGICA DE RESET (Modo Pruebas)
+		if (debug_resetear_todo)
+		{
+			// 1. Reiniciar Timer
+			frameTimer = 0.0f;
+
+			// 2. Matar Enemigos (Limpiar vector)
+			for (Enemy* en : enemies) 
+			{
+				delete en; // Liberar memoria
+			}
+			enemies.clear(); // Vaciar lista
+
+			// 3. Apagar la bandera para que no se ejecute infinitamente
+			debug_resetear_todo = false;
+		}
 
 
+		// LÓGICA DE SPAWN MANUAL (Modo Pruebas)
+		if (debug_solicitar_spawn)
+		{
+			// Llamamos a tu funcion existente spawnEnemy con el ID del hueco
+			spawnEnemy(debug_id_enemigo_spawn);
+
+			// Apagamos la bandera inmediatamente para que no spawnee infinitos
+			debug_solicitar_spawn = false;
+		}
+
+		// CONTROL DE ACTUALIZACIÓN (UPDATE)
+		// Se actualiza si:
+		// 1. NO está en pausa global (ESC)
+		// 2. Y ADEMÁS: (Estamos jugando) O (Estamos en pruebas Y el timer no está detenido manualmente)
+		bool debeActualizar = !juego_pausado && (show_jugar || (show_menu_pruebas && !debug_detener_tiempo));
+
+		if (debeActualizar)
+		{
+			Update(frameTimer, deltaTime);
+			frameTimer += deltaTime;
+		}
 
 		po.renderPicking();
 		
