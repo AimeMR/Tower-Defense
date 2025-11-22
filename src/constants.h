@@ -8,6 +8,14 @@
 #ifndef CONST_H
 #define CONST_H
 
+#define DEFAULT 0
+#define NORMALS 1
+#define SHADOW 2
+#define NO_SHADOWS 3
+//#define PICKING_OBJECTS 4 (aun no esta implementado, no usar)
+
+
+
 //--------------- VGI: Tipus de Càmera
 #define CAP ' '
 #define CAM_ESFERICA 'E'

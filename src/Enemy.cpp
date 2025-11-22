@@ -301,7 +301,7 @@ void Enemy::animate(float timer, float deltaTime)
 
 	case Accelerador: case AcceleradorACT:
 		// Crear y aplicar la matriz de rotación
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.1f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 		m_bodyParts[0]->rotate(matriz_rotacion); // Aplicar la rotación
 
 		if (m_pathType == Aceite) 

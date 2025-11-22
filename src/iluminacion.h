@@ -14,8 +14,8 @@ public:
 	void InitIluminacion(int width, int height);
 	void UpdateWindow(int width, int height);
 
-	void RenderShadows(glm::vec3 lightDir);
-	void RenderGame(GLuint shaderID);
+	void RenderShadows(glm::vec3 lightDir, float boxSize, float near_plane, float far_plane);
+	void RenderGame(GLuint shaderID, float ambientIntensity, glm::vec3 lightColor, int renderMode);
 
 	void TurretsWereLoaded() { m_turretsLoaded = true; }
 

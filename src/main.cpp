@@ -136,6 +136,13 @@ void InitGL()
 
 	luz.InitIluminacion(w, h);
 	direccionSol = glm::vec3(-1, -1, 1);
+	ambientIntensity = 0.3;
+	lightColor = glm::vec3(1, 1, 1);
+
+	boxSize = 25;
+	near_plane = 1.0f;
+	far_plane = 100.0f;
+
 	luz.m_cam = &mainCamara;
 	luz.objetos = &objects;
 	luz.enemigos = &enemies;
@@ -492,7 +499,7 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 		m_PosEAvall.y = ypos;
 
 		if (pitchCamera > 89.0f)  pitchCamera = 89.0f;
-		if (pitchCamera < 0) pitchCamera = 0;
+		if (pitchCamera < 15) pitchCamera = 15;
 
 		while (yawCamera >= 360.0f) yawCamera -= 360.0f;
 		while (yawCamera < 0.0f)    yawCamera += 360.0f;
@@ -519,7 +526,7 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 	{
 		distancia += m_PosDAvall.y - ypos;
 		if (distancia < 2) { distancia = 2; }
-		if (distancia > 100) { distancia = 100; }
+		if (distancia > 50) { distancia = 50; }
 		m_PosDAvall.x = xpos;				m_PosDAvall.y = ypos;
 	}
 	
@@ -879,13 +886,13 @@ int main(void)
 		po.renderPicking();
 		
 
-		luz.RenderShadows(direccionSol);
-		luz.RenderGame(customShaderID);
+		luz.RenderShadows(direccionSol, boxSize, near_plane, far_plane);
+		luz.RenderGame(customShaderID, ambientIntensity, lightColor, DEFAULT);
 
 		//po.debug();
 
 		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, mainCamara.getProjection(), mainCamara.getView());
-		dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, mainCamara.getProjection(), mainCamara.getView());
+		//dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, mainCamara.getProjection(), mainCamara.getView());
 
 		
 

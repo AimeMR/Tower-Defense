@@ -29,9 +29,6 @@ void Iluminacion::InitIluminacion(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
-	m_ambientIntensity = 0.3;
-	m_lightColor = glm::vec3(1, 1, 1);
-
 }
 
 void Iluminacion::UpdateWindow(int width, int height)
@@ -40,16 +37,18 @@ void Iluminacion::UpdateWindow(int width, int height)
 	h = height;
 }
 
-void Iluminacion::RenderShadows(glm::vec3 lightDir)
+void Iluminacion::RenderShadows(glm::vec3 lightDir, float boxSize, float near_plane, float far_plane)
 {
+
+	
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(2.0f, 5.0f); // Valores comunes que suelen funcionar
 
-	float boxSize = 25;
-	float near_plane = 1.0f, far_plane = 100.0f;
+	//float boxSize = 25;
+	//float near_plane = 1.0f, far_plane = 100.0f;
 	m_lightDirection = lightDir;
 
 	glm::mat4 lightProjection = glm::ortho(-boxSize, boxSize, -boxSize, boxSize, near_plane, far_plane);
@@ -82,11 +81,18 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir)
 }
 
 
-void Iluminacion::RenderGame(GLuint shaderID)
+void Iluminacion::RenderGame(GLuint shaderID, float ambientIntensity, glm::vec3 lightColor, int renderMode)
 {
+	m_ambientIntensity = ambientIntensity;
+	m_lightColor = lightColor;
+
+
 	glViewport(0, 0, w, h);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderID);
+
+	glUniform1i(glGetUniformLocation(shaderID, "renderMode"), renderMode);
+
 
 
 	glm::mat4 projectionMatrix, viewMatrix;

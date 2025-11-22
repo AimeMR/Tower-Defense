@@ -12,6 +12,8 @@ uniform Material material;
 uniform vec4 baseColor;
 uniform bool maskColor;
 
+uniform int renderMode;
+
 uniform vec3 lightColor;
 uniform vec3 lightDirection;
 uniform float ambientIntensity;
@@ -81,5 +83,22 @@ void main()
 	} 
 
 	vec3 result = (ambient + (1.0- shadow) * diffuse) * finalMaterialColor.rgb;
-	FragColor = vec4(result, 1.0);
+
+	switch(renderMode)
+	{
+		case 0:
+			FragColor = vec4(result, 1.0);
+			break;
+		case 1:
+			FragColor = vec4(normal * 0.5 + 0.5, 1.0);
+			break;
+		case 2:
+			FragColor = vec4(1.0 - shadow, 1.0 - shadow, 1.0 - shadow, 1.0);
+			break;
+		case 3:
+			FragColor = vec4(ambient * diffuse * finalMaterialColor.rgb, 1.0);
+			break;
+		default:
+			FragColor = vec4(result, 1.0);
+	}
 }

@@ -1028,8 +1028,8 @@ void _stdcall COBJModel::UseMaterial_ShaderID(GLuint sh_programID, Material pMat
 	{
 		//glUniform4i(glGetUniformLocation(sh_programID, "sw_intensity"), false, true, true, true);
 		//glUniform1i(glGetUniformLocation(sh_programID, "sw_material"), true);
-
-		if (pMaterial.iTextureID)
+		//pMaterial.iTextureID
+		if (false)
 		{
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, pMaterial.iTextureID);

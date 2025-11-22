@@ -36,6 +36,11 @@ GLuint poShaderID;
 //ILUMINACION
 Iluminacion luz;
 glm::vec3 direccionSol;
+float ambientIntensity = 0.3;
+glm::vec3 lightColor = glm::vec3(1, 1, 1);
+
+float boxSize;
+float near_plane, far_plane;
 
 //CAMARA
 Camara mainCamara;
