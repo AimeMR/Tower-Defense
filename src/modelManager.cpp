@@ -65,12 +65,12 @@ void modelManager::initialSetup()
 	m_modelsTorres.push_back(loadModel("Torretas\\laser2_head.obj"));
 
 	//Toxica
-	m_modelsTorres.push_back(loadModel("Torretas\\toxic2_base.obj"));
-	m_modelsTorres.push_back(loadModel("Torretas\\toxic2_head.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\toxic.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\toxicMOV.obj"));
 
 	//Francotirador
-	m_modelsTorres.push_back(loadModel("Torretas\\sniper3_base.obj"));
-	m_modelsTorres.push_back(loadModel("Torretas\\sniper3_head.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\sniper.obj"));
+	m_modelsTorres.push_back(loadModel("Torretas\\sniperMOV.obj"));
 
 	//A partir de aquí se añaden todos modelos auxiliares extras como balas, efectos, etc...
 	m_modelsTorres.push_back(loadModel("Torretas\\bala.obj")); //Ejemplo de bala

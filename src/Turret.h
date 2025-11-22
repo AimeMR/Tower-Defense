@@ -44,7 +44,7 @@ private:
 	std::vector<Enemy*> selectAllTargetsInRange();
 
 	int m_type = -1, m_id = 0;
-	float m_damage = 0, m_range = 0, m_defCD = 0, m_cd = 0;
+	float m_damage = 0, m_range = 0, m_defCD = 0, m_cd = 0, m_headZ = 0;
 	glm::vec2 m_pos;
 
 	//Variables auxiliars per animacions

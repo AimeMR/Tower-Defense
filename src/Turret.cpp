@@ -61,6 +61,7 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		m_range = 0; 
 		m_defCD = 0; 
 		m_cd = 0;
+		m_headZ = 0;
 		m_baseObj = nullptr;
 		m_headObj = nullptr;
 		return;
@@ -76,7 +77,6 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 	m_headObj->setPOID(m_id);
 
 	float zBase = 0.0f;
-	float zHead = 0.0f;
 
 	switch (type) {
 	case METRALLADORA:
@@ -85,33 +85,35 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		m_defCD = 0.5f;
 		m_range = 8;
 		zBase = -0.05f;
-		zHead = 0.8f;
+		m_headZ = 0.8f;
 		break;
 	case CONGELADORA:
 		m_damage = 1.0f;
 		m_defCD = 3.0f;
 		m_range = 5;
 		zBase = -0.05f;
+		m_headZ = 0.0f;
 		break;
 	case LASER:
 		m_damage = 0.65f;
 		m_defCD = 0.0f;
 		m_range = 5;
 		zBase = -0.05f;
-		zHead = 0.87f;
+		m_headZ = 0.87f;
 		break;
 	case VERI:
 		m_damage = 0.2f;
 		m_defCD = 1.0f;
 		m_range = 6;
 		zBase = -0.05f;
-		zHead = 0.75f;
+		m_headZ = 0.8f;
 		break;
 	case FRANCOTIRADORA:
 		m_damage = 2.5f;
 		m_defCD = 2.5f;
 		m_range = 12;
-		zHead = 2.42f;
+		zBase = -0.05f;
+		m_headZ = 1.2f;
 		break;
 	default:
 		return;
@@ -119,7 +121,7 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 	
 	m_cd = m_defCD;
 	m_baseObj->translate(glm::vec3(m_pos, zBase));
-	m_headObj->translate(glm::vec3(m_pos, zHead));
+	m_headObj->translate(glm::vec3(m_pos, m_headZ));
 }
 
 void Turret::mainUpdate(float deltaTime)
@@ -242,7 +244,7 @@ void Turret::shootAnimation()
 	switch (m_type) {
 	case METRALLADORA:
 		auxBool = true; // Control de retroceso
-		headPos = m_headObj->getPos();
+		headPos = glm::vec3(m_pos, m_headZ);
 		worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
 		recoilOffset = worldBackward * 0.25f;
 
@@ -262,7 +264,7 @@ void Turret::shootAnimation()
 		break;
 	case VERI:
 		auxBool = true; // Control de retroceso
-		headPos = m_headObj->getPos();
+		headPos = glm::vec3(m_pos, m_headZ);
 		worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
 		recoilOffset = worldBackward * 0.2f;
 
@@ -273,15 +275,11 @@ void Turret::shootAnimation()
 		m_auxObject->scale(glm::vec3(0.25f, 0.25f, 0.25f));
 		break;
 	case FRANCOTIRADORA:
-		auxBool = true; // Control de retroceso
-		headPos = m_headObj->getPos();
+		headPos = glm::vec3(m_pos, m_headZ);
 		worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
-		recoilOffset = worldBackward * 0.5f;
-
-		m_headObj->translate(headPos + recoilOffset);
 
 		spawnAuxObj(0);
-		m_auxObject->translate(glm::vec3(m_pos, 2.0f) - worldBackward * 1.45f);
+		m_auxObject->translate(glm::vec3(m_pos, 1.2f) - worldBackward * 1.45f);
 		m_auxObject->scale(glm::vec3(0.1f, 0.1f, 0.1f));
 
 		break;
@@ -296,10 +294,10 @@ void Turret::animate(float deltaTime)
 	case METRALLADORA:
 		if (auxBool) 
 		{
-			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 0.8f), 3.0f * deltaTime));
-			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, 0.8f)) < 0.001f)
+			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, m_headZ), 3.0f * deltaTime));
+			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, m_headZ)) < 0.001f)
 			{
-				m_headObj->translate(glm::vec3(m_pos, 0.8f));
+				m_headObj->translate(glm::vec3(m_pos, m_headZ));
 				auxBool = false;
 			}
 		}
@@ -331,10 +329,10 @@ void Turret::animate(float deltaTime)
 	case VERI:
 		if (auxBool)
 		{
-			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 0.75f), 3.0f * deltaTime));
-			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, 0.75f)) < 0.001f)
+			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, m_headZ), 3.0f * deltaTime));
+			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, m_headZ)) < 0.001f)
 			{
-				m_headObj->translate(glm::vec3(m_pos, 0.75f));
+				m_headObj->translate(glm::vec3(m_pos, m_headZ));
 				auxBool = false;
 			}
 		}
@@ -348,19 +346,10 @@ void Turret::animate(float deltaTime)
 
 		return;
 	case FRANCOTIRADORA:
-		if (auxBool)
-		{
-			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 2.42f), 3 * deltaTime));
-			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, 2.42f)) < 0.001f)
-			{
-				m_headObj->translate(glm::vec3(m_pos, 2.42f));
-				auxBool = false;
-			}
-		}
 
 		if (m_auxObject)
 		{
-			m_auxObject->translate(glm::lerp(m_auxObject->getPos(), auxVec3, 25.0f * deltaTime));
+			m_auxObject->translate(glm::lerp(m_auxObject->getPos(), auxVec3, 35.0f * deltaTime));
 			if (glm::length(m_auxObject->getPos() - auxVec3) < 0.1f)
 				deleteAuxObj();
 		}
