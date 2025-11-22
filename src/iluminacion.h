@@ -2,14 +2,14 @@
 
 #include "stdafx.h"
 #include "visualitzacio.h"
-#include "Enemy.h"
+#include "Turret.h"
 #include "shader.h"
 #include "camara.h"
 
 class Iluminacion {
 public:
 
-	Iluminacion() {}
+	Iluminacion() { m_turretsLoaded = false; }
 
 	void InitIluminacion(int width, int height);
 	void UpdateWindow(int width, int height);
@@ -17,10 +17,12 @@ public:
 	void RenderShadows(glm::vec3 lightDir);
 	void RenderGame(GLuint shaderID);
 
+	void TurretsWereLoaded() { m_turretsLoaded = true; }
+
 	Camara* m_cam;
 	std::vector<GameObject*>* objetos;
 	std::vector<Enemy*>* enemigos;
-
+	Turret** turrets;
 
 private:
 	// camara y ventana
@@ -40,6 +42,9 @@ private:
 	glm::mat4 m_lightSpaceMatrix;
 	float m_ambientIntensity;
 	glm::vec3 m_lightColor;
+
+	//control torretas
+	bool m_turretsLoaded = false;
 
 	//objetos
 };

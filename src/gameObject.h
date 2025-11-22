@@ -11,11 +11,13 @@ public:
 	void setRotation(glm::mat4 rot) { m_rot = rot; }
 	glm::mat4 getRot() { return m_rot; }
 	void scale(glm::vec3 scale) { m_scale = scale; }
+	glm::vec3 getScale() { return m_scale; }
 	void setId(int id) { objectID = id; }
 	void setParent(GameObject* parent) { m_parent = parent; }
 	int getId() { return objectID; }
 	glm::mat4 getModelMatrix();
 	glm::mat4 getNormalMatrix();
+	void setPOID(int id) { pickingID = id; }
 
 	void dibuixarObjecte(GLuint shaderID);
 

@@ -7,8 +7,7 @@
 
 
 // Entorn VGI: Llibreries i constants Constants de l'aplicació EntornVGI
-#include "gameObject.h"
-#include "Enemy.h"
+#include "Turret.h"
 #include "iluminacion.h"
 #include "camara.h"
 #include "pickingObjects.h"
@@ -18,6 +17,7 @@
 
 std::vector<Enemy*> enemies;
 std::vector<GameObject*> objects;
+Turret* turrets[NTURRETS];
 std::vector<Path*> path;
 
 GLuint customShaderID;	

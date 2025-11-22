@@ -56,16 +56,27 @@ void Enemy::setUpEnemyStats(float difficulty)
 	m_reward = (int)((float)m_weight * difficulty * 100.0f);
 }
 
+//Función auxiliar rotación
+float normalizeAngle(float a) {
+	a = fmod(a, 2.0f * PI);
+	if (a <= -PI) a += 2.0f * PI;
+	else if (a > PI) a -= 2.0f * PI;
+	return a;
+}
+
 void Enemy::move(float deltaTime, float timer)
 {
 	dieAnimation(deltaTime);
 	if (!m_Move || !m_target) return;
 	
-	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * m_speed * deltaTime;
+	float speed = m_speed * deltaTime * (1 - (max(m_slowCounter, 0.0f) / 3.5f));
+	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * speed;
+
+	TrackPathProgress();
 	
 	//Rotar
-	float targetAngle = atan2(m_dir.y, m_dir.x) - glm::half_pi<float>();
-	m_rotation = m_rotation + (fmod(targetAngle - m_rotation + PI, 2.0f * PI) - PI) * 5.0f * deltaTime;
+	float angleDiff = normalizeAngle(atan2(m_dir.y, m_dir.x) - glm::half_pi<float>() - m_rotation);
+	m_rotation = normalizeAngle(m_rotation + angleDiff * 7.5f * deltaTime);
 	m_rot = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0, 0, 1));
 
 	animate(timer, deltaTime);
@@ -73,7 +84,18 @@ void Enemy::move(float deltaTime, float timer)
 	//Sistema de detección de giros temporal
 	glm::vec2 relPos = glm::vec2(m_pos) - m_targetPos;
 	if (glm::dot(relPos, m_bisector) >= 0.0f)
-		reachPathEnd();
+		reachPathEnd();	
+
+	if (m_slowCounter > 0)
+	{
+		m_slowCounter -= deltaTime;
+		m_colorBase = glm::vec4(0.5f - (m_health / m_baseHealth * 2), m_poisonCounter / 5, m_slowCounter * 2 / 5, 1);
+	}
+	if (m_poisonCounter > 0) 
+	{
+		m_poisonCounter -= deltaTime;
+		takeDamage(deltaTime * 0.5f);
+	}	
 }
 
 void Enemy::dieAnimation(float deltatime) {
@@ -105,6 +127,7 @@ void Enemy::reachPathEnd()
 {
 	m_prevTargetPos = m_targetPos;
 	m_target = m_target->getNextPath();
+	m_nSegments ++;
 
 	
 	if (m_target == nullptr) 
@@ -112,7 +135,7 @@ void Enemy::reachPathEnd()
 		//Restar vida al jugador
 		//Explota
 		//Eliminar enemigo
-		
+		die();
 		return;
 	}
 
@@ -147,7 +170,17 @@ void Enemy::reachPathEnd()
 		}
 	}
 
+
 }
+
+void Enemy::TrackPathProgress() 
+{
+	glm::vec2 AB = m_targetPos - m_prevTargetPos;	
+	glm::vec2 AP = glm::vec2(m_pos.x, m_pos.y) - m_prevTargetPos;
+
+	m_segmentProgress = glm::clamp(glm::dot(AP, AB) / glm::dot(AB, AB), 0.0f, 1.0f);
+}
+
 
 void Enemy::animate(float timer, float deltaTime)
 {
@@ -351,35 +384,36 @@ void Enemy::takeDamage(float damage)
 	}
 	else 
 	{
-		m_colorBase = glm::vec4(1 - (m_health / m_baseHealth), 0, 0, 1);
+		m_colorBase = glm::vec4(0.5f - (m_health / m_baseHealth * 2.0f), m_poisonCounter / 6.0f, m_slowCounter / 4.5f, 1);
 	}
 }
 
 void Enemy::die()
 {
-	switch (m_type) {
-	case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
-		//Pagar al jugador rewardS
-		//Explota
-		break;
-	case Accelerador:
+	if(m_target)
+		switch (m_type) {
+		case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
+			//Pagar al jugador rewardS
+			//Explota
+			break;
+		case Accelerador:
 
-		//No paguem
-		m_health = m_baseHealth;
-		m_defSpeed *= 1.5f;
-		m_speed = m_defSpeed * m_target->getSpeedMultiplier();
-		m_damage = 1;
-		m_type = 6;
-		//Crear un nuevo enemigo ACCELERADORACT
-		return;
-	case Divisible:
-		//No paguem
-		//Explota
-		//Creem 2 enemics 7 a la seva posició actual amb la seva direcció actual
-		break;
-	default:
-		break;
-	}
+			//No paguem
+			m_health = m_baseHealth;
+			m_defSpeed *= 1.5f;
+			m_speed = m_defSpeed * m_target->getSpeedMultiplier();
+			m_damage = 1;
+			m_type = 6;
+			//Crear un nuevo enemigo ACCELERADORACT
+			return;
+		case Divisible:
+			//No paguem
+			//Explota
+			//Creem 2 enemics 7 a la seva posició actual amb la seva direcció actual
+			break;
+		default:
+			break;
+		}
 	m_Move = false;
 }
 
@@ -419,4 +453,13 @@ void Enemy::setStartPoint(glm::vec2 startPoint)
 		break;
 	}
 	m_pos = glm::vec3(startPoint.x, startPoint.y + m_offset, z); 
+}
+
+float Enemy::getProgress() 
+{
+	if(m_type == Volador)
+		return m_segmentProgress * 30;
+
+	else
+		return (float)m_nSegments + m_segmentProgress;
 }
