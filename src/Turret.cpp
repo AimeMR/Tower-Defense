@@ -112,7 +112,7 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		m_damage = 2.5f;
 		m_defCD = 2.5f;
 		m_range = 12;
-		zBase = -0.05f;
+		zBase = -0.15f;
 		m_headZ = 1.2f;
 		break;
 	default:

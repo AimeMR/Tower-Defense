@@ -16,12 +16,14 @@ void Enemy::setUpEnemyStats(float difficulty)
 		m_defSpeed = baseS * 1.0f;
 		m_damage = 1;
 		m_weight = 2;
+		m_maxOffset = 0.4;
 		break;
 	case Tanc:
 		m_baseHealth = baseH * 1.0f;
 		m_defSpeed = baseS * 0.4f;
 		m_damage = 2;
 		m_weight = 3;
+		m_maxOffset = 0.3;
 		break;
 	case Volador:
 		m_baseHealth = baseH * 0.4f;
@@ -41,7 +43,7 @@ void Enemy::setUpEnemyStats(float difficulty)
 		m_damage = 2;
 		m_weight = 4;
 		break;
-	//Per donar l'efecte de transició en el l'enemic 5, l'eliminem i creem un nou. L'espai 6 està ocupat per identificar enemics 4 accelerats.
+		//Per donar l'efecte de transició en el l'enemic 5, l'eliminem i creem un nou. L'espai 6 està ocupat per identificar enemics 4 accelerats.
 	case DivisibleDIV: //Enemic 5 dividit
 		m_baseHealth = baseH * 0.3f;
 		m_defSpeed = baseS * 0.4f;
@@ -68,12 +70,12 @@ void Enemy::move(float deltaTime, float timer)
 {
 	dieAnimation(deltaTime);
 	if (!m_Move || !m_target) return;
-	
+
 	float speed = m_speed * deltaTime * (1 - (max(m_slowCounter, 0.0f) / 3.5f));
 	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * speed;
 
 	TrackPathProgress();
-	
+
 	//Rotar
 	float angleDiff = normalizeAngle(atan2(m_dir.y, m_dir.x) - glm::half_pi<float>() - m_rotation);
 	m_rotation = normalizeAngle(m_rotation + angleDiff * 7.5f * deltaTime);
@@ -84,31 +86,31 @@ void Enemy::move(float deltaTime, float timer)
 	//Sistema de detección de giros temporal
 	glm::vec2 relPos = glm::vec2(m_pos) - m_targetPos;
 	if (glm::dot(relPos, m_bisector) >= 0.0f)
-		reachPathEnd();	
+		reachPathEnd();
 
 	if (m_slowCounter > 0)
 	{
 		m_slowCounter -= deltaTime;
 		m_colorBase = glm::vec4(0.5f - (m_health / m_baseHealth * 2), m_poisonCounter / 5, m_slowCounter * 2 / 5, 1);
 	}
-	if (m_poisonCounter > 0) 
+	if (m_poisonCounter > 0)
 	{
 		m_poisonCounter -= deltaTime;
 		takeDamage(deltaTime * 0.5f);
-	}	
+	}
 }
 
 void Enemy::dieAnimation(float deltatime) {
 	if (m_Move) return;
 	m_scale = glm::lerp(m_scale, glm::vec3(0.01f), 7.5f * deltatime);
-	
+
 	if (m_scale.x <= 0.1f)
 		m_alive = false;
 }
 
 
 
-void Enemy::startMoving() 
+void Enemy::startMoving()
 {
 	if (!m_target) return;
 
@@ -123,14 +125,14 @@ void Enemy::startMoving()
 	setStartPoint(m_prevTargetPos);
 }
 
-void Enemy::reachPathEnd() 
+void Enemy::reachPathEnd()
 {
 	m_prevTargetPos = m_targetPos;
 	m_target = m_target->getNextPath();
-	m_nSegments ++;
+	m_nSegments++;
 
-	
-	if (m_target == nullptr) 
+
+	if (m_target == nullptr)
 	{
 		//Restar vida al jugador
 		//Explota
@@ -144,7 +146,7 @@ void Enemy::reachPathEnd()
 	m_bisector = m_target->getBisector();
 	m_targetPos = m_target->getPos();
 	int newPType = m_target->getTipus();
-	if (newPType != m_pathType) 
+	if (newPType != m_pathType)
 	{
 		m_pathType = newPType;
 		//Esto se ejecuta solo en las transiciones entre diferentes tipos de caminos
@@ -173,9 +175,9 @@ void Enemy::reachPathEnd()
 
 }
 
-void Enemy::TrackPathProgress() 
+void Enemy::TrackPathProgress()
 {
-	glm::vec2 AB = m_targetPos - m_prevTargetPos;	
+	glm::vec2 AB = m_targetPos - m_prevTargetPos;
 	glm::vec2 AP = glm::vec2(m_pos.x, m_pos.y) - m_prevTargetPos;
 
 	m_segmentProgress = glm::clamp(glm::dot(AP, AB) / glm::dot(AB, AB), 0.0f, 1.0f);
@@ -252,7 +254,7 @@ void Enemy::animate(float timer, float deltaTime)
 		break;
 
 	case Tanc:
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.25f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		// --- GRUPO IZQUIERDO (Piezas 0, 1)
 		// No necesitan la rotación de 180 grados (están mirando hacia adelante por defecto)
@@ -283,10 +285,10 @@ void Enemy::animate(float timer, float deltaTime)
 	case Volador:
 		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -2.0f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(0.0f, 0.0f, 1.0f));
 
-		m_bodyParts[0]->translate(glm::vec3(-0.4, -0.55, 0.05)); 
-		m_bodyParts[1]->translate(glm::vec3(-0.35, 0.5, 0.05));  
- 		m_bodyParts[2]->translate(glm::vec3(0.37, -0.55, 0.05));  
-		m_bodyParts[3]->translate(glm::vec3(0.37, 0.5, 0.05)); 
+		m_bodyParts[0]->translate(glm::vec3(-0.4, -0.55, 0.05));
+		m_bodyParts[1]->translate(glm::vec3(-0.35, 0.5, 0.05));
+		m_bodyParts[2]->translate(glm::vec3(0.37, -0.55, 0.05));
+		m_bodyParts[3]->translate(glm::vec3(0.37, 0.5, 0.05));
 
 		m_bodyParts[0]->rotate(matriz_rotacion);
 		m_bodyParts[1]->rotate(matriz_rotacion);
@@ -299,24 +301,53 @@ void Enemy::animate(float timer, float deltaTime)
 
 		break;
 
-	case Accelerador: case AcceleradorACT:
-		// Crear y aplicar la matriz de rotación
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.1f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
-		m_bodyParts[0]->rotate(matriz_rotacion); // Aplicar la rotación
+	case Accelerador:
 
-		if (m_pathType == Aceite) 
+		// Crear y aplicar la matriz de rotación
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+
+
+		m_bodyParts[0]->rotate(matriz_rotacion); // Aplicar la rotación
+		m_bodyParts[0]->scale(glm::vec3(1, 1, 1));
+		m_bodyParts[1]->scale(glm::vec3(0.5, 0.5, 0.5));
+
+		if (m_pathType == Aceite)
 		{
 			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.0025f, m_pos.y, m_pos.z));
-			matriz_rotacionAceite = glm::rotate(glm::mat4(1.0f),sin(timer * 10.0f) * glm::radians(5.0f),glm::vec3(0.0f, 1.0f, 0.0f) );
+			matriz_rotacionAceite = glm::rotate(glm::mat4(1.0f), sin(timer * 10.0f) * glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			rotate(matriz_rotacionAceite); // Aplicar la rotación
 		}
-		else if(m_pathType == Baches)
+		else if (m_pathType == Baches)
 		{
 			translate(glm::vec3(m_pos.x, m_pos.y, 0.5 + abs(sin(timer * 10) * 0.2f)));
 		}
 		break;
 
-	case Divisible:  
+	case AcceleradorACT:
+
+		// Crear y aplicar la matriz de rotación
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		m_bodyParts[1]->rotate(matriz_rotacion); // Aplicar la rotación
+		m_bodyParts[0]->scale(glm::vec3(0.5, 0.5, 0.5));
+		m_bodyParts[1]->scale(glm::vec3(1, 1, 1));
+
+		if (m_pathType == Aceite)
+		{
+			translate(glm::vec3(m_pos.x + sin(timer * 10) * 0.0025f, m_pos.y, m_pos.z));
+			matriz_rotacionAceite = glm::rotate(glm::mat4(1.0f), sin(timer * 10.0f) * glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			rotate(matriz_rotacionAceite); // Aplicar la rotación
+		}
+		else if (m_pathType == Baches)
+		{
+			translate(glm::vec3(m_pos.x, m_pos.y, 0.5 + abs(sin(timer * 10) * 0.2f)));
+		}
+
+
+		break;
+
+
+	case Divisible:
 		// Lado derecho
 		m_bodyParts[0]->translate(glm::vec3(-0.14, -0.2, -0.32));
 		m_bodyParts[1]->translate(glm::vec3(-0.14, 0.22, -0.32));
@@ -324,7 +355,7 @@ void Enemy::animate(float timer, float deltaTime)
 		// Lado izquierdo
 		m_bodyParts[2]->translate(glm::vec3(0.14, -0.2, -0.32));
 		m_bodyParts[3]->translate(glm::vec3(0.14, 0.22, -0.32));
-		
+
 		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		m_bodyParts[0]->rotate(matriz_rotacion);
@@ -343,7 +374,7 @@ void Enemy::animate(float timer, float deltaTime)
 			{
 				translate(glm::vec3(m_pos.x, m_pos.y, 0.4 + abs(sin(timer * 10) * 0.1f)));
 			}
-		}	
+		}
 		break;
 
 	case DivisibleDIV:
@@ -375,14 +406,14 @@ void Enemy::animate(float timer, float deltaTime)
 	}
 }
 
-void Enemy::takeDamage(float damage) 
-{ 
-	m_health -= damage; 
-	if (m_health <= 0) 
+void Enemy::takeDamage(float damage)
+{
+	m_health -= damage;
+	if (m_health <= 0)
 	{
 		die();
 	}
-	else 
+	else
 	{
 		m_colorBase = glm::vec4(0.5f - (m_health / m_baseHealth * 2.0f), m_poisonCounter / 6.0f, m_slowCounter / 4.5f, 1);
 	}
@@ -390,7 +421,7 @@ void Enemy::takeDamage(float damage)
 
 void Enemy::die()
 {
-	if(m_target)
+	if (m_target)
 		switch (m_type) {
 		case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
 			//Pagar al jugador rewardS
@@ -405,6 +436,9 @@ void Enemy::die()
 			m_damage = 1;
 			m_type = 6;
 			//Crear un nuevo enemigo ACCELERADORACT
+
+
+
 			return;
 		case Divisible:
 			//No paguem
@@ -424,8 +458,8 @@ void Enemy::draw(GLuint shader)
 		g->dibuixarObjecte(shader);
 }
 
-void Enemy::setStartPoint(glm::vec2 startPoint) 
-{ 
+void Enemy::setStartPoint(glm::vec2 startPoint)
+{
 	m_prevTargetPos = startPoint;
 	float m_offset = (((float)rand() / (float)RAND_MAX) * 2.0f - 1.0f) * m_maxOffset;
 	float z;
@@ -452,12 +486,12 @@ void Enemy::setStartPoint(glm::vec2 startPoint)
 		z = 0.3f;
 		break;
 	}
-	m_pos = glm::vec3(startPoint.x, startPoint.y + m_offset, z); 
+	m_pos = glm::vec3(startPoint.x, startPoint.y + m_offset, z);
 }
 
-float Enemy::getProgress() 
+float Enemy::getProgress()
 {
-	if(m_type == Volador)
+	if (m_type == Volador)
 		return m_segmentProgress * 30;
 
 	else
