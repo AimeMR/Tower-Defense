@@ -254,7 +254,7 @@ void Enemy::animate(float timer, float deltaTime)
 		break;
 
 	case Tanc:
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.25f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.1f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		// --- GRUPO IZQUIERDO (Piezas 0, 1)
 		// No necesitan la rotación de 180 grados (están mirando hacia adelante por defecto)
