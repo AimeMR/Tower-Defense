@@ -236,12 +236,15 @@ void Turret::deleteAuxObj()
 
 void Turret::shootAnimation() 
 {
-	glm::vec3 headPos = m_headObj->getPos();
-	glm::vec3 worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
-	glm::vec3 recoilOffset = worldBackward * 0.25f;
+	glm::vec3 headPos;
+	glm::vec3 worldBackward;
+	glm::vec3 recoilOffset;
 	switch (m_type) {
 	case METRALLADORA:
 		auxBool = true; // Control de retroceso
+		headPos = m_headObj->getPos();
+		worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
+		recoilOffset = worldBackward * 0.25f;
 
 		m_headObj->translate(headPos + recoilOffset);
 
@@ -249,33 +252,39 @@ void Turret::shootAnimation()
 		m_auxObject->translate(glm::vec3(m_pos, 1.0f) - worldBackward * 1.45f);
 		m_auxObject->scale(glm::vec3(0.1f, 0.1f, 0.1f));
 
-		return;
+		break;
 	case CONGELADORA:
-		//Podem fer servir una circumferència blava al terra semblant a la que farem servir per veure el radi. Que el model tingui radi 1.
-		// Llavors la iniciem en escala (0.1, 0.1, 1) a dins la torre i fem que vagi creixent fins a ser del tamany m_range i que llavors desaparegui.
-		//Et pots inspirar en l'animació de mort que va fer el Joan a una altra branca per fer lo de que creixi fins a X punt.
-
-		//Et deixo un esquelet del codi entre aquesta funció i la de animate: 
-		// 
 		spawnAuxObj(0);
 		m_auxObject->translate(glm::vec3(m_pos, 0));
 		m_auxObject->scale(glm::vec3(0.1f, 0.1f, 1));
-		return;
+		break;
 	case LASER:
-		return;
+		break;
 	case VERI:
-		return;
-	case FRANCOTIRADORA:
 		auxBool = true; // Control de retroceso
+		headPos = m_headObj->getPos();
+		worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
+		recoilOffset = worldBackward * 0.2f;
 
 		m_headObj->translate(headPos + recoilOffset);
 
 		spawnAuxObj(0);
-		m_auxObject->translate(glm::vec3(m_pos, 1.0f) - worldBackward * 10.0f);
+		m_auxObject->translate(glm::vec3(m_pos, 1.0f) - worldBackward * 1.45f);
+		m_auxObject->scale(glm::vec3(0.25f, 0.25f, 0.25f));
+		break;
+	case FRANCOTIRADORA:
+		auxBool = true; // Control de retroceso
+		headPos = m_headObj->getPos();
+		worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
+		recoilOffset = worldBackward * 0.5f;
+
+		m_headObj->translate(headPos + recoilOffset);
+
+		spawnAuxObj(0);
+		m_auxObject->translate(glm::vec3(m_pos, 2.0f) - worldBackward * 1.45f);
 		m_auxObject->scale(glm::vec3(0.1f, 0.1f, 0.1f));
 
-		return;
-
+		break;
 	default: 
 		return;
 	}
@@ -304,13 +313,9 @@ void Turret::animate(float deltaTime)
 
 		return;
 	case CONGELADORA:
-		
-		// Esto combinado con lo del shootAnimation debería funcionar
-		
+				
 		if (m_auxObject == nullptr) return;
-		
 		m_auxObject->scale(glm::lerp(m_auxObject->getScale(), glm::vec3(m_range, m_range, 1), 7.5f * deltaTime));
-
 
 		if (m_auxObject)
 		{
@@ -326,7 +331,7 @@ void Turret::animate(float deltaTime)
 	case VERI:
 		if (auxBool)
 		{
-			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 0.75f), deltaTime));
+			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 0.75f), 3.0f * deltaTime));
 			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, 0.75f)) < 0.001f)
 			{
 				m_headObj->translate(glm::vec3(m_pos, 0.75f));
@@ -345,7 +350,7 @@ void Turret::animate(float deltaTime)
 	case FRANCOTIRADORA:
 		if (auxBool)
 		{
-			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 2.42f), deltaTime));
+			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 2.42f), 3 * deltaTime));
 			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, 2.42f)) < 0.001f)
 			{
 				m_headObj->translate(glm::vec3(m_pos, 2.42f));

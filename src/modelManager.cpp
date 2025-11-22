@@ -74,7 +74,8 @@ void modelManager::initialSetup()
 
 	//A partir de aquí se añaden todos modelos auxiliares extras como balas, efectos, etc...
 	m_modelsTorres.push_back(loadModel("Torretas\\bala.obj")); //Ejemplo de bala
-	m_modelsTorres.push_back(loadModel("Torretas\\tesla_bala.obj")); //Ejemplo de bala
+	m_modelsTorres.push_back(loadModel("Torretas\\radio.obj")); //Ejemplo de bala
+	m_modelsTorres.push_back(loadModel("Torretas\\bola.obj")); //Ejemplo de bala
 
 }
 
@@ -144,7 +145,7 @@ std::vector<COBJModel*> modelManager::getTurret(int type)
 
 		break;
 	case VERI:
-
+		models.push_back(m_modelsTorres[12]);
 		break;
 	case FRANCOTIRADORA:
 		models.push_back(m_modelsTorres[10]); //Carreguem la bala com a auxiliar de la metralladora
