@@ -743,7 +743,7 @@ int main(void)
 	setUpPath();
 	setUpTurrets();
 	luz.TurretsWereLoaded();
-	modifyTurret(0, 1);
+	modifyTurret(0, 4);
 	modifyTurret(1, -1);
 	modifyTurret(2, -1);
 	modifyTurret(3, -1);

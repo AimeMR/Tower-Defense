@@ -182,6 +182,7 @@ void Turret::updateIce(float deltaTime)
 		{
 			//Attack effect
 			//Slow enemies
+			shootAnimation();
 			e->takeDamage(m_damage);
 			e->setSlow(2.0f + m_damage);
 		}
@@ -308,10 +309,14 @@ void Turret::animate(float deltaTime)
 		
 		if (m_auxObject == nullptr) return;
 		
-		m_auxObject->scale(glm::lerp(m_auxObject->getScale(), glm::vec3(m_range, m_range, 1), 2.5f * deltaTime));
+		m_auxObject->scale(glm::lerp(m_auxObject->getScale(), glm::vec3(m_range, m_range, 1), 7.5f * deltaTime));
 
-		if (m_auxObject->getScale().x > m_range - 0.25f)
-			deleteAuxObj();
+
+		if (m_auxObject)
+		{
+			if (m_auxObject->getScale().x > m_range - 0.25f)
+				deleteAuxObj();
+		}
 
 
 		return;
@@ -319,6 +324,22 @@ void Turret::animate(float deltaTime)
 		//Hem de veure com fer un laser que vagi d'un punt a un altre, no ho tinc molt clar, investiga com fer-ho. Deixa-ho pel final.
 		return;
 	case VERI:
+		if (auxBool)
+		{
+			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, 0.75f), deltaTime));
+			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, 0.75f)) < 0.001f)
+			{
+				m_headObj->translate(glm::vec3(m_pos, 0.75f));
+				auxBool = false;
+			}
+		}
+
+		if (m_auxObject)
+		{
+			m_auxObject->translate(glm::lerp(m_auxObject->getPos(), auxVec3, 25.0f * deltaTime));
+			if (glm::length(m_auxObject->getPos() - auxVec3) < 0.1f)
+				deleteAuxObj();
+		}
 
 		return;
 	case FRANCOTIRADORA:
