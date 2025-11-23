@@ -1,5 +1,6 @@
 #include "modelManager.h"
 #include "Enemy.h"
+#include <unordered_set>
 #define Basic 0
 #define Rapid 1
 #define Tanc 2
@@ -25,18 +26,13 @@ modelManager::modelManager()
 modelManager::~modelManager()
 {
 	delete m_modelMapa;
+	std::unordered_set<COBJModel*> deleted;
+
 	for (COBJModel* m : m_modelsEnemics)
-	{
-		if (m != nullptr)
-		{
+		if (m && !deleted.count(m)) {
+			deleted.insert(m);
 			delete m;
-			m = nullptr;
 		}
-		else
-		{
-			continue;
-		}
-	}
 	for (COBJModel* m : m_modelsTorres)
 		delete m;
 }

@@ -338,7 +338,7 @@ void setUpPath()
 
 	createPath(glm::vec2(0.9, -3.5));
 	createPath(glm::vec2(0.9, 4), 1.25, Aceite); // CAMINO ACEITE
-	createPath(glm::vec2(0.9, 4.5), 0.8, Esquina);
+	createPath(glm::vec2(0.9, 4.75), 0.8, Esquina);
 
 	createPath(glm::vec2(7.25, 4.75));
 	createPath(glm::vec2(8.25, 4.75), 0.8, Esquina);
@@ -348,7 +348,7 @@ void setUpPath()
 
 	createPath(glm::vec2(8, 8.75));
 	createPath(glm::vec2(-2.75, 8.75), 0.7, Nuclear);  // CAMINO NUCLEAR
-	createPath(glm::vec2(-3, 8.75), 0.8, Esquina);
+	createPath(glm::vec2(-3.25, 8.75), 0.8, Esquina);
 
 	//////////////////////
 	createPath(glm::vec2(-3.25, 4.75));
@@ -361,14 +361,14 @@ void setUpPath()
 	createPath(glm::vec2(-14.85, -6.7), 0.8, Esquina);
 
 	createPath(glm::vec2(-14.85, -4));
-	createPath(glm::vec2(-14.85, -2.7), 0.8, Esquina);
+	createPath(glm::vec2(-14.85, -2.5), 0.8, Esquina);
 
 	createPath(glm::vec2(-14, -2.5)); 
 	createPath(glm::vec2(-9.5, -2.5), 1.25, Aceite); // CAMINO ACEITE
 	createPath(glm::vec2(-8, -2.5), 0.8, Esquina);
 
 	createPath(glm::vec2(-8, 0.5));
-	createPath(glm::vec2(-8, 1.5), 0.8, Esquina);
+	createPath(glm::vec2(-8, 1.75), 0.8, Esquina);
 
 	createPath(glm::vec2(-20, 1.75));
 	createPath(glm::vec2(-20.5, 1.75));
@@ -946,14 +946,14 @@ int main(void)
 	setUpPath();
 	setUpTurrets();
 	luz.TurretsWereLoaded();
-	modifyTurret(0, -1);
-	modifyTurret(1, -1);
-	modifyTurret(2, -1);
-	modifyTurret(3, -1);
-	modifyTurret(4, -1);
-	modifyTurret(5, -1);
-	modifyTurret(6, -1);
-	modifyTurret(7, -1);
+	modifyTurret(0, LASER);
+	modifyTurret(1, LASER);
+	modifyTurret(2, LASER);
+	modifyTurret(3, 0);
+	modifyTurret(4, 1);
+	modifyTurret(5, 2);
+	modifyTurret(6, 3);
+	modifyTurret(7, 4);
 	modifyTurret(8, -1);
 
 

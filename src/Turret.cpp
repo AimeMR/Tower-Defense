@@ -138,24 +138,36 @@ void Turret::mainUpdate(float deltaTime)
 void Turret::updateLaser(float deltaTime)
 {
 	Enemy* target = selectTarget();
-	auxBool = (target);
 	if (target)
 	{
-		if (!m_auxObject) 
+		TurnHead(deltaTime, target->getPos());
+		if (auxBool) 
 		{
-			spawnAuxObj(0);
+			auxVec3 = target->getPos();
+			float laserDMG = max(target->getHealth() * 0.5f, m_damage * 2);
+			target->takeDamage(laserDMG * deltaTime * m_damage);
+			if (!m_auxObject) 
+			{
+				spawnAuxObj(0);
+				glm::vec3 worldFW = glm::vec3(m_headObj->getRot() * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+				glm::quat rot = glm::rotation(glm::vec3(0, 0, 1), worldFW);
+				m_auxObject->setRotation(glm::mat4_cast(rot));
+
+				glm::vec3 cannonTip = glm::vec3(m_pos, m_headZ + 0.6f) + worldFW;
+				glm::vec3 dir = auxVec3 - cannonTip;
+				m_auxObject->translate(cannonTip + dir / 2.0f);
+
+				m_auxObject->scale(glm::vec3(0.25f, 0.25f, glm::length(dir) / 2.0f));
+			}
 		}
-		auxVec3 = target->getPos();
-		TurnHead(deltaTime, auxVec3);
-		shootAnimation();
-		float laserDMG = max(target->getHealth() * 0.5f, m_damage * 2);
-		target->takeDamage(laserDMG * deltaTime * m_damage);
+		else
+		{
+			if (m_auxObject) deleteAuxObj();
+		}
+		
 		return;
 	}
-	else if(m_auxObject)
-	{
-		deleteAuxObj();
-	}
+	else if (m_auxObject) deleteAuxObj();
 }
 
 void Turret::updateCannon(float deltaTime) 
@@ -217,6 +229,8 @@ void Turret::TurnHead(float deltaTime, glm::vec3 ePos)
 
 	glm::quat currentRot = glm::quat_cast(m_headObj->getRot());
 	glm::quat smoothRot = glm::slerp(currentRot, targetRot, 0.15f);
+
+	if (m_type == LASER) auxBool = glm::dot(currentRot, targetRot) > 0.999f;
 
 	m_headObj->setRotation(glm::mat4_cast(smoothRot));
 }
