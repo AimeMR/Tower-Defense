@@ -814,29 +814,13 @@ void Update(float timer, float deltaTime)
 	}
 
 
-	if (inputVector.y == 1)
-	{
-		freeCameraPos -= cameraDir * cameraSpeed * deltaTime;
-	}
-	if (inputVector.x == -1)
-	{
-		freeCameraPos += cameraRight * cameraSpeed * deltaTime;
-	}
-	if (inputVector.y == -1)
-	{
-		freeCameraPos += cameraDir * cameraSpeed * deltaTime;
-	}
-	if (inputVector.x == 1)
-	{
-		freeCameraPos -= cameraRight * cameraSpeed * deltaTime;
-	}
+	if (inputVector.y == 1)	freeCameraPos -= cameraDir * cameraSpeed * deltaTime;
+	if (inputVector.x == -1) freeCameraPos += cameraRight * cameraSpeed * deltaTime;
+	if (inputVector.y == -1) freeCameraPos += cameraDir * cameraSpeed * deltaTime;
+	if (inputVector.x == 1) freeCameraPos -= cameraRight * cameraSpeed * deltaTime;
 
 	camaras[CAM_FREE].translate(freeCameraPos);
 	camaras[CAM_FREE].target(freeCameraPos - cameraDir);
-
-
-	fprintf(stderr, "Cam: %d\n", camaraActual);
-
 }
 
 

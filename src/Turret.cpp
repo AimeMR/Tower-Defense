@@ -228,9 +228,9 @@ void Turret::TurnHead(float deltaTime, glm::vec3 ePos)
 	targetRot = targetRot * fixSideOffset * fixXForward;
 
 	glm::quat currentRot = glm::quat_cast(m_headObj->getRot());
-	glm::quat smoothRot = glm::slerp(currentRot, targetRot, 0.15f);
+	glm::quat smoothRot = glm::slerp(currentRot, targetRot, 0.2f);
 
-	if (m_type == LASER) auxBool = glm::dot(currentRot, targetRot) > 0.999f;
+	if (m_type == LASER) auxBool = abs(glm::dot(smoothRot, targetRot)) > 0.999f;
 
 	m_headObj->setRotation(glm::mat4_cast(smoothRot));
 }

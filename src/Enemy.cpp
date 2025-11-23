@@ -130,6 +130,7 @@ void Enemy::reachPathEnd()
 	m_prevTargetPos = m_targetPos;
 	m_target = m_target->getNextPath();
 	m_nSegments++;
+	m_segmentProgress = 0.0f;
 
 
 	if (m_target == nullptr)
