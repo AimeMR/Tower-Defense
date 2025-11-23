@@ -780,29 +780,18 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 	fprintf(stderr, "\n");
 }
 
-
-//-----------------Variables globales
-
-void Update(float timer, float deltaTime) 
+void CamerasUpdate() 
 {
 	Enemy* target = nullptr;
 	int maxProg = 0;
 	for (Enemy* e : enemies) 
 	{
-		e->move(deltaTime, timer);
-		divideEnemy(e);
-		destroyEnemies(e);
 		float prog = e->getProgress();
 		if (prog > maxProg)
 		{
 			maxProg = prog;
 			target = e;
 		}
-	}
-
-	for (int i = 0; i < NTURRETS; i++) 
-	{
-		turrets[i]->mainUpdate(deltaTime);
 	}
 
 	if (target != nullptr)
@@ -823,6 +812,23 @@ void Update(float timer, float deltaTime)
 
 	camaras[CAM_FREE].translate(freeCameraPos);
 	camaras[CAM_FREE].target(freeCameraPos - cameraDir);
+}
+
+//-----------------Variables globales
+
+void Update(float timer, float deltaTime) 
+{
+	for (Enemy* e : enemies) 
+	{
+		e->move(deltaTime, timer);
+		divideEnemy(e);
+		destroyEnemies(e);
+	}
+
+	for (int i = 0; i < NTURRETS; i++) 
+	{
+		turrets[i]->mainUpdate(deltaTime);
+	}
 }
 
 
@@ -950,15 +956,15 @@ int main(void)
 	setUpPath();
 	setUpTurrets();
 	luz.TurretsWereLoaded();
-	modifyTurret(0, LASER);
-	modifyTurret(1, LASER);
+	modifyTurret(0, METRALLADORA);
+	modifyTurret(1, CONGELADORA);
 	modifyTurret(2, LASER);
-	modifyTurret(3, 0);
-	modifyTurret(4, 1);
-	modifyTurret(5, 2);
-	modifyTurret(6, 3);
-	modifyTurret(7, 4);
-	modifyTurret(8, -1);
+	modifyTurret(3, VERI);
+	modifyTurret(4, FRANCOTIRADORA);
+	modifyTurret(5, VERI);
+	modifyTurret(6, CONGELADORA);
+	modifyTurret(7, METRALLADORA);
+	modifyTurret(8, LASER);
 
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
@@ -1017,9 +1023,11 @@ int main(void)
 
 		if (debeActualizar)
 		{
-			Update(frameTimer, deltaTime);
-			frameTimer += deltaTime;
+			float speedMult = 1.0f;
+			Update(frameTimer, deltaTime * speedMult);
+			frameTimer += deltaTime * speedMult;
 		}
+		CamerasUpdate();
 
 		po.renderPicking();
 		
