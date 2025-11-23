@@ -497,3 +497,15 @@ float Enemy::getProgress()
 	else
 		return (float)m_nSegments + m_segmentProgress;
 }
+
+void Enemy::copyMovementData(Path* target)
+{
+	m_target = target;
+	m_dir = m_target->getNextDir();
+	m_speed = m_defSpeed * m_target->getSpeedMultiplier();
+	m_bisector = m_target->getBisector();
+	m_targetPos = m_target->getPos();
+
+	m_rotation = atan2(m_dir.y, m_dir.x) - glm::half_pi<float>();
+	m_rot = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0, 0, 1));
+}

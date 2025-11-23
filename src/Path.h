@@ -33,6 +33,7 @@ public:
 	glm::vec2 getPos() { return m_pos; }
 	int getTipus() { return m_tipo; }
 	float getSpeedMultiplier() { return m_speedMultiplier; }
+	Path* getPrevPath() { return m_prevPath; }
 
 private:
 	float m_speedMultiplier = 1;

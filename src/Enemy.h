@@ -62,6 +62,9 @@ public:
 	float getHealth() { return m_health; }
 	void setSlow(float sC) { m_slowCounter = sC; }
 	void setPoison(float pC) { m_poisonCounter = pC; }
+	int getEnemyType() { return m_type; }
+	Path* getTarget() { return m_target; }
+	void copyMovementData(Path* target);
 
 private:
 	int m_damage, m_reward, m_type, m_weight, m_pathType = 0, m_nSegments = 0;

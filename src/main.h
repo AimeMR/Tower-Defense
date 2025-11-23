@@ -12,6 +12,7 @@
 #include "camara.h"
 #include "pickingObjects.h"
 #include <vector>
+#include <unordered_set>
 #include "modelManager.h"
 // Entorn VGI: OBJECTE OBJ. Include per la definició de l'objecte Obj_OBJ
 
