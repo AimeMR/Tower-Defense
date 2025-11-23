@@ -192,7 +192,7 @@ void Enemy::animate(float timer, float deltaTime)
 
 	switch (m_type) {
 	case Basic:
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -5.0f * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		// --- GRUPO IZQUIERDO (Piezas 0, 1, 2)
 		// No necesitan la rotación de 180 grados (están mirando hacia adelante por defecto)
@@ -235,7 +235,7 @@ void Enemy::animate(float timer, float deltaTime)
 		m_bodyParts[0]->translate(glm::vec3(0, -0.33, -0.24));
 		m_bodyParts[1]->translate(glm::vec3(0, 0.54, -0.24));
 
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -7.5f * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		m_bodyParts[0]->rotate(matriz_rotacion);
 		m_bodyParts[1]->rotate(matriz_rotacion);
@@ -255,7 +255,7 @@ void Enemy::animate(float timer, float deltaTime)
 		break;
 
 	case Tanc:
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.1f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -2.0f * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		// --- GRUPO IZQUIERDO (Piezas 0, 1)
 		// No necesitan la rotación de 180 grados (están mirando hacia adelante por defecto)
@@ -284,7 +284,7 @@ void Enemy::animate(float timer, float deltaTime)
 		break;
 
 	case Volador:
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -2.0f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(0.0f, 0.0f, 1.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -15.0f * m_speed * deltaTime / m_defSpeed, glm::vec3(0.0f, 0.0f, 1.0f));
 
 		m_bodyParts[0]->translate(glm::vec3(-0.4, -0.55, 0.05));
 		m_bodyParts[1]->translate(glm::vec3(-0.35, 0.5, 0.05));
@@ -305,7 +305,7 @@ void Enemy::animate(float timer, float deltaTime)
 	case Accelerador:
 
 		// Crear y aplicar la matriz de rotación
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -5.0f * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 
 		m_bodyParts[0]->rotate(matriz_rotacion); // Aplicar la rotación
@@ -327,7 +327,7 @@ void Enemy::animate(float timer, float deltaTime)
 	case AcceleradorACT:
 
 		// Crear y aplicar la matriz de rotación
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -5.0f * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		m_bodyParts[1]->rotate(matriz_rotacion); // Aplicar la rotación
 		m_bodyParts[0]->scale(glm::vec3(0.5, 0.5, 0.5));
@@ -357,7 +357,7 @@ void Enemy::animate(float timer, float deltaTime)
 		m_bodyParts[2]->translate(glm::vec3(0.14, -0.2, -0.32));
 		m_bodyParts[3]->translate(glm::vec3(0.14, 0.22, -0.32));
 
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -5.0f * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		m_bodyParts[0]->rotate(matriz_rotacion);
 		m_bodyParts[1]->rotate(matriz_rotacion);
@@ -382,7 +382,7 @@ void Enemy::animate(float timer, float deltaTime)
 		m_bodyParts[0]->translate(glm::vec3(0, -0.18, -0.31));
 		m_bodyParts[1]->translate(glm::vec3(0, 0.24, -0.31));
 
-		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -0.5f * timer * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
+		matriz_rotacion = glm::rotate(glm::mat4(1.0f), -5.0f * m_speed * deltaTime / m_defSpeed, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		m_bodyParts[0]->rotate(matriz_rotacion);
 		m_bodyParts[1]->rotate(matriz_rotacion);
