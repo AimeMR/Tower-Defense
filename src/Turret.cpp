@@ -10,7 +10,7 @@ Enemy* Turret::selectTarget()
 		glm::vec3 epos = e->getPos();
 		float len = glm::distance(glm::vec2(epos.x, epos.y), m_pos);
 		
-		if (len > m_range) continue;
+		if (len > m_range || !e->isAlive()) continue;
 		
 		float prog = e->getProgress();
 		if (prog > maxProg) 
@@ -32,7 +32,7 @@ std::vector<Enemy*> Turret::selectAllTargetsInRange()
 		glm::vec3 epos = e->getPos();
 		float len = glm::distance(glm::vec2(epos.x, epos.y), m_pos);
 
-		if (len <= m_range)
+		if (len <= m_range && e->isAlive())
 			targets.push_back(e);
 	}
 
@@ -138,24 +138,34 @@ void Turret::mainUpdate(float deltaTime)
 void Turret::updateLaser(float deltaTime)
 {
 	Enemy* target = selectTarget();
+	auxBool = (target);
 	if (target)
 	{
-		TurnHead(deltaTime, target->getPos());
+		if (!m_auxObject) 
+		{
+			spawnAuxObj(0);
+		}
+		auxVec3 = target->getPos();
+		TurnHead(deltaTime, auxVec3);
+		shootAnimation();
 		float laserDMG = max(target->getHealth() * 0.5f, m_damage * 2);
 		target->takeDamage(laserDMG * deltaTime * m_damage);
 		return;
+	}
+	else if(m_auxObject)
+	{
+		deleteAuxObj();
 	}
 }
 
 void Turret::updateCannon(float deltaTime) 
 {
 	Enemy* target = selectTarget();
-	if (!target) 
+	if (!target && m_cd < m_defCD) 
 	{
-		m_cd = m_defCD;
-		return;
+		m_cd += deltaTime;
 	}
-	else 
+	else if(target)
 	{
 		TurnHead(deltaTime, target->getPos());
 		m_cd -= deltaTime;
@@ -226,16 +236,6 @@ void Turret::deleteAuxObj()
 	m_auxObject = nullptr;
 }
 
-//mm = modelManager.cpp
-//El concepto de las animaciones es el siguiente: Al disparar se ejecuta shootAnimation() y animate se va ejecutando todo el rato.
-//Por ejemplo, para disparar una bala la tienes que haber cargado en el mm, tanto el modelo al final de la carga como añadida al switch del getTurret que quieras.
-//En shootAnimation() llamas a spawnAuxObj(el num de modelo auxiliar) para crear la bala, y pones su m_pos en la punta del cañón con translate(), su tamaño con scale()... 
-
-//Desde animate() modificas su posición/rotación/escala lo que quieras mientras no se cumpla cierta condición. Allí animas también la própia torreta.
-//Cuando pase la condición límite llamas a deleteAuxObj(objeto) o lo que sea.
-
-//Usa los espacios de variables auxiliares de torre para guardar variables, y crea los que necesites.
-
 void Turret::shootAnimation() 
 {
 	glm::vec3 headPos;
@@ -243,7 +243,7 @@ void Turret::shootAnimation()
 	glm::vec3 recoilOffset;
 	switch (m_type) {
 	case METRALLADORA:
-		auxBool = true; // Control de retroceso
+		auxBool = true;
 		headPos = glm::vec3(m_pos, m_headZ);
 		worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
 		recoilOffset = worldBackward * 0.25f;
@@ -260,10 +260,8 @@ void Turret::shootAnimation()
 		m_auxObject->translate(glm::vec3(m_pos, 0));
 		m_auxObject->scale(glm::vec3(0.1f, 0.1f, 1));
 		break;
-	case LASER:
-		break;
 	case VERI:
-		auxBool = true; // Control de retroceso
+		auxBool = true;
 		headPos = glm::vec3(m_pos, m_headZ);
 		worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
 		recoilOffset = worldBackward * 0.2f;
@@ -321,10 +319,20 @@ void Turret::animate(float deltaTime)
 				deleteAuxObj();
 		}
 
-
 		return;
 	case LASER:
-		//Hem de veure com fer un laser que vagi d'un punt a un altre, no ho tinc molt clar, investiga com fer-ho. Deixa-ho pel final.
+		if (!m_auxObject) return;
+		
+		glm::vec3 worldFW = glm::vec3(m_headObj->getRot() * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f));
+		glm::quat rot = glm::rotation(glm::vec3(0, 0, 1), worldFW);
+		m_auxObject->setRotation(glm::mat4_cast(rot));
+
+		glm::vec3 cannonTip = glm::vec3(m_pos, m_headZ + 0.6f) + worldFW;
+		glm::vec3 dir = auxVec3 - cannonTip;
+		m_auxObject->translate(cannonTip + dir / 2.0f);
+
+		m_auxObject->scale(glm::vec3(0.25f, 0.25f, glm::length(dir) / 2.0f));
+
 		return;
 	case VERI:
 		if (auxBool)

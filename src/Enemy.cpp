@@ -2,7 +2,7 @@
 
 void Enemy::setUpEnemyStats(float difficulty)
 {
-	float baseH = 10.0f;
+	float baseH = 20.0f;
 	float baseS = 5.0f;
 	switch (m_type) {
 	case Basic:

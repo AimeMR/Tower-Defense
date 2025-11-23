@@ -862,7 +862,7 @@ int main(void)
 
 
 		// LÓGICA DE SPAWN MANUAL (Modo Pruebas)
-		if (debug_solicitar_spawn)
+		if (debug_solicitar_spawn && debug_id_enemigo_spawn > -1 && debug_id_enemigo_spawn < 6)
 		{
 			// Llamamos a tu funcion existente spawnEnemy con el ID del hueco
 			spawnEnemy(debug_id_enemigo_spawn);

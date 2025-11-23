@@ -48,7 +48,6 @@ private:
 	glm::vec2 m_pos;
 
 	//Variables auxiliars per animacions
-	float auxTimer = 0.0f;
 	glm::vec3 auxVec3 = glm::vec3(0.0f, 0.0f, 0.0f);
 	bool auxBool = false;
 
