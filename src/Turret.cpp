@@ -143,7 +143,7 @@ void Turret::updateLaser(float deltaTime)
 		TurnHead(deltaTime, target->getPos());
 		if (auxBool) 
 		{
-			auxVec3 = target->getPos();
+			auxVec3 = target->getPos() - vec3(0, 0, 0.25f);
 			float laserDMG = max(target->getHealth() * 0.5f, m_damage * 2);
 			target->takeDamage(laserDMG * deltaTime * m_damage);
 			if (!m_auxObject) 
@@ -184,7 +184,7 @@ void Turret::updateCannon(float deltaTime)
 		if (m_cd <= 0) 
 		{
 			shootAnimation();
-			auxVec3 = target->getPos();
+			auxVec3 = target->getPos() - vec3(0, 0, 0.25f);
 
 			if(m_type == VERI) target->setPoison(1.5f + m_damage * 2.0f);
 
@@ -216,7 +216,7 @@ void Turret::updateIce(float deltaTime)
 void Turret::TurnHead(float deltaTime, glm::vec3 ePos)
 {
 	glm::vec3 headPos = m_headObj->getPos();
-	glm::mat4 view = glm::lookAt(headPos, ePos, glm::vec3(0, 0, 1));
+	glm::mat4 view = glm::lookAt(headPos, ePos - vec3(0, 0, 0.25f), glm::vec3(0, 0, 1));
 	
 	glm::mat4 modelRot = glm::inverse(view);
 
