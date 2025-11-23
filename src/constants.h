@@ -15,6 +15,14 @@
 //#define PICKING_OBJECTS 4 (aun no esta implementado, no usar)
 
 
+#define CAM_ORBIT 0
+#define CAM_TOP 1
+#define CAM_FRONT 2
+#define CAM_RIGHT 3
+#define CAM_FOLLOW 4
+#define CAM_FREE 5
+
+
 
 //--------------- VGI: Tipus de Càmera
 #define CAP ' '

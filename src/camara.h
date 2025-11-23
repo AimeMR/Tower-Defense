@@ -14,6 +14,22 @@ public:
 	void rotate(glm::vec3 eulerRot);
 	void target(glm::vec3 target);
 
+	Camara& operator=(const Camara& other)
+	{
+		if (this != &other)
+		{
+			this->m_projectionMatrix = other.m_projectionMatrix;
+			this->m_viewMatrix = other.m_viewMatrix;
+			this->m_position = other.m_position;
+			this->m_rotation = other.m_rotation;
+
+			this->m_near = other.m_near;
+			this->m_far = other.m_far;
+			this->m_zoom = other.m_zoom;
+		}
+		return *this;
+	}
+
 	glm::mat4 getProjection();
 	glm::mat4 getView();
 

@@ -27,6 +27,8 @@ float deltaTime;
 float frameTimer = 0;
 int awa = 0;
 
+glm::vec3 inputVector;
+
 //picking objects
 PickingObjects3D po;
 Shader poShader;
@@ -43,10 +45,18 @@ float boxSize;
 float near_plane, far_plane;
 
 //CAMARA
-Camara mainCamara;
+Camara* mainCamara;
 float yawCamera, pitchCamera;
 float distancia;
 float sensibilidad;
+std::vector<Camara> camaras;
+int camaraActual;
+int nCamaras;
+
+float cameraSpeed;
+glm::vec3 cameraDir;
+glm::vec3 cameraRight;
+glm::vec3 freeCameraPos;
 
 //Modelos
 modelManager mm;

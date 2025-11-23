@@ -19,7 +19,7 @@ public:
 
 	void TurretsWereLoaded() { m_turretsLoaded = true; }
 
-	Camara* m_cam;
+	Camara** m_cam;
 	std::vector<GameObject*>* objetos;
 	std::vector<Enemy*>* enemigos;
 	Turret** turrets;

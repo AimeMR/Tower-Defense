@@ -125,13 +125,30 @@ void InitGL()
 	//Carga modelos
 	mm = modelManager();
 	mm.initialSetup();
-
 	createObject(mm.getMapa());
 
-	mainCamara = Camara(w,h);
+
+	nCamaras = 6;
+	camaras = std::vector<Camara>(nCamaras, Camara(w,h));
+
+	camaraActual = 0;
+	mainCamara = &camaras[CAM_ORBIT];
+
+	camaras[CAM_TOP].translate(glm::vec3(-2, 1.51f, 30));
+	camaras[CAM_TOP].target(glm::vec3(-2, 1.5f, 0));
+
+	camaras[CAM_FRONT].translate(glm::vec3(-22, 0, 6));
+	camaras[CAM_FRONT].target(glm::vec3(0, 0, 0));
+
+	camaras[CAM_RIGHT].translate(glm::vec3(0, -20, 20));
+	camaras[CAM_RIGHT].target(glm::vec3(0, 0, 0));
+
+	freeCameraPos = glm::vec3(0, 0, 0);
+
+	cameraSpeed = 10;
 	distancia = 25;
 	yawCamera = -135;
-	pitchCamera = 45; //eje arriba
+	pitchCamera = 45; 
 	sensibilidad = 0.5;
 
 	luz.InitIluminacion(w, h);
@@ -418,7 +435,11 @@ void OnSize(GLFWwindow* window, int width, int height)
 {
 	w = width;	h = height;
 	luz.UpdateWindow(width, height);
-	mainCamara.UpdateWindow(width, height);
+	for (Camara& c : camaras)
+	{
+		c.UpdateWindow(w, h);
+	}
+	mainCamara->UpdateWindow(width, height);
 	po.updatePickingObjectSize(width, height);
 }
 
@@ -486,23 +507,34 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 
 void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 {
+
 	if (m_ButoEAvall)
 	{
 		double deltaX = xpos - m_PosEAvall.x;
 		double deltaY = ypos - m_PosEAvall.y;
 
-
-		yawCamera += (float)deltaX * sensibilidad;
-		pitchCamera -= (float)deltaY * sensibilidad;
+		
+		yawCamera += (float)deltaX * sensibilidad * ((camaraActual == CAM_FREE) ? -1 : 1);
+		pitchCamera -= (float)deltaY * sensibilidad * ((camaraActual == CAM_FREE) ? -1 : 1);
 
 		m_PosEAvall.x = xpos;
 		m_PosEAvall.y = ypos;
 
-		if (pitchCamera > 89.0f)  pitchCamera = 89.0f;
-		if (pitchCamera < 15) pitchCamera = 15;
+		if (camaraActual != CAM_FREE)
+		{
+			if (pitchCamera > 89.0f)  pitchCamera = 89.0f;
+			if (pitchCamera < 15) pitchCamera = 15;
+		}
+		else
+		{
+			if (pitchCamera > 89.0f)  pitchCamera = 89.0f;
+			if (pitchCamera < -89.0f) pitchCamera = -89.0f;
+		}
 
 		while (yawCamera >= 360.0f) yawCamera -= 360.0f;
 		while (yawCamera < 0.0f)    yawCamera += 360.0f;
+
+
 	}
 
 	float yawRadiants = glm::radians(yawCamera);
@@ -515,13 +547,21 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 	forward.z = glm::sin(pitchRadiants);
 
 	forward = glm::normalize(forward);
-
-	mainCamara.translate(forward * distancia);
-	mainCamara.target(glm::vec3(0, 0, 0));
-
+	cameraDir = forward;
+	cameraRight = glm::normalize(glm::cross(forward, glm::vec3(0, 0, 1)));
 	
+	if (camaraActual != CAM_FREE)
+	{
+		freeCameraPos = forward * distancia;
+	}
+
+	camaras[CAM_ORBIT].translate(forward * distancia);
+	camaras[CAM_ORBIT].target(glm::vec3(0, 0, 0));
+
+
+
 	//ZOOM
-	
+
 	if (m_ButoDAvall)
 	{
 		distancia += m_PosDAvall.y - ypos;
@@ -533,46 +573,99 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 
 }
 
+
 void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	if (action != GLFW_PRESS)
-		return;
+
+	
 
 	ImGuiIO& io = ImGui::GetIO();
 	if (io.WantCaptureKeyboard)
 		return;
 
-	switch (key) {
-	case GLFW_KEY_F:
-		OnFull_Screen(primary, window);
-		break;
-	case GLFW_KEY_D:
-		for (Enemy* e : enemies)
-			e->takeDamage(0.25f);
-		break;	
-	case GLFW_KEY_1:
-		spawnEnemy(Basic);
-		break;
-	case GLFW_KEY_2:
-		spawnEnemy(Rapid);
-		break;
-	case GLFW_KEY_3:
-		spawnEnemy(Tanc);
-		break;
-	case GLFW_KEY_4:
-		spawnEnemy(Volador);
-		break;
-	case GLFW_KEY_5:
-		spawnEnemy(Accelerador);
-		break;
-	case GLFW_KEY_6:
-		spawnEnemy(Divisible);
-		break;
-	case GLFW_KEY_7:
-		spawnEnemy(DivisibleDIV);
-		break;
-	default:
-		break;
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_F:
+			OnFull_Screen(primary, window);
+			break;
+		case GLFW_KEY_T:
+			for (Enemy* e : enemies)
+				e->takeDamage(0.25f);
+			break;
+		case GLFW_KEY_1:
+			spawnEnemy(Basic);
+			break;
+		case GLFW_KEY_2:
+			spawnEnemy(Rapid);
+			break;
+		case GLFW_KEY_3:
+			spawnEnemy(Tanc);
+			break;
+		case GLFW_KEY_4:
+			spawnEnemy(Volador);
+			break;
+		case GLFW_KEY_5:
+			spawnEnemy(Accelerador);
+			break;
+		case GLFW_KEY_6:
+			spawnEnemy(Divisible);
+			break;
+		case GLFW_KEY_X:
+			camaraActual++;
+			break;
+		case GLFW_KEY_Z:
+			camaraActual--;
+			break;
+		default:
+			break;
+		}
+
+		camaraActual = (camaraActual % nCamaras + nCamaras) % nCamaras;
+
+		mainCamara = &camaras[camaraActual];
+
+
+		if (key == GLFW_KEY_W)
+		{
+			inputVector += glm::vec3(0, 1, 0);
+		}
+		if (key == GLFW_KEY_A)
+		{
+			inputVector += glm::vec3(-1, 0, 0);
+		}
+		if (key == GLFW_KEY_S)
+		{
+			inputVector += glm::vec3(0, -1, 0);
+		}
+		if (key == GLFW_KEY_D)
+		{
+			inputVector += glm::vec3(1, 0, 0);
+		}
 	}
+
+
+	if (action == GLFW_RELEASE)
+	{
+		if (key == GLFW_KEY_W)
+		{
+			inputVector += glm::vec3(0, -1, 0);
+		}
+		if (key == GLFW_KEY_A)
+		{
+			inputVector += glm::vec3(1, 0, 0);
+		}
+		if (key == GLFW_KEY_S)
+		{
+			inputVector += glm::vec3(0, 1, 0);
+		}
+		if (key == GLFW_KEY_D)
+		{
+			inputVector += glm::vec3(-1, 0, 0);
+		}
+	}
+
+
 }
 
 // Entorn VGI. OnFull_Screen: Funci� per a pantalla completa
@@ -673,15 +766,59 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 
 void Update(float timer, float deltaTime) 
 {
+	Enemy* target = nullptr;
+	int maxProg = 0;
 	for (Enemy* e : enemies) 
 	{
 		e->move(deltaTime, timer);
 		destroyEnemies(e);
+		float prog = e->getProgress();
+		if (prog > maxProg)
+		{
+			maxProg = prog;
+			target = e;
+		}
+
 	}
 	for (int i = 0; i < NTURRETS; i++) 
 	{
 		turrets[i]->mainUpdate(deltaTime);
 	}
+
+	if (target != nullptr)
+	{
+		camaras[CAM_FOLLOW].translate(cameraDir * distancia + target->getPos());
+		camaras[CAM_FOLLOW].target(target->getPos());
+	}
+	else
+	{
+		camaras[CAM_FOLLOW] = camaras[CAM_ORBIT];
+	}
+
+
+	if (inputVector.y == 1)
+	{
+		freeCameraPos -= cameraDir * cameraSpeed * deltaTime;
+	}
+	if (inputVector.x == -1)
+	{
+		freeCameraPos += cameraRight * cameraSpeed * deltaTime;
+	}
+	if (inputVector.y == -1)
+	{
+		freeCameraPos += cameraDir * cameraSpeed * deltaTime;
+	}
+	if (inputVector.x == 1)
+	{
+		freeCameraPos -= cameraRight * cameraSpeed * deltaTime;
+	}
+
+	camaras[CAM_FREE].translate(freeCameraPos);
+	camaras[CAM_FREE].target(freeCameraPos - cameraDir);
+
+
+	fprintf(stderr, "Cam: %d\n", camaraActual);
+
 }
 
 
@@ -809,15 +946,15 @@ int main(void)
 	setUpPath();
 	setUpTurrets();
 	luz.TurretsWereLoaded();
-	modifyTurret(0, 4);
-	modifyTurret(1,3);
-	modifyTurret(2, 2);
-	modifyTurret(3, 1);
-	modifyTurret(4, 0);
+	modifyTurret(0, -1);
+	modifyTurret(1, -1);
+	modifyTurret(2, -1);
+	modifyTurret(3, -1);
+	modifyTurret(4, -1);
 	modifyTurret(5, -1);
 	modifyTurret(6, -1);
 	modifyTurret(7, -1);
-	modifyTurret(8, 0);
+	modifyTurret(8, -1);
 
 
 	spawnEnemy(Accelerador); /////////////////////////////// ENEMIGO  ////////////////////////////////////////////////////
@@ -891,7 +1028,7 @@ int main(void)
 
 		//po.debug();
 
-		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, mainCamara.getProjection(), mainCamara.getView());
+		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, mainCamara->getProjection(), mainCamara->getView());
 		//dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, mainCamara.getProjection(), mainCamara.getView());
 
 		
