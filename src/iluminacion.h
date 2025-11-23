@@ -5,6 +5,7 @@
 #include "Turret.h"
 #include "shader.h"
 #include "camara.h"
+#include "pickingObjects.h"
 
 class Iluminacion {
 public:
@@ -23,8 +24,10 @@ public:
 	std::vector<GameObject*>* objetos;
 	std::vector<Enemy*>* enemigos;
 	Turret** turrets;
+	PickingObjects3D* m_po;
 
 private:
+
 	// camara y ventana
 	int w, h;
 
@@ -46,6 +49,5 @@ private:
 	//control torretas
 	bool m_turretsLoaded = false;
 
-	//objetos
 };
 

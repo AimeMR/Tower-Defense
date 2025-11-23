@@ -12,7 +12,7 @@ void Iluminacion::InitIluminacion(int width, int height)
 
 	glGenTextures(1, &m_depthMap); //textura depth
 	glBindTexture(GL_TEXTURE_2D, m_depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 2048, 2048, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 4096, 4096, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -58,7 +58,7 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir, float boxSize, float near_pl
 	glUseProgram(m_shadowShaderID);
 	glUniformMatrix4fv(glGetUniformLocation(m_shadowShaderID, "lightSpaceMatrix"), 1, GL_FALSE, &m_lightSpaceMatrix[0][0]);
 
-	glViewport(0, 0, 2048, 2048);
+	glViewport(0, 0, 4096, 4096);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFB);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glCullFace(GL_FRONT);
@@ -83,6 +83,8 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir, float boxSize, float near_pl
 
 void Iluminacion::RenderGame(GLuint shaderID, float ambientIntensity, glm::vec3 lightColor, int renderMode)
 {
+
+
 	m_ambientIntensity = ambientIntensity;
 	m_lightColor = lightColor;
 
@@ -123,4 +125,10 @@ void Iluminacion::RenderGame(GLuint shaderID, float ambientIntensity, glm::vec3 
 	if (m_turretsLoaded)
 		for (int i = 0; i < NTURRETS; i++)
 			turrets[i]->draw(shaderID);
+
+	if (renderMode == PICKING_OBJECTS)
+	{
+		m_po->debug();
+		return;
+	}
 }

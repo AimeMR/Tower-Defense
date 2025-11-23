@@ -12,7 +12,7 @@
 #define NORMALS 1
 #define SHADOW 2
 #define NO_SHADOWS 3
-//#define PICKING_OBJECTS 4 (aun no esta implementado, no usar)
+#define PICKING_OBJECTS 4
 
 
 #define CAM_ORBIT 0

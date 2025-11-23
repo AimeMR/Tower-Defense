@@ -3,6 +3,7 @@
 #include "gameObject.h"
 #include "shader.h"
 #include "camara.h"
+#include "Turret.h"
 
 class PickingObjects3D {
 public:
@@ -17,6 +18,7 @@ public:
 	void debug();
 
 	std::vector<GameObject*>* m_objectes;
+	Turret** m_turrets;
 	Camara** m_cam;
 
 private:

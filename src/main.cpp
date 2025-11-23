@@ -167,7 +167,9 @@ void InitGL()
 
 	po = PickingObjects3D(w, h, poShaderID);
 	po.m_cam = &mainCamara;
+	po.m_turrets = turrets;
 	po.m_objectes = &objects;
+	luz.m_po = &po;
 	
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
@@ -442,7 +444,7 @@ void setUpTurrets()
 
 	for (int i = 0; i < NTURRETS; i++)
 	{
-		turrets[i] = new Turret(i);
+		turrets[i] = new Turret(i+1);
 		turrets[i]->setPos(pos[i]);
 		turrets[i]->setEnemiesVector(&enemies);
 	}
@@ -1025,7 +1027,6 @@ int main(void)
 		luz.RenderShadows(direccionSol, boxSize, near_plane, far_plane);
 		luz.RenderGame(customShaderID, ambientIntensity, lightColor, DEFAULT);
 
-		//po.debug();
 
 		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, mainCamara->getProjection(), mainCamara->getView());
 		//dibuixa_Eixos(eixos_programID, eixos, eixos_Id, grid, hgrid, mainCamara.getProjection(), mainCamara.getView());

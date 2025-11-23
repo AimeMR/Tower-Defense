@@ -73,8 +73,8 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 	for (int i = 2; i < models.size(); i++)
 		m_auxModels.push_back(models[i]);
 
-	m_baseObj->setPOID(m_id);
-	m_headObj->setPOID(m_id);
+	m_baseObj->setPOID((m_id) * 2654435760);
+	m_headObj->setPOID((m_id) * 2654435760);
 
 	float zBase = 0.0f;
 

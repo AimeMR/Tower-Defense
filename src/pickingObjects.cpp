@@ -106,14 +106,13 @@ void PickingObjects3D::debug()
 
 void PickingObjects3D::renderObjects()
 {
-	for (GameObject* current : *m_objectes)
+	for (GameObject* o : *m_objectes)
 	{
-
-
-
-		current->dibuixarObjecte(m_poShaderID);
-
+		o->dibuixarObjecte(m_poShaderID);
 	}
+
+	for (int i = 0; i < NTURRETS; i++)
+		m_turrets[i]->draw(m_poShaderID);
 }
 
 

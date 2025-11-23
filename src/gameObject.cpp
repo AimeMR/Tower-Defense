@@ -8,7 +8,7 @@ GameObject::GameObject(COBJModel* objModel)
 	m_rot = glm::mat4(1.0);
 	m_scale = glm::vec3(1, 1, 1);
 	objectID = -1;
-	pickingID = -1;
+	pickingID = 0;
 	m_texture = false;
 	m_parent = nullptr;
 	m_maskColor = false;
