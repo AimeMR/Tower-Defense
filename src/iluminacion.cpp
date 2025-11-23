@@ -96,8 +96,8 @@ void Iluminacion::RenderGame(GLuint shaderID, float ambientIntensity, glm::vec3 
 
 
 	glm::mat4 projectionMatrix, viewMatrix;
-	projectionMatrix = m_cam->getProjection();
-	viewMatrix = m_cam->getView();
+	projectionMatrix = (*m_cam)->getProjection();
+	viewMatrix = (*m_cam)->getView();
 
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]);

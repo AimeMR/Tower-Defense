@@ -65,8 +65,8 @@ void PickingObjects3D::renderPicking()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 projectionMatrix, viewMatrix;
-	projectionMatrix = m_cam->getProjection();
-	viewMatrix = m_cam->getView();
+	projectionMatrix = (*m_cam)->getProjection();
+	viewMatrix = (*m_cam)->getView();
 
 	glUseProgram(m_poShaderID);
 	glUniformMatrix4fv(glGetUniformLocation(m_poShaderID, "projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);

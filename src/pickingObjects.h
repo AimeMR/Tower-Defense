@@ -17,7 +17,7 @@ public:
 	void debug();
 
 	std::vector<GameObject*>* m_objectes;
-	Camara* m_cam;
+	Camara** m_cam;
 
 private:
 	int m_width, m_height;
