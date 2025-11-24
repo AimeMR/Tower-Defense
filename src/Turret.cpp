@@ -110,8 +110,8 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		break;
 	case FRANCOTIRADORA:
 		m_damage = 2.5f;
-		m_defCD = 2.5f;
-		m_range = 12;
+		m_defCD = 2.0f;
+		m_range = 13;
 		zBase = -0.15f;
 		m_headZ = 1.2f;
 		break;
@@ -186,7 +186,7 @@ void Turret::updateCannon(float deltaTime)
 			shootAnimation();
 			auxVec3 = target->getPos() - vec3(0, 0, 0.25f);
 
-			if(m_type == VERI) target->setPoison(1.5f + m_damage * 2.0f);
+			if(m_type == VERI) target->setPoison(2.5f + m_damage * 2.5f);
 
 			target->takeDamage(m_damage);
 			m_cd = m_defCD;
@@ -196,21 +196,27 @@ void Turret::updateCannon(float deltaTime)
 
 void Turret::updateIce(float deltaTime)
 {
-	m_cd -= deltaTime;
 	if (m_cd <= 0) 
 	{
-		m_cd = m_defCD;
 		std::vector<Enemy*> affectedEnemies = selectAllTargetsInRange();
-		
-		for (Enemy* e : affectedEnemies) 
+		if (affectedEnemies.empty()) 
 		{
-			//Attack effect
-			//Slow enemies
+			m_cd = 0.5f;
+		}
+		else
+		{
+			m_cd = m_defCD;
+
 			shootAnimation();
-			e->takeDamage(m_damage);
-			e->setSlow(2.0f + m_damage);
+
+			for (Enemy* e : affectedEnemies)
+			{
+				e->takeDamage(m_damage);
+				e->setSlow(2.0f + m_damage);
+			}
 		}
 	}
+	else m_cd -= deltaTime;
 }
 
 void Turret::TurnHead(float deltaTime, glm::vec3 ePos)
@@ -371,7 +377,7 @@ void Turret::animate(float deltaTime)
 
 		if (m_auxObject)
 		{
-			m_auxObject->translate(glm::lerp(m_auxObject->getPos(), auxVec3, 35.0f * deltaTime));
+			m_auxObject->translate(glm::lerp(m_auxObject->getPos(), auxVec3, 25.0f * deltaTime));
 			if (glm::length(m_auxObject->getPos() - auxVec3) < 0.1f)
 				deleteAuxObj();
 		}

@@ -28,6 +28,7 @@ float deltaTime;
 float frameTimer = 0;
 int awa = 0;
 
+bool keyW = false, keyA = false, keyS = false, keyD = false;
 glm::vec3 inputVector;
 
 //picking objects

@@ -26,13 +26,13 @@ void Enemy::setUpEnemyStats(float difficulty)
 		m_maxOffset = 0.3;
 		break;
 	case Volador:
-		m_baseHealth = baseH * 0.4f;
-		m_defSpeed = baseS * 0.5f;
+		m_baseHealth = baseH * 0.5f;
+		m_defSpeed = baseS * 0.35f;
 		m_damage = 2;
 		m_weight = 3;
 		break;
 	case Accelerador:
-		m_baseHealth = baseH * 0.3f;
+		m_baseHealth = baseH * 0.4f;
 		m_defSpeed = baseS * 0.4f;
 		m_damage = 2;
 		m_weight = 3;
@@ -71,7 +71,7 @@ void Enemy::move(float deltaTime, float timer)
 	dieAnimation(deltaTime);
 	if (!m_Move || !m_target) return;
 
-	float speed = m_speed * deltaTime * (1 - (max(m_slowCounter, 0.0f) / 3.5f));
+	float speed = m_speed * deltaTime * (1 - (max(m_slowCounter, 0.0f) / 4.0f));
 	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * speed;
 
 	TrackPathProgress();
@@ -91,12 +91,12 @@ void Enemy::move(float deltaTime, float timer)
 	if (m_slowCounter > 0)
 	{
 		m_slowCounter -= deltaTime;
-		m_colorBase = glm::vec4(0.5f - (m_health / m_baseHealth * 2), m_poisonCounter / 5, m_slowCounter * 2 / 5, 1);
+		m_colorBase = glm::vec4(0.2f * (1 - sqrt(m_health / m_baseHealth)), m_poisonCounter / 4.5f, m_slowCounter / 4.5f, 1);
 	}
 	if (m_poisonCounter > 0)
 	{
 		m_poisonCounter -= deltaTime;
-		takeDamage(deltaTime * 0.5f);
+		takeDamage(deltaTime);
 	}
 }
 
@@ -416,7 +416,7 @@ void Enemy::takeDamage(float damage)
 	}
 	else
 	{
-		m_colorBase = glm::vec4(0.5f - (m_health / m_baseHealth * 2.0f), m_poisonCounter / 6.0f, m_slowCounter / 4.5f, 1);
+		m_colorBase = glm::vec4(0.2f * (1 - sqrt(m_health / m_baseHealth)), m_poisonCounter / 4.5f, m_slowCounter / 4.5f, 1);
 	}
 }
 
@@ -432,7 +432,7 @@ void Enemy::die()
 
 			//No paguem
 			m_health = m_baseHealth;
-			m_defSpeed *= 1.5f;
+			m_defSpeed *= 2.0f;
 			m_speed = m_defSpeed * m_target->getSpeedMultiplier();
 			m_damage = 1;
 			m_type = 6;

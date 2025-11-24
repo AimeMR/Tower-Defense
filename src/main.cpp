@@ -595,8 +595,6 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 
 void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
-	
-
 	ImGuiIO& io = ImGui::GetIO();
 	if (io.WantCaptureKeyboard)
 		return;
@@ -645,46 +643,26 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 		mainCamara = &camaras[camaraActual];
 
 
-		if (key == GLFW_KEY_W)
-		{
-			inputVector += glm::vec3(0, 1, 0);
-		}
-		if (key == GLFW_KEY_A)
-		{
-			inputVector += glm::vec3(-1, 0, 0);
-		}
-		if (key == GLFW_KEY_S)
-		{
-			inputVector += glm::vec3(0, -1, 0);
-		}
-		if (key == GLFW_KEY_D)
-		{
-			inputVector += glm::vec3(1, 0, 0);
-		}
+		if (key == GLFW_KEY_W) keyW = true;
+		if (key == GLFW_KEY_A) keyA = true;
+		if (key == GLFW_KEY_S) keyS = true;
+		if (key == GLFW_KEY_D) keyD = true;
 	}
 
 
 	if (action == GLFW_RELEASE)
 	{
-		if (key == GLFW_KEY_W)
-		{
-			inputVector += glm::vec3(0, -1, 0);
-		}
-		if (key == GLFW_KEY_A)
-		{
-			inputVector += glm::vec3(1, 0, 0);
-		}
-		if (key == GLFW_KEY_S)
-		{
-			inputVector += glm::vec3(0, 1, 0);
-		}
-		if (key == GLFW_KEY_D)
-		{
-			inputVector += glm::vec3(-1, 0, 0);
-		}
+		if (key == GLFW_KEY_W) keyW = false;
+		if (key == GLFW_KEY_A) keyA = false;
+		if (key == GLFW_KEY_S) keyS = false;
+		if (key == GLFW_KEY_D) keyD = false;
 	}
 
-
+	inputVector = glm::vec3(0);
+	if (keyW) inputVector += glm::vec3(0, 1, 0);
+	if (keyS) inputVector += glm::vec3(0, -1, 0);
+	if (keyA) inputVector += glm::vec3(-1, 0, 0);
+	if (keyD) inputVector += glm::vec3(1, 0, 0);
 }
 
 // Entorn VGI. OnFull_Screen: Funci� per a pantalla completa
@@ -783,7 +761,7 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 void CamerasUpdate() 
 {
 	Enemy* target = nullptr;
-	int maxProg = 0;
+	float maxProg = 0;
 	for (Enemy* e : enemies) 
 	{
 		float prog = e->getProgress();
@@ -956,15 +934,15 @@ int main(void)
 	setUpPath();
 	setUpTurrets();
 	luz.TurretsWereLoaded();
-	modifyTurret(0, METRALLADORA);
+	modifyTurret(0, -1);
 	modifyTurret(1, CONGELADORA);
 	modifyTurret(2, LASER);
-	modifyTurret(3, VERI);
-	modifyTurret(4, FRANCOTIRADORA);
-	modifyTurret(5, VERI);
+	modifyTurret(3, METRALLADORA);
+	modifyTurret(4, VERI);
+	modifyTurret(5, FRANCOTIRADORA);
 	modifyTurret(6, CONGELADORA);
-	modifyTurret(7, METRALLADORA);
-	modifyTurret(8, LASER);
+	modifyTurret(7, LASER);
+	modifyTurret(8, METRALLADORA);
 
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
