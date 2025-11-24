@@ -1016,12 +1016,11 @@ int main(void)
 		// LLAMADA MODIFICADA RENDER SHADOWS
 		luz.RenderShadows(lightDir, debug_boxSize, debug_nearPlane, debug_farPlane);
 
+		glm::vec3 lightColor(debug_lightColor[0], debug_lightColor[1], debug_lightColor[2]);
+
 		// LLAMADA MODIFICADA RENDER GAME
-		luz.RenderGame(customShaderID, ambientIntensity, lightColor, debug_renderMode);
+		luz.RenderGame(customShaderID, debug_ambientIntensity, lightColor, debug_renderMode);
 
-
-		//luz.RenderShadows(direccionSol, boxSize, near_plane, far_plane);
-		//luz.RenderGame(customShaderID, ambientIntensity, lightColor, DEFAULT);
 
 
 		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, mainCamara->getProjection(), mainCamara->getView());

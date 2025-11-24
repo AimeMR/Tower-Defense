@@ -16,6 +16,7 @@ extern int debug_id_enemigo_spawn; // Id del enemigo
 extern int debug_num_enemigo_spawn; // Cantidad de enemigos
 extern bool debug_solicitar_spawn; // La orden de spawnear
 extern bool show_submenu_shadows; // Booleano para ventana de sombras
+extern bool show_submenu_light;
 extern float debug_speedMult;
 
 // --- VARIABLES NUEVAS (SOMBRAS Y RENDER) ---
@@ -23,6 +24,8 @@ extern float debug_lightDir[3];   // Vector direccion luz
 extern float debug_boxSize;       // Tamano caja sombras
 extern float debug_nearPlane;     // Plano cercano
 extern float debug_farPlane;      // Plano lejano
+extern float debug_ambientIntensity;
+extern float debug_lightColor[3];
 extern int debug_renderMode;      // Modo de renderizado 
 
 
@@ -33,6 +36,7 @@ void menuAjustes();
 void menuCreditos();
 void menuPruebas(bool& salir);
 void menuShadows();
+void menuLight();
 
 void aplicarEfectoBrillo();
 void cambiarEstiloBotones();

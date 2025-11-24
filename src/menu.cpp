@@ -16,7 +16,7 @@ bool show_menu_ajustes = false;
 bool show_jugar = false;
 bool show_menu_creditos = false;
 bool show_menu_pruebas = false; 
-bool juego_pausado = false;
+bool juego_pausado = false;   //flag para el control del timer (activado o pausado)
 
 //------------- Variables globales para modo pruebas------------------
 bool enable_debug_mode = true; // Variable de configuracion para mostrar el boton (CAMBIAR AQUI)
@@ -26,25 +26,31 @@ int debug_id_enemigo_spawn = 0; // ID por defecto (Basic)
 int debug_num_enemigo_spawn = 1; // Cantidad de enemigos a spawnear
 bool debug_solicitar_spawn = false;
 bool show_submenu_shadows = false;
-float debug_speedMult = 1.0f;
+bool show_submenu_light = false;
+float debug_speedMult = 1.0f;   //multiplicador de la velocidad del timer interno
 
 //------------- Variables para Sombras y Render -----------------------
-float debug_lightDir[3] = { -1.0f, -1.0f, 1.0f }; // Valor inicial por defecto
+float debug_lightDir[3] = { -1.0f, -1.0f, 1.0f }; 
 float debug_boxSize = 25.0f;
 float debug_nearPlane = 1.0f;
 float debug_farPlane = 100.0f;
+float debug_ambientIntensity = 0.3f;
+float debug_lightColor[3] = { 1.0f, 1.0f, 1.0f };
 int debug_renderMode = 0; // 0 = DEFAULT
 
 // Variable de Brillo (1.0 = Normal, 0.0 = Negro total)
 float nivelBrillo = 1.0f;
 
 //------------- PROTOTIPOS DE FUNCIONES ------------------
+//(al tener el menu arriba hace falta precargar las funciones)
+
 void menuPausa(bool& salir, const ImGuiViewport* viewport);
 void menuPruebas(bool& salir); 
 void menuAjustes();
 void menuCreditos();
 void iniciarPartida(bool& salir);
 void menuShadows();
+void menuLight();
 
 ImVec2 colocarBoton(float porX, float porY);
 void cambiarEstiloBotones();
@@ -54,7 +60,12 @@ void regresarEstiloSlider();
 void aplicarEfectoBrillo();
 
 
-//--------------------- A PARTIR D'AQUÍ EL NOSTRE CODI ---------------------
+//--------------------------------------------------------------//
+//					Funciones de menus							//
+//--------------------------------------------------------------//
+
+
+//Menu inicial al ejecutar
 void menu(bool& salir)
 {
 	// Inicializa frame de ImGui
@@ -158,6 +169,11 @@ void menu(bool& salir)
 		{
 			menuShadows();
 		}
+		// Si el submenu de sombras está activo, lo dibujamos
+		if (show_submenu_light)
+		{
+			menuLight();
+		}
 	}
 	// =========================================================
 	// MENU AJUSTES
@@ -177,6 +193,7 @@ void menu(bool& salir)
 	ImGui::Render();
 }
 
+//Control de partida normal
 void iniciarPartida(bool& salir)
 {
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -214,6 +231,7 @@ void iniciarPartida(bool& salir)
 	}
 }
 
+//Menu de pruebas para testeos
 void menuPruebas(bool& salir)
 {
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -296,6 +314,17 @@ void menuPruebas(bool& salir)
 		}
 		ImGui::Spacing();
 
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		// --- BOTON 5: CONFIGURAR Luces ---
+		// Abre/Cierra el submenu de sombras
+		if (ImGui::Button("Config. luces", btnSize))
+		{
+			show_submenu_light = !show_submenu_light;
+		}
+		ImGui::Spacing();
 		// --- DESPLEGABLE RENDER MODE ---
 		ImGui::Text("Render Mode:");
 
@@ -347,6 +376,8 @@ void menuPruebas(bool& salir)
 	}
 	ImGui::End();
 }
+
+//Menu de pausa 
 void menuPausa(bool& salir, const ImGuiViewport* viewport)
 {
 	// Configuración ventana Fullscreen
@@ -419,7 +450,7 @@ void menuShadows()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
 
-	if (ImGui::Begin("Sombras & Luz", &show_submenu_shadows, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
+	if (ImGui::Begin("Sombras", &show_submenu_shadows, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
 	{
 		ImGui::Text("Parametros RenderShadows");
 		ImGui::Separator();
@@ -465,6 +496,58 @@ void menuShadows()
 	ImGui::PopStyleColor(2);
 }
 
+//Sub-menu de prueba para control de los parametros del renderizado de luces
+void menuLight()
+{
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// Configuración del Submenú
+	ImVec2 size(300, 300);
+	// Posición a la izquierda del panel de pruebas
+	ImGui::SetNextWindowPos(ImVec2(viewport->WorkSize.x - 550.0f, (viewport->WorkSize.y - size.y) * 0.5f));
+	ImGui::SetNextWindowSize(size);
+
+	// Estilo Panel (Igual que Ajustes)
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.15f, 0.15f, 0.17f, 0.9f)); // Gris oscuro
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.85f, 0.55f, 0.25f, 1.0f)); // Cobre
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
+
+	if (ImGui::Begin("Luces", &show_submenu_light, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
+	{
+		ImGui::Text("Parametros RenderGame");
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		cambiarEstiloSlider(); // Estilo para los inputs
+
+		// 
+		ImGui::Text("Ambient Intensity");
+		ImGui::PushItemWidth(250);
+		ImGui::InputFloat("##near", &debug_ambientIntensity, 0.1f, 1.0f);
+		ImGui::PopItemWidth();
+		ImGui::Spacing();
+
+		// 1. Vector Color luz (3 parametros)
+		ImGui::Text("Direccion Color (x, y, z)");
+		ImGui::PushItemWidth(250);
+		ImGui::InputFloat3("##lightColor", debug_lightColor);
+		ImGui::PopItemWidth();
+		ImGui::Spacing();
+
+
+		regresarEstiloSlider();
+
+		ImGui::Spacing();
+		if (ImGui::Button("Cerrar")) show_submenu_light = false;
+	}
+	ImGui::End();
+
+	ImGui::PopStyleVar(2);
+	ImGui::PopStyleColor(2);
+}
+
+//Menu de control de ajustes al que accede el usuario
 void menuAjustes()
 {
 	show_menu_inicio = false;
@@ -535,6 +618,7 @@ void menuAjustes()
 	ImGui::PopStyleColor();
 }
 
+//Menu informativo de los integrantes del grupo y su respectivo trabajo
 void menuCreditos()
 {
 	show_menu_inicio = false;
@@ -548,9 +632,9 @@ void menuCreditos()
 }
 
 
-//////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------//
 //					Funciones de diseño							//
-//////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------//
 
 // Función para el efecto de oscurecer pantalla
 // Crea una ventana falsa que no se puede interactuar con ella
@@ -604,6 +688,7 @@ ImVec2 colocarBoton(float porX, float porY)
 	return button_size;
 }
 
+//Establece el estilo de fabrica de los botones
 void cambiarEstiloBotones()
 {
 	// --- COLORES ---
@@ -624,6 +709,7 @@ void cambiarEstiloBotones()
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 }
 
+//Devuelve el estilo previo de los botones
 void regresarEstiloBotones()
 {
 	// Sacamos los 4 colores
@@ -632,6 +718,7 @@ void regresarEstiloBotones()
 	ImGui::PopStyleVar(2);
 }
 
+//Establece el estilo fabrica de los sliders
 void cambiarEstiloSlider()
 {
 	// Fondo del slider (Canal): Gris Oscuro
@@ -653,6 +740,7 @@ void cambiarEstiloSlider()
 	ImGui::PushStyleVar(ImGuiStyleVar_GrabRounding, 3.0f);
 }
 
+//Devuelve el estilo de previo de los sliders
 void regresarEstiloSlider()
 {
 	// Sacamos los 6 colores
