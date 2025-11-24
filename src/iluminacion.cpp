@@ -51,8 +51,14 @@ void Iluminacion::RenderShadows(glm::vec3 lightDir, float boxSize, float near_pl
 	//float near_plane = 1.0f, far_plane = 100.0f;
 	m_lightDirection = lightDir;
 
+	glm::vec3 lightPos;
+
+	lightPos = (normalize(m_lightDirection) * 35.0f);
+	//lightPos = (*m_cam)->m_position + (normalize(m_lightDirection) * 50.0f);
+
+
 	glm::mat4 lightProjection = glm::ortho(-boxSize, boxSize, -boxSize, boxSize, near_plane, far_plane);
-	glm::mat4 lightView = glm::lookAt(m_lightDirection * 20.0f, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightView = glm::lookAt(lightPos, lightPos - normalize(m_lightDirection), glm::vec3(0.0f, 1.0f, 0.0f));
 	m_lightSpaceMatrix = lightProjection * lightView;
 
 	glUseProgram(m_shadowShaderID);
