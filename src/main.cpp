@@ -270,7 +270,7 @@ Enemy* spawnEnemy(int type)
 	newEnemy->setStartPoint(start->getPos());
 
 	// target = siguiente nodo si existe, sino mismo
-	if (type == 3) 	newEnemy->setTarget(path[path.size() - 2]);
+	if (type == Volador) 	newEnemy->setTarget(path[path.size() - 2]);
 	else
 	{
 		start = start->getNextPath() ? start->getNextPath() : nullptr;

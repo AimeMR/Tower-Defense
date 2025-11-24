@@ -114,10 +114,10 @@ void Enemy::startMoving()
 {
 	if (!m_target) return;
 
-	m_dir = m_target->getNextDir();
 	m_speed = m_defSpeed * m_target->getSpeedMultiplier();
 	m_bisector = m_target->getBisector();
 	m_targetPos = m_target->getPos();
+	m_dir = glm::normalize(m_targetPos - m_prevTargetPos);
 
 	m_rotation = atan2(m_dir.y, m_dir.x) - glm::half_pi<float>();
 	m_rot = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0, 0, 1));
@@ -142,10 +142,10 @@ void Enemy::reachPathEnd()
 		return;
 	}
 
-	m_dir = m_target->getNextDir();
 	m_speed = m_defSpeed * m_target->getSpeedMultiplier();
 	m_bisector = m_target->getBisector();
 	m_targetPos = m_target->getPos();
+	m_dir = glm::normalize(m_targetPos - m_prevTargetPos);
 	int newPType = m_target->getTipus();
 	if (newPType != m_pathType)
 	{
@@ -502,10 +502,11 @@ float Enemy::getProgress()
 void Enemy::copyMovementData(Path* target)
 {
 	m_target = target;
-	m_dir = m_target->getNextDir();
+	m_prevTargetPos = target->getPrevPath()->getPos();
 	m_speed = m_defSpeed * m_target->getSpeedMultiplier();
 	m_bisector = m_target->getBisector();
 	m_targetPos = m_target->getPos();
+	m_dir = glm::normalize(m_targetPos - m_prevTargetPos);
 
 	m_rotation = atan2(m_dir.y, m_dir.x) - glm::half_pi<float>();
 	m_rot = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0, 0, 1));
