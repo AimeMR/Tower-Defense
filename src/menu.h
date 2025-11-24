@@ -12,8 +12,18 @@ extern bool show_menu_pruebas;
 // --- VARIABLES DE CONTROL DE PRUEBAS ---
 extern bool debug_detener_tiempo; // Controla si el timer corre
 extern bool debug_resetear_todo;  // Orden de matar y reiniciar
-extern int debug_id_enemigo_spawn; // Id del enemgo
+extern int debug_id_enemigo_spawn; // Id del enemigo
+extern int debug_num_enemigo_spawn; // Cantidad de enemigos
 extern bool debug_solicitar_spawn; // La orden de spawnear
+extern bool show_submenu_shadows; // Booleano para ventana de sombras
+extern float debug_speedMult;
+
+// --- VARIABLES NUEVAS (SOMBRAS Y RENDER) ---
+extern float debug_lightDir[3];   // Vector direccion luz
+extern float debug_boxSize;       // Tamano caja sombras
+extern float debug_nearPlane;     // Plano cercano
+extern float debug_farPlane;      // Plano lejano
+extern int debug_renderMode;      // Modo de renderizado 
 
 
 void menu(bool& salir);
@@ -22,6 +32,7 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport);
 void menuAjustes();
 void menuCreditos();
 void menuPruebas(bool& salir);
+void menuShadows();
 
 void aplicarEfectoBrillo();
 void cambiarEstiloBotones();

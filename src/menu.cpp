@@ -10,7 +10,7 @@
 #include "escena.h"
 #include "menu.h"
 
-// --- Variables Globales ---
+//------------- Variables Globales -------------
 bool show_menu_inicio = true;
 bool show_menu_ajustes = false;
 bool show_jugar = false;
@@ -18,22 +18,34 @@ bool show_menu_creditos = false;
 bool show_menu_pruebas = false; 
 bool juego_pausado = false;
 
-//--------------Variables globales para modo pruebas------------------
+//------------- Variables globales para modo pruebas------------------
 bool enable_debug_mode = true; // Variable de configuracion para mostrar el boton (CAMBIAR AQUI)
 bool debug_detener_tiempo = false;
 bool debug_resetear_todo = false;
 int debug_id_enemigo_spawn = 0; // ID por defecto (Basic)
+int debug_num_enemigo_spawn = 1; // Cantidad de enemigos a spawnear
 bool debug_solicitar_spawn = false;
+bool show_submenu_shadows = false;
+float debug_speedMult = 1.0f;
+
+//------------- Variables para Sombras y Render -----------------------
+float debug_lightDir[3] = { -1.0f, -1.0f, 1.0f }; // Valor inicial por defecto
+float debug_boxSize = 25.0f;
+float debug_nearPlane = 1.0f;
+float debug_farPlane = 100.0f;
+int debug_renderMode = 0; // 0 = DEFAULT
 
 // Variable de Brillo (1.0 = Normal, 0.0 = Negro total)
 float nivelBrillo = 1.0f;
 
-// --- PROTOTIPOS DE FUNCIONES ---
+//------------- PROTOTIPOS DE FUNCIONES ------------------
 void menuPausa(bool& salir, const ImGuiViewport* viewport);
-void menuPruebas(bool& salir); // Prototipo menu pruebas
+void menuPruebas(bool& salir); 
 void menuAjustes();
 void menuCreditos();
 void iniciarPartida(bool& salir);
+void menuShadows();
+
 ImVec2 colocarBoton(float porX, float porY);
 void cambiarEstiloBotones();
 void regresarEstiloBotones();
@@ -141,6 +153,11 @@ void menu(bool& salir)
 	else if (show_menu_pruebas)
 	{
 		menuPruebas(salir);
+		// Si el submenu de sombras está activo, lo dibujamos
+		if (show_submenu_shadows)
+		{
+			menuShadows();
+		}
 	}
 	// =========================================================
 	// MENU AJUSTES
@@ -206,7 +223,7 @@ void menuPruebas(bool& salir)
 
 	// Dimensiones del panel lateral
 	float panelWidth = 220.0f;
-	float panelHeight = 450.0f; // Aumentamos un poco la altura para que quepa el input
+	float panelHeight = 550.0f; 
 
 	// Posicionamiento pegado a la derecha, centrado verticalmente
 	ImGui::SetNextWindowPos(ImVec2(viewport->WorkSize.x - panelWidth, (viewport->WorkSize.y - panelHeight) * 0.5f));
@@ -246,7 +263,7 @@ void menuPruebas(bool& salir)
 		ImGui::Separator();
 		ImGui::Spacing();
 
-		// --- BOTON 3: SPAWN ENEMIGO (MODIFICADO) ---
+		// --- BOTON 3: SPAWN ENEMIGO ---
 		ImGui::Text("Spawn Manual:");
 
 		// Hueco interactuable para el ID (Input Int)
@@ -256,6 +273,11 @@ void menuPruebas(bool& salir)
 		ImGui::InputInt("##ID_Enemigo", &debug_id_enemigo_spawn);
 		ImGui::PopItemWidth();
 
+		// PushItemWidth ajusta el ancho de la caja de texto
+		ImGui::PushItemWidth(180);
+		// "##ID" oculta la etiqueta pero sirve de identificador unico
+		ImGui::InputInt("##Num_Enemigo", &debug_num_enemigo_spawn);
+		ImGui::PopItemWidth();
 		// Boton para ejecutar la orden usando el numero de arriba
 		if (ImGui::Button("SPAWNEAR ID", btnSize))
 		{
@@ -266,9 +288,51 @@ void menuPruebas(bool& salir)
 		ImGui::Separator();
 		ImGui::Spacing();
 
-		// Boton 4 (Vacio por ahora)
-		if (ImGui::Button("Test 4: Reset", btnSize)) {}
+		// --- BOTON 4: CONFIGURAR SOMBRAS ---
+		// Abre/Cierra el submenu de sombras
+		if (ImGui::Button("Config. Sombras", btnSize))
+		{
+			show_submenu_shadows = !show_submenu_shadows;
+		}
+		ImGui::Spacing();
 
+		// --- DESPLEGABLE RENDER MODE ---
+		ImGui::Text("Render Mode:");
+
+		// LISTA DE MODOS
+		const char* items[] = {
+			"0: Default (Lit)",
+			"1: Normals",
+			"2: Shadow Map",
+			"3: Position",
+			"4: Picking ID",
+			"5: Wireframe"
+		};
+
+
+		cambiarEstiloSlider(); 
+		ImGui::PushItemWidth(180);
+
+		// Creamos el Desplegable
+		ImGui::Combo("##renderMode", &debug_renderMode, items, IM_ARRAYSIZE(items));
+
+		ImGui::PopItemWidth();
+		regresarEstiloSlider();
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		// --- BOTON 5: Velocidad ---
+		ImGui::Text("Speed:");
+
+		// PushItemWidth ajusta el ancho de la caja de texto
+		ImGui::PushItemWidth(180);
+		ImGui::InputFloat("##Velocidad", &debug_speedMult);
+		ImGui::PopItemWidth();
+
+		ImGui::Spacing();
+		ImGui::Separator();
 		ImGui::Spacing();
 
 		// Boton volver
@@ -336,6 +400,69 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport)
 
 	//Quita el fondo de color negro y deja el pre-establecido (claro)
 	ImGui::PopStyleColor();
+}
+
+//Sub-menu de prueba para control de los parametros del renderizado de sombras
+void menuShadows()
+{
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// Configuración del Submenú
+	ImVec2 size(300, 300);
+	// Posición a la izquierda del panel de pruebas
+	ImGui::SetNextWindowPos(ImVec2(viewport->WorkSize.x - 550.0f, (viewport->WorkSize.y - size.y) * 0.5f));
+	ImGui::SetNextWindowSize(size);
+
+	// Estilo Panel (Igual que Ajustes)
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.15f, 0.15f, 0.17f, 0.9f)); // Gris oscuro
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.85f, 0.55f, 0.25f, 1.0f)); // Cobre
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
+
+	if (ImGui::Begin("Sombras & Luz", &show_submenu_shadows, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
+	{
+		ImGui::Text("Parametros RenderShadows");
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		cambiarEstiloSlider(); // Estilo para los inputs
+
+		// 1. Vector Direccion Luz (3 parametros)
+		ImGui::Text("Direccion Luz (x, y, z)");
+		ImGui::PushItemWidth(250);
+		ImGui::InputFloat3("##lightDir", debug_lightDir);
+		ImGui::PopItemWidth();
+		ImGui::Spacing();
+
+		// 2. Box Size
+		ImGui::Text("Box Size");
+		ImGui::PushItemWidth(250);
+		ImGui::InputFloat("##boxSize", &debug_boxSize, 1.0f, 10.0f);
+		ImGui::PopItemWidth();
+		ImGui::Spacing();
+
+		// 3. Near Plane
+		ImGui::Text("Near Plane");
+		ImGui::PushItemWidth(250);
+		ImGui::InputFloat("##near", &debug_nearPlane, 0.1f, 1.0f);
+		ImGui::PopItemWidth();
+		ImGui::Spacing();
+
+		// 4. Far Plane
+		ImGui::Text("Far Plane");
+		ImGui::PushItemWidth(250);
+		ImGui::InputFloat("##far", &debug_farPlane, 1.0f, 10.0f);
+		ImGui::PopItemWidth();
+
+		regresarEstiloSlider();
+
+		ImGui::Spacing();
+		if (ImGui::Button("Cerrar")) show_submenu_shadows = false;
+	}
+	ImGui::End();
+
+	ImGui::PopStyleVar(2);
+	ImGui::PopStyleColor(2);
 }
 
 void menuAjustes()

@@ -990,26 +990,28 @@ int main(void)
 		// LÓGICA DE RESET (Modo Pruebas)
 		if (debug_resetear_todo)
 		{
-			// 1. Reiniciar Timer
+			// Reiniciar Timer
 			frameTimer = 0.0f;
 
-			// 2. Matar Enemigos (Limpiar vector)
+			// Matar Enemigos (Limpiar vector)
 			for (Enemy* en : enemies) 
 			{
-				delete en; // Liberar memoria
+				en->die();// Liberar memoria
 			}
-			enemies.clear(); // Vaciar lista
+			//enemies.clear(); // Vaciar lista
 
-			// 3. Apagar la bandera para que no se ejecute infinitamente
+			// Apagar la bandera para que no se ejecute infinitamente
 			debug_resetear_todo = false;
 		}
 
 
 		// LÓGICA DE SPAWN MANUAL (Modo Pruebas)
-		if (debug_solicitar_spawn && debug_id_enemigo_spawn > -1 && debug_id_enemigo_spawn < 6)
+		if (debug_solicitar_spawn && debug_id_enemigo_spawn >= 0 && debug_id_enemigo_spawn <= 5)
 		{
-			// Llamamos a tu funcion existente spawnEnemy con el ID del hueco
-			spawnEnemy(debug_id_enemigo_spawn);
+
+			for (int i = 0; i < debug_num_enemigo_spawn; i++)
+				// Llamamos a tu funcion existente spawnEnemy con el ID del hueco
+				spawnEnemy(debug_id_enemigo_spawn);
 
 			// Apagamos la bandera inmediatamente para que no spawnee infinitos
 			debug_solicitar_spawn = false;
@@ -1023,17 +1025,25 @@ int main(void)
 
 		if (debeActualizar)
 		{
-			float speedMult = 1.0f;
-			Update(frameTimer, deltaTime * speedMult);
-			frameTimer += deltaTime * speedMult;
+			Update(frameTimer, deltaTime * debug_speedMult);
+			frameTimer += deltaTime * debug_speedMult;
 		}
 		CamerasUpdate();
 
 		po.renderPicking();
 		
+		// CONSTRUIMOS EL VECTOR DE LUZ DESDE LOS SLIDERS
+		glm::vec3 lightDir(debug_lightDir[0], debug_lightDir[1], debug_lightDir[2]);
 
-		luz.RenderShadows(direccionSol, boxSize, near_plane, far_plane);
-		luz.RenderGame(customShaderID, ambientIntensity, lightColor, DEFAULT);
+		// LLAMADA MODIFICADA RENDER SHADOWS
+		luz.RenderShadows(lightDir, debug_boxSize, debug_nearPlane, debug_farPlane);
+
+		// LLAMADA MODIFICADA RENDER GAME
+		luz.RenderGame(customShaderID, ambientIntensity, lightColor, debug_renderMode);
+
+
+		//luz.RenderShadows(direccionSol, boxSize, near_plane, far_plane);
+		//luz.RenderGame(customShaderID, ambientIntensity, lightColor, DEFAULT);
 
 
 		dibuixa_Skybox(skC_programID, cubemapTexture, Vis_Polar, mainCamara->getProjection(), mainCamara->getView());
