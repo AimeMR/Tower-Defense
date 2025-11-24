@@ -608,7 +608,7 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			break;
 		case GLFW_KEY_T:
 			for (Enemy* e : enemies)
-				e->takeDamage(2.0f);
+				e->takeDamage(2.5f);
 			break;
 		case GLFW_KEY_1:
 			spawnEnemy(Basic);
