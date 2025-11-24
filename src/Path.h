@@ -29,7 +29,6 @@ public:
 		}
 	}
 	glm::vec2 getBisector() { return m_bisectorNormal; }
-	glm::vec2 getNextDir() { return glm::normalize(m_pos - m_prevPath->m_pos); }
 	glm::vec2 getPos() { return m_pos; }
 	int getTipus() { return m_tipo; }
 	float getSpeedMultiplier() { return m_speedMultiplier; }
