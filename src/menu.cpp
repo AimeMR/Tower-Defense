@@ -330,12 +330,11 @@ void menuPruebas(bool& salir)
 
 		// LISTA DE MODOS
 		const char* items[] = {
-			"0: Default (Lit)",
+			"0: Default",
 			"1: Normals",
 			"2: Shadow Map",
-			"3: Position",
+			"3: No shadows",
 			"4: Picking ID",
-			"5: Wireframe"
 		};
 
 
@@ -461,28 +460,28 @@ void menuShadows()
 		// 1. Vector Direccion Luz (3 parametros)
 		ImGui::Text("Direccion Luz (x, y, z)");
 		ImGui::PushItemWidth(250);
-		ImGui::InputFloat3("##lightDir", debug_lightDir);
+		ImGui::DragFloat3("##lightDir", debug_lightDir);
 		ImGui::PopItemWidth();
 		ImGui::Spacing();
 
 		// 2. Box Size
 		ImGui::Text("Box Size");
 		ImGui::PushItemWidth(250);
-		ImGui::InputFloat("##boxSize", &debug_boxSize, 1.0f, 10.0f);
+		ImGui::DragFloat("##boxSize", &debug_boxSize, 1.0f, 10.0f);
 		ImGui::PopItemWidth();
 		ImGui::Spacing();
 
 		// 3. Near Plane
 		ImGui::Text("Near Plane");
 		ImGui::PushItemWidth(250);
-		ImGui::InputFloat("##near", &debug_nearPlane, 0.1f, 1.0f);
+		ImGui::DragFloat("##near", &debug_nearPlane, 0.1f, 1.0f);
 		ImGui::PopItemWidth();
 		ImGui::Spacing();
 
 		// 4. Far Plane
 		ImGui::Text("Far Plane");
 		ImGui::PushItemWidth(250);
-		ImGui::InputFloat("##far", &debug_farPlane, 1.0f, 10.0f);
+		ImGui::DragFloat("##far", &debug_farPlane, 1.0f, 10.0f);
 		ImGui::PopItemWidth();
 
 		regresarEstiloSlider();
@@ -524,14 +523,14 @@ void menuLight()
 		// 
 		ImGui::Text("Ambient Intensity");
 		ImGui::PushItemWidth(250);
-		ImGui::InputFloat("##near", &debug_ambientIntensity, 0.1f, 1.0f);
+		ImGui::DragFloat("##near", &debug_ambientIntensity, 0.1f, 1.0f);
 		ImGui::PopItemWidth();
 		ImGui::Spacing();
 
 		// 1. Vector Color luz (3 parametros)
-		ImGui::Text("Direccion Color (x, y, z)");
+		ImGui::Text("Color luz (r, g, b)");
 		ImGui::PushItemWidth(250);
-		ImGui::InputFloat3("##lightColor", debug_lightColor);
+		ImGui::ColorEdit3("##lightColor", debug_lightColor);
 		ImGui::PopItemWidth();
 		ImGui::Spacing();
 
