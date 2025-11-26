@@ -50,7 +50,7 @@ void InitGL()
 	statusB = false;
 
 // Entorn VGI: Variables de control per Men� Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
-	fullscreen = false;
+	fullscreen = true;
 	eixos = true;
 
 // Entorn VGI: Variables de control Skybox Cube
@@ -152,9 +152,9 @@ void InitGL()
 	sensibilidad = 0.5;
 
 	luz.InitIluminacion(w, h);
-	direccionSol = glm::vec3(-1, -1, 1);
+	direccionSol = glm::vec3(-0.9f, -3.0f, 2.0f);
 	ambientIntensity = 0.3;
-	lightColor = glm::vec3(1, 1, 1);
+	lightColor = glm::vec3(1, 0.86f, 0.77f);
 
 	boxSize = 25;
 	near_plane = 1.0f;

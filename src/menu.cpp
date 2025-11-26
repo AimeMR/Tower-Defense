@@ -29,13 +29,14 @@ bool show_submenu_shadows = false;
 bool show_submenu_light = false;
 float debug_speedMult = 1.0f;   //multiplicador de la velocidad del timer interno
 
+
 //------------- Variables para Sombras y Render -----------------------
-float debug_lightDir[3] = { -1.0f, -1.0f, 1.0f }; 
+float debug_lightDir[3] = { -0.9f, -3.0f,2.0f };
 float debug_boxSize = 25.0f;
 float debug_nearPlane = 1.0f;
 float debug_farPlane = 100.0f;
 float debug_ambientIntensity = 0.3f;
-float debug_lightColor[3] = { 1.0f, 1.0f, 1.0f };
+float debug_lightColor[3] = { 1.0f, 0.86f, 0.77f };
 int debug_renderMode = 0; // 0 = DEFAULT
 
 // Variable de Brillo (1.0 = Normal, 0.0 = Negro total)
