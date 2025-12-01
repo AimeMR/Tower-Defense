@@ -131,7 +131,7 @@ void Turret::mainUpdate(float deltaTime)
 	if (m_type < 0 || m_type > 4) return;
 
 	animate(deltaTime);
-	//m_radio->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(deltaTime) * 20, glm::vec3(0, 0, 1)));
+	m_radio->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(deltaTime) * 20, glm::vec3(0, 0, 1)));
 	if (m_type == LASER) updateLaser(deltaTime);
 	else if (m_type == CONGELADORA) updateIce(deltaTime);
 	else updateCannon(deltaTime);
