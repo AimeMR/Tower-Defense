@@ -528,17 +528,24 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 				t->hideRadio();
 				if (t->getPOID() == clickedObject)
 				{
-					t->showRadio();
-					fprintf(stderr, "Torreta clicada: %d\n", clickedObject);
+					fprintf(stderr, "Torreta clicada: %d\n", t->getID());
 					if (t->getType() == -1) 
 					{ //espacio vacio, menu de construccion
+						fprintf(stderr, "Menu construccion\n");
 
+
+						modifyTurret(t->getID() - 1, ((t->getType() + 2) % 6) - 1);
 					}
 					else //torreta ya puesta, menu de edicion
 					{
+						fprintf(stderr, "Menu mejoras\n");
+
+
+						modifyTurret(t->getID() - 1, ((t->getType() + 2) % 6) - 1);
 
 					}
-					fprintf(stderr, "Torreta clicada tipo: %d\n", t->getType());
+					t->showRadio();
+
 				}
 			}
 

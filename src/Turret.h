@@ -58,6 +58,7 @@ public:
 	}
 	
 	int getPOID() { return m_poid; }
+	int getID() { return m_id; }
 
 private:
 	void updateLaser(float deltaTime);
