@@ -35,7 +35,7 @@ glm::vec3 inputVector;
 PickingObjects3D po;
 Shader poShader;
 GLuint poShaderID;
-
+int clickedObject;
 
 //ILUMINACION
 Iluminacion luz;

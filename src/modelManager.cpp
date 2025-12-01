@@ -20,12 +20,17 @@
 
 modelManager::modelManager()
 {
-
+	m_modelMapa = nullptr;
+	m_turretFloor = nullptr;
+	m_turretRadius = nullptr;
 }
 
 modelManager::~modelManager()
 {
+
 	delete m_modelMapa;
+	delete m_turretFloor;
+	delete m_turretRadius;
 	std::unordered_set<COBJModel*> deleted;
 
 	for (COBJModel* m : m_modelsEnemics)
@@ -42,6 +47,8 @@ void modelManager::initialSetup()
 	//Setup Mapa
 	m_modelMapa = loadModel("Mapas\\MAPAFINAL.obj");
 
+	m_turretFloor = loadModel("Torretas\\torreBase.obj");
+	m_turretRadius = loadModel("Torretas\\radius2.obj");
 	//Setup Enemics, modelos en intérvalos [x, y] incluídos
 
 	/////////////////////////////////////////////////////////////////// Basic [0,6] ///////////////////////////////////////////////////////////////////

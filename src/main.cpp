@@ -50,7 +50,7 @@ void InitGL()
 	statusB = false;
 
 // Entorn VGI: Variables de control per Men� Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
-	fullscreen = true;
+	fullscreen = false;
 	eixos = true;
 
 // Entorn VGI: Variables de control Skybox Cube
@@ -414,6 +414,9 @@ void destroyObject(GameObject* obj)
 
 void modifyTurret(int id, int type)
 {
+	turrets[id]->setTurretFloor(mm.getFloor());
+	turrets[id]->setRadio(mm.getRadius());
+	turrets[id]->hideRadio();
 	if (type == -1) 
 	{
 		std::vector<COBJModel*> emptyModels;
@@ -507,7 +510,6 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 			m_ButoEAvall = true;
 			m_PosEAvall.x = xpos;	m_PosEAvall.y = ypos;
 			m_EsfeEAvall = OPV;
-			//Picking objects JAVI AQU�
 		}
 		// OnLButtonUp
 		else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
@@ -517,6 +519,19 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 		{
 			m_ButoDAvall = true;
 			m_PosDAvall.x = xpos;	m_PosDAvall.y = ypos;
+
+			po.renderPicking();
+			clickedObject = po.getClickedObject(window, m_PosDAvall);
+
+			for (Turret* t : turrets)
+			{
+				if (t->getPOID() == clickedObject)
+				{
+					fprintf(stderr, "Torreta clicada: %d\n", clickedObject);
+					fprintf(stderr, "Torreta clicada tipo: %d\n", t->getType());
+				}
+			}
+
 		}
 		// OnRButtonUp
 		else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
@@ -1007,8 +1022,10 @@ int main(void)
 			frameTimer += deltaTime * debug_speedMult;
 		}
 		CamerasUpdate();
-
-		po.renderPicking();
+		if (debug_renderMode == PICKING_OBJECTS)
+		{
+			po.renderPicking();
+		}
 		
 		// CONSTRUIMOS EL VECTOR DE LUZ DESDE LOS SLIDERS
 		glm::vec3 lightDir(debug_lightDir[0], debug_lightDir[1], debug_lightDir[2]);
