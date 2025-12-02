@@ -63,6 +63,12 @@ glm::vec3 freeCameraPos;
 //Modelos
 modelManager mm;
 
+//Player
+Player* player;
+
+//Game Info
+bool isInConstructionMode;
+
 
 
 

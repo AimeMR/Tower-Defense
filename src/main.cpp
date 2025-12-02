@@ -127,6 +127,8 @@ void InitGL()
 	mm.initialSetup();
 	createObject(mm.getMapa());
 
+	//Carga player
+	player = &Player::GetInstance();
 
 	nCamaras = 6;
 	camaras = std::vector<Camara>(nCamaras, Camara(w,h));
@@ -928,8 +930,6 @@ int main(void)
 			fullscreen = false;
 		}
 	}
-
-	
 
 	setUpPath();
 	setUpTurrets();
