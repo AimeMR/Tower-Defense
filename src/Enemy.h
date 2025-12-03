@@ -25,7 +25,7 @@ public:
 	{
 		m_alive = true;
 		m_type = enemyType;
-		setUpEnemyStats(1.0f); // Leer dificultad de Player.h y actualizar
+		setUpEnemyStats(Player::GetInstance().getDifficulty()); // Leer dificultad de Player.h y actualizar
 
 		for (auto it = ++objModels.begin(); it != objModels.end(); ++it) {
 			GameObject* newBodyPart = new GameObject(*it);

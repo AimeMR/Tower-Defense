@@ -130,6 +130,7 @@ void InitGL()
 	//Carga player
 	player = &Player::GetInstance();
 
+	//Carga camaras
 	nCamaras = 6;
 	camaras = std::vector<Camara>(nCamaras, Camara(w,h));
 
@@ -153,6 +154,7 @@ void InitGL()
 	pitchCamera = 45; 
 	sensibilidad = 0.5;
 
+	//Carga iluminación
 	luz.InitIluminacion(w, h);
 	direccionSol = glm::vec3(-0.9f, -3.0f, 2.0f);
 	ambientIntensity = 0.3;
@@ -167,12 +169,16 @@ void InitGL()
 	luz.enemigos = &enemies;
 	luz.turrets = turrets;
 
+	//Carga PO
 	po = PickingObjects3D(w, h, poShaderID);
 	po.m_cam = &mainCamara;
 	po.m_turrets = turrets;
 	po.m_objectes = &objects;
 	luz.m_po = &po;
 	
+	//Carga variables juego
+	isInConstructionMode = true;
+	enemyCount = 0;
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
@@ -262,6 +268,13 @@ void InitAPI()
 	glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)wglGetProcAddress("glVertexAttribPointer");
 }
 
+void finishRound()
+{
+	isInConstructionMode = true;
+	fprintf(stderr, "Round Finished:\n");
+	player->increaseRound();
+}
+
 Enemy* spawnEnemy(int type)
 {
 	Enemy* newEnemy = new Enemy(mm.getEnemy(type), type);
@@ -281,6 +294,9 @@ Enemy* spawnEnemy(int type)
 
 	newEnemy->startMoving();
 
+	enemyCount++;
+	fprintf(stderr, "EnemyAmount: %d\n", enemyCount);
+
 	return newEnemy;
 }
 
@@ -289,6 +305,14 @@ void destroyEnemies(Enemy* en)
 	auto it = std::find(enemies.begin(), enemies.end(), en);
 	if (it == enemies.end()) return;
 	if (en->mustDestroy()) return;
+
+	enemyCount--;
+	fprintf(stderr, "EnemyAmount: %d\n", enemyCount);
+
+	if (enemyCount == 0 && !isInConstructionMode) 
+	{
+		finishRound();
+	}
 
 	enemies.erase(it);
 	delete en;
@@ -307,8 +331,9 @@ void divideEnemy(Enemy* en)
 		div = spawnEnemy(DivisibleDIV);
 		div->copyMovementData(nt);
 		div->translate(en->getPos() + glm::vec3(-0.25f, -0.25f, 0.0f));
-	}
 
+		enemyCount += 2;
+	}
 }
 
 GameObject* createObject(COBJModel* model)
@@ -489,6 +514,40 @@ void OnVistaSkyBox()
 	}
 }
 
+void startSpawningEnemies() 
+{
+	int weight = trunc((player->getRound() * 2.0f - 1.0f) * player->getDifficulty());
+	int maxEnemy = min((player->getRound() - 1) / 2, 5);
+	fprintf(stderr, "Round: %d\n", player->getRound());
+	fprintf(stderr, "Difficulty: %f\n", player->getDifficulty());
+	fprintf(stderr, "Weight: %d\n", weight);
+	fprintf(stderr, "ME: %d\n", maxEnemy);
+
+	while (weight > 0) 
+	{
+		int enemyType = trunc(((float)rand() / (float)RAND_MAX) * (maxEnemy + 1));
+		fprintf(stderr, "Spawining an enemy of type: %d\n", enemyType);
+		while(enemyType >= 0)
+		{
+			if (weight >= enemyWeights[enemyType])
+			{
+				spawnEnemy(enemyType);
+				weight -= enemyWeights[enemyType];
+				break;
+			}
+			enemyType--;
+		}
+		
+	}
+}
+
+void startNextRound()
+{
+	fprintf(stderr, "Round Started:\n");
+	isInConstructionMode = false;
+	startSpawningEnemies();
+}
+
 
 /* ------------------------------------------------------------------------- */
 /*                           CONTROL DEL RATOLI                              */
@@ -635,6 +694,12 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			break;
 		case GLFW_KEY_Z:
 			camaraActual--;
+			break;
+		case GLFW_KEY_O:
+			startNextRound();
+			break;
+		case GLFW_KEY_P:
+			finishRound();
 			break;
 		default:
 			break;

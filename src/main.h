@@ -68,6 +68,8 @@ Player* player;
 
 //Game Info
 bool isInConstructionMode;
+int enemyCount;
+int enemyWeights[] = { 1, 2, 3, 3, 3, 4 };
 
 
 

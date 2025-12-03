@@ -54,6 +54,8 @@ void Enemy::setUpEnemyStats(float difficulty)
 		die();
 	}
 
+	m_health *= difficulty;
+	m_speed *= (1.0f + difficulty) / 2.0f;
 	m_health = m_baseHealth;
 	m_reward = (int)((float)m_weight * difficulty * 100.0f);
 }
