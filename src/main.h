@@ -68,8 +68,11 @@ Player* player;
 
 //Game Info
 bool isInConstructionMode;
-int enemyCount;
+int enemyCount = 0;
+int currentWeight = 0;
+int maxEnemy = 0;
 int enemyWeights[] = { 1, 2, 3, 3, 3, 4 };
+float enemySpawnTimer = 0.0f;
 
 
 

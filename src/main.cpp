@@ -309,7 +309,7 @@ void destroyEnemies(Enemy* en)
 	enemyCount--;
 	fprintf(stderr, "EnemyAmount: %d\n", enemyCount);
 
-	if (enemyCount == 0 && !isInConstructionMode) 
+	if (enemyCount == 0 && !isInConstructionMode && currentWeight == 0) 
 	{
 		finishRound();
 	}
@@ -514,35 +514,42 @@ void OnVistaSkyBox()
 	}
 }
 
-void startSpawningEnemies() 
+void spawnEnemies(float deltaTime)
 {
-	int weight = trunc((player->getRound() * 2.0f - 1.0f) * player->getDifficulty());
-	int maxEnemy = min((player->getRound() - 1) / 2, 5);
-	fprintf(stderr, "Round: %d\n", player->getRound());
-	fprintf(stderr, "Difficulty: %f\n", player->getDifficulty());
-	fprintf(stderr, "Weight: %d\n", weight);
-	fprintf(stderr, "ME: %d\n", maxEnemy);
-
-	while (weight > 0) 
+	if (enemySpawnTimer > 0)	enemySpawnTimer -= deltaTime;
+	else if (currentWeight > 0)
 	{
 		int enemyType = trunc(((float)rand() / (float)RAND_MAX) * (maxEnemy + 1));
 		fprintf(stderr, "Spawining an enemy of type: %d\n", enemyType);
-		while(enemyType >= 0)
+		while (enemyType >= 0)
 		{
-			if (weight >= enemyWeights[enemyType])
+			if (currentWeight >= enemyWeights[enemyType])
 			{
 				spawnEnemy(enemyType);
-				weight -= enemyWeights[enemyType];
+				currentWeight -= enemyWeights[enemyType];
+				if(currentWeight > 0) 
+					enemySpawnTimer = (float)rand() / (float)RAND_MAX;
 				break;
 			}
 			enemyType--;
 		}
-		
 	}
+}
+
+void startSpawningEnemies() 
+{
+	currentWeight = trunc((player->getRound() * 2.0f - 1.0f) * player->getDifficulty());
+	maxEnemy = min((player->getRound() - 1) / 2, 5);
+	enemySpawnTimer = 0.2f;
+	fprintf(stderr, "Round: %d\n", player->getRound());
+	fprintf(stderr, "Difficulty: %f\n", player->getDifficulty());
+	fprintf(stderr, "Weight: %d\n", currentWeight);
+	fprintf(stderr, "ME: %d\n", maxEnemy);
 }
 
 void startNextRound()
 {
+	if (!isInConstructionMode) return;
 	fprintf(stderr, "Round Started:\n");
 	isInConstructionMode = false;
 	startSpawningEnemies();
@@ -863,6 +870,8 @@ void CamerasUpdate()
 
 void Update(float timer, float deltaTime) 
 {
+	spawnEnemies(deltaTime);
+
 	for (Enemy* e : enemies) 
 	{
 		e->move(deltaTime, timer);
