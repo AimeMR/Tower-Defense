@@ -113,7 +113,7 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		m_defCD = 2.0f;
 		m_range = 13;
 		zBase = -0.15f;
-		m_headZ = 1.2f;
+		m_headZ = 0.5f;
 		break;
 	default:
 		return;
@@ -293,11 +293,15 @@ void Turret::shootAnimation()
 		m_auxObject->scale(glm::vec3(0.25f, 0.25f, 0.25f));
 		break;
 	case FRANCOTIRADORA:
+		auxBool = true;
 		headPos = glm::vec3(m_pos, m_headZ);
 		worldBackward = glm::vec3(m_headObj->getRot() * glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f));
+		recoilOffset = worldBackward * 0.25f;
+
+		m_headObj->translate(headPos + recoilOffset);
 
 		spawnAuxObj(0);
-		m_auxObject->translate(glm::vec3(m_pos, 1.2f) - worldBackward * 1.45f);
+		m_auxObject->translate(glm::vec3(m_pos, 1.5f) - worldBackward * 1.8f);
 		m_auxObject->scale(glm::vec3(0.1f, 0.1f, 0.1f));
 
 		break;
@@ -374,6 +378,15 @@ void Turret::animate(float deltaTime)
 
 		return;
 	case FRANCOTIRADORA:
+		if (auxBool)
+		{
+			m_headObj->translate(glm::lerp(m_headObj->getPos(), glm::vec3(m_pos, m_headZ), 3.0f * deltaTime));
+			if (glm::length(m_headObj->getPos() - glm::vec3(m_pos, m_headZ)) < 0.001f)
+			{
+				m_headObj->translate(glm::vec3(m_pos, m_headZ));
+				auxBool = false;
+			}
+		}
 
 		if (m_auxObject)
 		{
