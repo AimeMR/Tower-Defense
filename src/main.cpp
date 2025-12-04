@@ -326,13 +326,13 @@ void divideEnemy(Enemy* en)
 		Path* nt = en->getTarget();
 		Enemy* div = spawnEnemy(DivisibleDIV);
 		div->copyMovementData(nt);
+		div->setNPath(en->getNPath());
 		div->translate(en->getPos() + glm::vec3(0.25f, 0.25f, 0.0f));
 
 		div = spawnEnemy(DivisibleDIV);
 		div->copyMovementData(nt);
+		div->setNPath(en->getNPath());
 		div->translate(en->getPos() + glm::vec3(-0.25f, -0.25f, 0.0f));
-
-		enemyCount += 2;
 	}
 }
 
@@ -676,7 +676,7 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			break;
 		case GLFW_KEY_T:
 			for (Enemy* e : enemies)
-				e->takeDamage(2.5f);
+				e->takeDamage(15.0f);
 			break;
 		case GLFW_KEY_1:
 			spawnEnemy(Basic);

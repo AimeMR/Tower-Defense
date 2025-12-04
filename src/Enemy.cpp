@@ -2,7 +2,7 @@
 
 void Enemy::setUpEnemyStats(float difficulty)
 {
-	float baseH = 20.0f;
+	float baseH = 15.0f;
 	float baseS = 5.0f;
 	switch (m_type) {
 	case Basic:
@@ -54,7 +54,7 @@ void Enemy::setUpEnemyStats(float difficulty)
 		die();
 	}
 
-	m_health *= difficulty;
+	m_baseHealth *= difficulty;
 	m_speed *= (1.0f + difficulty) / 2.0f;
 	m_health = m_baseHealth;
 	m_reward = (int)((float)m_weight * difficulty * 100.0f);
@@ -430,7 +430,7 @@ void Enemy::die()
 			break;
 		case Accelerador:
 			m_health = m_baseHealth;
-			m_defSpeed *= 2.0f;
+			m_defSpeed *= 2.5f;
 			m_speed = m_defSpeed * m_target->getSpeedMultiplier();
 			m_damage = 1;
 			m_type = 6;

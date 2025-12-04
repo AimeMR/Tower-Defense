@@ -65,6 +65,8 @@ public:
 	int getEnemyType() { return m_type; }
 	Path* getTarget() { return m_target; }
 	void copyMovementData(Path* target);
+	void setNPath(int nPath) { m_nSegments = nPath; }
+	int getNPath() { return m_nSegments; }
 
 private:
 	int m_damage, m_reward, m_type, m_weight, m_pathType = 0, m_nSegments = 0;
