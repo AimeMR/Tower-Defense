@@ -8,6 +8,10 @@ extern bool show_jugar;
 extern bool show_menu_creditos;
 extern bool juego_pausado;
 extern bool show_menu_pruebas;
+extern bool show_menu_construccion;
+
+extern int idTipoTorreta;
+extern int idTorretaSeleccionada;
 
 // --- VARIABLES DE CONTROL DE PRUEBAS ---
 extern bool debug_detener_tiempo; // Controla si el timer corre
@@ -19,7 +23,7 @@ extern bool show_submenu_shadows; // Booleano para ventana de sombras
 extern bool show_submenu_light;
 extern float debug_speedMult;
 
-// --- VARIABLES NUEVAS (SOMBRAS Y RENDER) ---
+// --- VARIABLES SOMBRAS Y RENDER ---
 extern float debug_lightDir[3];   // Vector direccion luz
 extern float debug_boxSize;       // Tamano caja sombras
 extern float debug_nearPlane;     // Plano cercano
@@ -34,6 +38,8 @@ void iniciarPartida(bool& salir);
 void menuPausa(bool& salir, const ImGuiViewport* viewport);
 void menuAjustes();
 void menuCreditos();
+void menuConstruccion();
+
 void menuPruebas(bool& salir);
 void menuShadows();
 void menuLight();

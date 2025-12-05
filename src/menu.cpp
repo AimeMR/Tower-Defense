@@ -17,6 +17,10 @@ bool show_jugar = false;
 bool show_menu_creditos = false;
 bool show_menu_pruebas = false; 
 bool juego_pausado = false;   //flag para el control del timer (activado o pausado)
+bool show_menu_construccion = false;
+
+int idTipoTorreta = -1; //Hueco vacio
+int idTorretaSeleccionada = -1; //Sin torreta seleccionada
 
 //------------- Variables globales para modo pruebas------------------
 bool enable_debug_mode = true; // Variable de configuracion para mostrar el boton (CAMBIAR AQUI)
@@ -50,6 +54,8 @@ void menuPruebas(bool& salir);
 void menuAjustes();
 void menuCreditos();
 void iniciarPartida(bool& salir);
+void menuConstruccion();
+
 void menuShadows();
 void menuLight();
 
@@ -225,12 +231,260 @@ void iniciarPartida(bool& salir)
 		}
 		ImGui::End();
 	}
+	if (show_menu_construccion)
+	{
+		menuConstruccion();
+	}
 
 	if (juego_pausado)
 	{
 		menuPausa(salir, viewport);
 	}
 }
+
+//Menu de control de ajustes al que accede el usuario
+void menuAjustes()
+{
+	show_menu_inicio = false;
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// Configuración ventana Fullscreen (Estilo Industrial)
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+
+	// Fondo negro menu
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+	// Transparencia del fondo
+	ImGui::SetNextWindowBgAlpha(0.8f);
+
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+
+	if (ImGui::Begin("Menu_Ajustes_Fullscreen", &show_menu_ajustes, flags))
+	{
+		ImGui::SetWindowFontScale(1.5f);
+
+		// --- TÍTULO ---
+		const char* titulo = "CONFIGURACION";
+		ImVec2 textSize = ImGui::CalcTextSize(titulo);
+		ImGui::SetCursorPos(ImVec2((viewport->Size.x - textSize.x) * 0.5f, viewport->Size.y * 0.2f));
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), titulo);
+
+		ImGui::Spacing();
+
+		// --- SLIDER DE BRILLO ---
+		// Centramos el slider
+		float sliderWidth = 300.0f;
+		ImGui::SetCursorPos(ImVec2((viewport->Size.x - sliderWidth) * 0.5f, viewport->Size.y * 0.4f));
+		ImGui::PushItemWidth(sliderWidth);
+
+		// Aplicamos estilo personalizado al slider (Cobre y con Borde)
+		cambiarEstiloSlider();
+
+		// Etiqueta encima del slider
+		ImGui::Text("Brillo de Pantalla");
+		ImGui::SetCursorPosX((viewport->Size.x - sliderWidth) * 0.5f); // Recolocamos X porque Text mueve cursor
+
+		ImGui::SliderFloat("##brillo", &nivelBrillo, 0.1f, 1.0f, "Brillo: %.2f");
+
+		regresarEstiloSlider();
+		ImGui::PopItemWidth();
+
+
+		// --- BOTÓN CERRAR ---
+		cambiarEstiloBotones();
+
+		// Forzamos la fuente grande para este botón
+		ImGui::SetWindowFontScale(1.5f);
+
+		// Usamos colocarBoton para situarlo abajo, igual que el botón "Salir"
+		ImVec2 btnSize = colocarBoton(0.5f, 0.80f);
+		if (ImGui::Button("Guardar y Cerrar", btnSize))
+		{
+			show_menu_ajustes = false;
+			show_menu_inicio = true;
+		}
+
+		ImGui::SetWindowFontScale(1.0f);
+		regresarEstiloBotones();
+	}
+	ImGui::End();
+
+
+	// Quita el fondo de color negro
+	ImGui::PopStyleColor();
+}
+
+//Menu informativo de los integrantes del grupo y su respectivo trabajo
+void menuCreditos()
+{
+	show_menu_inicio = false;
+	ImGui::Begin("Menu Creditos", &show_menu_creditos);
+	if (ImGui::Button("Cerrar"))
+	{
+		show_menu_creditos = false;
+		show_menu_inicio = true;
+	}
+	ImGui::End();
+}
+
+//Menu de pausa 
+void menuPausa(bool& salir, const ImGuiViewport* viewport)
+{
+	// Configuración ventana Fullscreen
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+
+	// Fondo negro menu
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+	// Transparencia del fondo (0.8 = bastante opaco)
+	ImGui::SetNextWindowBgAlpha(0.8f);
+
+	ImGuiWindowFlags pausaFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+
+	if (ImGui::Begin("Menu_Pausa_Fullscreen", &juego_pausado, pausaFlags))
+	{
+		// Establece estilos de botones personalizados
+		cambiarEstiloBotones();
+		ImGui::SetWindowFontScale(1.5f);
+
+		// Ajuste vertical para el contenido
+		ImGui::SetCursorPosY(viewport->Size.y * 0.2f);
+
+		// --- BOTONES DEL MENÚ DE PAUSA ---
+
+		ImVec2 btnSize = colocarBoton(0.5f, 0.40f);
+		if (ImGui::Button("Continuar", btnSize))
+		{
+			juego_pausado = false;
+		}
+
+		btnSize = colocarBoton(0.5f, 0.55f);
+		if (ImGui::Button("Menu Principal", btnSize))
+		{
+			juego_pausado = false;
+			show_jugar = false;
+			show_menu_inicio = true;
+		}
+
+		btnSize = colocarBoton(0.1f, 0.90f);
+		if (ImGui::Button("Salir Juego", btnSize))
+		{
+			salir = true;
+		}
+
+		// Devuelve estilo original a la fuente y botones
+		ImGui::SetWindowFontScale(1.0f);
+		regresarEstiloBotones();
+	}
+	ImGui::End();
+
+	//Quita el fondo de color negro y deja el pre-establecido (claro)
+	ImGui::PopStyleColor();
+}
+
+//Menu de construccion
+void menuConstruccion()
+{
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	ImGuiWindowFlags construcFlag = ImGuiWindowFlags_NoDecoration
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoSavedSettings
+		| ImGuiWindowFlags_NoNav;
+
+	// POSICIONAMIENTO: Esquina superior izquierda (WorkPos)
+	float menuWidth = viewport->WorkSize.x * 0.30f;
+	float menuHeight = viewport->WorkSize.y;
+
+	ImGui::SetNextWindowPos(viewport->WorkPos, ImGuiCond_Always);
+
+	// TAMAÑO: Forzamos las dimensiones calculadas
+	ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_Always);
+
+	// Fondo visible
+	ImGui::SetNextWindowBgAlpha(1.0f);
+
+	if (ImGui::Begin("MenuConstruccion", NULL, construcFlag))
+	{
+		// 1. OBTENER TAMAÑO REAL DEL MENÚ (NO DE LA PANTALLA)
+		ImVec2 winSize = ImGui::GetWindowSize();
+
+		// --- ESTILOS ---
+		cambiarEstiloBotones();
+		ImGui::SetWindowFontScale(1.0f);
+
+		// --- TÍTULO (Centrado relativo al menú) ---
+		const char* titulo = "Construccion";
+		ImVec2 textSize = ImGui::CalcTextSize(titulo);
+
+		// Cálculo X: (AnchoMenu - AnchoTexto) / 2
+		float textPosX = (winSize.x - textSize.x) * 0.5f;
+		// Cálculo Y: Al 10% de la altura del menú (puedes ajustar el 0.1f)
+		float textPosY = winSize.y * 0.1f;
+
+		ImGui::SetCursorPos(ImVec2(textPosX, textPosY));
+		ImGui::TextColored(ImVec4(0.0f, 0.0f, 0.0f, 1.0f), titulo);
+		ImGui::SetWindowFontScale(1.0f);
+
+		// --- Seleccionar torreta ---
+
+		// Dibujamos el botón
+		ImVec2 btnAm = colocarBoton(0.2f, 0.20f);
+		if (ImGui::Button("Ametralladora", btnAm))
+		{
+			idTipoTorreta = 0;
+		}
+
+		ImVec2 btnCon = colocarBoton(0.2f, 0.350f);
+		if (ImGui::Button("Congeladora", btnCon))
+		{
+			idTipoTorreta = 0;
+		}
+
+		ImVec2 btnLas = colocarBoton(0.2f, 0.50f);
+		if (ImGui::Button("Laser", btnLas))
+		{
+			idTipoTorreta = 0;
+		}
+
+		ImVec2 btnVen = colocarBoton(0.2f, 0.65f);
+		if (ImGui::Button("Veneno", btnVen))
+		{
+			idTipoTorreta = 0;
+		}
+
+		ImVec2 btnFran = colocarBoton(0.2f, 0.80f);
+		if (ImGui::Button("Francotirador", btnFran))
+		{
+			idTipoTorreta = 0;
+		}
+
+		
+
+
+
+		// --- BOTÓN CERRAR ---
+
+		// Forzamos la fuente grande para este botón
+		ImGui::SetWindowFontScale(1.5f);
+
+		// Usamos colocarBoton para situarlo abajo, igual que el botón "Salir"
+		ImVec2 btnSize = colocarBoton(0.5f, 0.90f);
+		if (ImGui::Button("Cerrar", btnSize))
+		{
+			show_menu_construccion = false;
+		}
+
+		ImGui::SetWindowFontScale(1.0f);
+		regresarEstiloBotones();
+	}
+	ImGui::End();
+}
+
+//--------------------------------------------------------------//
+//					Funciones de prubas							//
+//--------------------------------------------------------------//
 
 //Menu de pruebas para testeos
 void menuPruebas(bool& salir)
@@ -377,62 +631,6 @@ void menuPruebas(bool& salir)
 	ImGui::End();
 }
 
-//Menu de pausa 
-void menuPausa(bool& salir, const ImGuiViewport* viewport)
-{
-	// Configuración ventana Fullscreen
-	ImGui::SetNextWindowPos(viewport->Pos);
-	ImGui::SetNextWindowSize(viewport->Size);
-
-	// Fondo negro menu
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-
-	// Transparencia del fondo (0.8 = bastante opaco)
-	ImGui::SetNextWindowBgAlpha(0.8f);
-
-	ImGuiWindowFlags pausaFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
-
-	if (ImGui::Begin("Menu_Pausa_Fullscreen", &juego_pausado, pausaFlags))
-	{
-		// Establece estilos de botones personalizados
-		cambiarEstiloBotones();
-		ImGui::SetWindowFontScale(1.5f);
-
-		// Ajuste vertical para el contenido
-		ImGui::SetCursorPosY(viewport->Size.y * 0.2f);
-
-		// --- BOTONES DEL MENÚ DE PAUSA ---
-
-		ImVec2 btnSize = colocarBoton(0.5f, 0.40f);
-		if (ImGui::Button("Continuar", btnSize))
-		{
-			juego_pausado = false;
-		}
-
-		btnSize = colocarBoton(0.5f, 0.55f);
-		if (ImGui::Button("Menu Principal", btnSize))
-		{
-			juego_pausado = false;
-			show_jugar = false;
-			show_menu_inicio = true;
-		}
-
-		btnSize = colocarBoton(0.1f, 0.90f);
-		if (ImGui::Button("Salir Juego", btnSize))
-		{
-			salir = true;
-		}
-
-		// Devuelve estilo original a la fuente y botones
-		ImGui::SetWindowFontScale(1.0f);
-		regresarEstiloBotones();
-	}
-	ImGui::End();
-
-	//Quita el fondo de color negro y deja el pre-establecido (claro)
-	ImGui::PopStyleColor();
-}
-
 //Sub-menu de prueba para control de los parametros del renderizado de sombras
 void menuShadows()
 {
@@ -545,90 +743,6 @@ void menuLight()
 
 	ImGui::PopStyleVar(2);
 	ImGui::PopStyleColor(2);
-}
-
-//Menu de control de ajustes al que accede el usuario
-void menuAjustes()
-{
-	show_menu_inicio = false;
-	const ImGuiViewport* viewport = ImGui::GetMainViewport();
-
-	// Configuración ventana Fullscreen (Estilo Industrial)
-	ImGui::SetNextWindowPos(viewport->Pos);
-	ImGui::SetNextWindowSize(viewport->Size);
-
-	// Fondo negro menu
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-	// Transparencia del fondo
-	ImGui::SetNextWindowBgAlpha(0.8f);
-
-	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
-
-	if (ImGui::Begin("Menu_Ajustes_Fullscreen", &show_menu_ajustes, flags))
-	{
-		ImGui::SetWindowFontScale(1.5f);
-
-		// --- TÍTULO ---
-		const char* titulo = "CONFIGURACION";
-		ImVec2 textSize = ImGui::CalcTextSize(titulo);
-		ImGui::SetCursorPos(ImVec2((viewport->Size.x - textSize.x) * 0.5f, viewport->Size.y * 0.2f));
-		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), titulo);
-
-		ImGui::Spacing();
-
-		// --- SLIDER DE BRILLO ---
-		// Centramos el slider
-		float sliderWidth = 300.0f;
-		ImGui::SetCursorPos(ImVec2((viewport->Size.x - sliderWidth) * 0.5f, viewport->Size.y * 0.4f));
-		ImGui::PushItemWidth(sliderWidth);
-
-		// Aplicamos estilo personalizado al slider (Cobre y con Borde)
-		cambiarEstiloSlider();
-
-		// Etiqueta encima del slider
-		ImGui::Text("Brillo de Pantalla");
-		ImGui::SetCursorPosX((viewport->Size.x - sliderWidth) * 0.5f); // Recolocamos X porque Text mueve cursor
-
-		ImGui::SliderFloat("##brillo", &nivelBrillo, 0.1f, 1.0f, "Brillo: %.2f");
-
-		regresarEstiloSlider();
-		ImGui::PopItemWidth();
-
-
-		// --- BOTÓN CERRAR ---
-		cambiarEstiloBotones();
-
-		// Forzamos la fuente grande para este botón
-		ImGui::SetWindowFontScale(1.5f);
-
-		// Usamos colocarBoton para situarlo abajo, igual que el botón "Salir"
-		ImVec2 btnSize = colocarBoton(0.5f, 0.80f);
-		if (ImGui::Button("Guardar y Cerrar", btnSize))
-		{
-			show_menu_ajustes = false;
-			show_menu_inicio = true;
-		}
-
-		ImGui::SetWindowFontScale(1.0f);
-		regresarEstiloBotones();
-	}
-	ImGui::End();
-
-	// Quita el fondo de color negro
-	ImGui::PopStyleColor();
-}
-
-//Menu informativo de los integrantes del grupo y su respectivo trabajo
-void menuCreditos()
-{
-	show_menu_inicio = false;
-	ImGui::Begin("Menu Creditos", &show_menu_creditos);
-	if (ImGui::Button("Cerrar"))
-	{
-		show_menu_creditos = false;
-		show_menu_inicio = true;
-	}
-	ImGui::End();
 }
 
 
