@@ -15,7 +15,7 @@ public:
     //Tocad a partir de aquí
 
     //Setters
-    void modifyMoney(int amount) { m_money += amount; }
+    void modifyMoney(int amount) { m_money += amount; if(amount > 0) m_totalMoneyEarned += amount; }
     void modifyHealth(int amount) { m_health += amount; }
     void increaseRound();
 
@@ -24,6 +24,11 @@ public:
     int getHealth() { return m_health; }
     int getRound() { return m_nRound; }
     float getDifficulty() { return m_difficulty; }
+
+    //Stats
+    void enemyDefeated() { m_enemiesDefeated++; }
+    void turretPlaced() { m_turretsPlaced++; }
+    void turretUpgraded() { m_UpgradesPurchased++; }
 
 private:
     //Valores iniciales
@@ -37,6 +42,7 @@ private:
 
         //Stats
         m_enemiesDefeated = 0;
+        m_totalMoneyEarned = 0;
     }
 
     //Variables
@@ -44,5 +50,5 @@ private:
     float m_difficulty;
 
     //Stats
-    int m_enemiesDefeated;
+    int m_enemiesDefeated, m_totalMoneyEarned, m_turretsPlaced, m_UpgradesPurchased;
 };

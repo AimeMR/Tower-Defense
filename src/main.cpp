@@ -307,6 +307,7 @@ void destroyEnemies(Enemy* en)
 	if (en->mustDestroy()) return;
 
 	enemyCount--;
+	Player::GetInstance().enemyDefeated();
 	fprintf(stderr, "EnemyAmount: %d\n", enemyCount);
 
 	if (enemyCount == 0 && !isInConstructionMode && currentWeight == 0) 
@@ -439,16 +440,24 @@ void destroyObject(GameObject* obj)
 	}
 }
 
-void modifyTurret(int id, int type)
+void modifyTurret(int id, int type, int price = 0)
 {
 	if (type == -1) 
 	{
+		if (turrets[id]->getType() != -1) {
+			turretAmountByType[turrets[id]->getType()]--;
+			turretAmount--;
+			int cashback = round(turrets[id]->getPrice() * 0.5f);
+			Player::GetInstance().modifyMoney(cashback);
+		}
 		std::vector<COBJModel*> emptyModels;
-		turrets[id]->loadTurret(type, emptyModels);
+		turrets[id]->loadTurret(type, emptyModels, 0);
 	}
 	else 
 	{
-		turrets[id]->loadTurret(type, mm.getTurret(type));
+		turrets[id]->loadTurret(type, mm.getTurret(type), price);
+		turretAmountByType[type]++;
+		turretAmount++;
 	}
 }
 
@@ -474,6 +483,41 @@ void setUpTurrets()
 		turrets[i] = new Turret(i+1);
 		turrets[i]->setPos(pos[i]);
 		turrets[i]->setEnemiesVector(&enemies);
+	}
+}
+
+int getTurretPrice(int type) 
+{
+	return turretBasePrice[type] + round((turretAmount * (turretAmountByType[type] + 1) * turretBasePrice[type] * 0.1f));
+}
+
+glm::vec3 getTurretUpgradesPrices(int id) 
+{
+	glm::vec3 level = turrets[id]->getUpgradeLevel();
+	glm::vec3 prices = glm::vec3(turretUpgradePrices[(int)level[0]], turretUpgradePrices[(int)level[1]], turretUpgradePrices[(int)level[2]]);
+	return prices;
+}
+
+void buyTurret(int id, int type) 
+{
+	int price = getTurretPrice(type);
+	if (Player::GetInstance().getMoney() >= price) 
+	{
+		modifyTurret(id, type);
+		Player::GetInstance().turretPlaced();
+		Player::GetInstance().modifyMoney(-price);
+	}
+}
+
+void buyTurretUpgrade(int id, int stat) 
+{
+	if (stat < 0 || stat > 2) return;
+	int price = getTurretUpgradesPrices(id)[stat];
+	if (Player::GetInstance().getMoney() >= price)
+	{
+		turrets[id]->upgradeStat(stat);
+		Player::GetInstance().turretUpgraded();
+		Player::GetInstance().modifyMoney(-price);
 	}
 }
 

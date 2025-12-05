@@ -47,9 +47,13 @@ void Turret::draw(GLuint shader)
 	if (m_auxObject) m_auxObject->dibuixarObjecte(shader);
 }
 
-void Turret::loadTurret(int type, std::vector<COBJModel*> models)
+void Turret::loadTurret(int type, std::vector<COBJModel*> models, int price = 0)
 {
 	m_type = type;
+
+	m_levelCD = 0;
+	m_levelDmg = 0;
+	m_levelRange = 0;
 
 	if (m_baseObj != nullptr) delete m_baseObj;
 	if (m_headObj != nullptr) delete m_headObj;
@@ -57,6 +61,7 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 
 	if (type == -1) 
 	{
+		m_price = 0;
 		m_damage = 0; 
 		m_range = 0; 
 		m_defCD = 0; 
@@ -67,6 +72,7 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		return;
 	}
 
+	m_price = price;
 	m_baseObj = new GameObject(models[0]);
 	m_headObj = new GameObject(models[1]);
 
@@ -81,37 +87,37 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 	switch (type) {
 	case METRALLADORA:
 		//Ajustar stats i z
-		m_damage = 0.5f;
-		m_defCD = 0.5f;
-		m_range = 8;
+		m_baseDMG = 0.5f;
+		m_baseDEFCD = 0.5f;
+		m_baseRNG = 8;
 		zBase = -0.05f;
 		m_headZ = 0.8f;
 		break;
 	case CONGELADORA:
-		m_damage = 1.0f;
-		m_defCD = 3.0f;
-		m_range = 5;
+		m_baseDMG = 1.0f;
+		m_baseDEFCD = 3.5f;
+		m_baseRNG = 5;
 		zBase = -0.05f;
 		m_headZ = 0.0f;
 		break;
 	case LASER:
-		m_damage = 0.65f;
-		m_defCD = 0.0f;
-		m_range = 5;
+		m_baseDMG = 0.65f;
+		m_baseDEFCD = 0.0f;
+		m_baseRNG = 5;
 		zBase = -0.05f;
 		m_headZ = 0.87f;
 		break;
 	case VERI:
-		m_damage = 0.2f;
-		m_defCD = 1.0f;
-		m_range = 6;
+		m_baseDMG = 0.2f;
+		m_baseDEFCD = 1.0f;
+		m_baseRNG = 6;
 		zBase = -0.05f;
 		m_headZ = 0.8f;
 		break;
 	case FRANCOTIRADORA:
-		m_damage = 2.5f;
-		m_defCD = 2.0f;
-		m_range = 13;
+		m_baseDMG = 2.5f;
+		m_baseDEFCD = 2.0f;
+		m_baseRNG = 13;
 		zBase = -0.15f;
 		m_headZ = 0.5f;
 		break;
@@ -119,7 +125,7 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		return;
 	}
 	
-	m_cd = m_defCD;
+	updateStats();
 	m_baseObj->translate(glm::vec3(m_pos, zBase));
 	m_headObj->translate(glm::vec3(m_pos, m_headZ));
 }
@@ -133,6 +139,26 @@ void Turret::mainUpdate(float deltaTime)
 	if (m_type == LASER) updateLaser(deltaTime);
 	else if (m_type == CONGELADORA) updateIce(deltaTime);
 	else updateCannon(deltaTime);
+}
+
+void Turret::updateStats() 
+{
+	m_defCD = m_baseDEFCD * (1 - m_levelCD * 0.15f);
+	m_damage = m_baseDMG * (1 + m_levelDmg * 0.2f);
+	m_range = m_baseRNG * (1 + m_levelRange * 0.15f);
+	m_cd = m_defCD;
+}
+
+void Turret::upgradeStat(int stat)
+{
+	if (stat == SHOOT_SPEED && m_levelCD < 3)
+		m_levelCD++;
+	else if (stat == DAMAGE && m_levelDmg < 3)
+		m_baseDMG++;
+	else if (stat == RANGE && m_levelRange < 3)
+		m_baseRNG++;
+
+	updateStats();
 }
 
 void Turret::updateLaser(float deltaTime)

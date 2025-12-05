@@ -73,7 +73,10 @@ int currentWeight = 0;
 int maxEnemy = 0;
 int enemyWeights[] = { 1, 2, 3, 3, 3, 4 };
 float enemySpawnTimer = 0.0f;
-
+int turretAmount = 0;
+int turretAmountByType[] = { 0, 0, 0, 0, 0 };
+int turretBasePrice[] = { 2000, 3500, 3000, 2500, 4000 };
+int turretUpgradePrices[] = { 250, 500, 750, 999999 };
 
 
 
