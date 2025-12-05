@@ -179,6 +179,10 @@ void InitGL()
 	//Carga variables juego
 	isInConstructionMode = true;
 	enemyCount = 0;
+	currentWeight = 0;
+	maxEnemy = 0;
+	enemySpawnTimer = 0.0f;
+	turretAmount = 0;
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
