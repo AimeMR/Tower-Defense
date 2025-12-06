@@ -383,104 +383,121 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport)
 	ImGui::PopStyleColor();
 }
 
-//Menu de construccion
 void menuConstruccion()
 {
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
+	// Configuración de la ventana
 	ImGuiWindowFlags construcFlag = ImGuiWindowFlags_NoDecoration
 		| ImGuiWindowFlags_NoMove
 		| ImGuiWindowFlags_NoSavedSettings
 		| ImGuiWindowFlags_NoNav;
 
-	// POSICIONAMIENTO: Esquina superior izquierda (WorkPos)
-	float menuWidth = viewport->WorkSize.x * 0.30f;
+	// --- DIMENSIONES ---
+	float menuWidth = viewport->WorkSize.x * 0.30f; 
 	float menuHeight = viewport->WorkSize.y;
 
+	// Posición: Arriba a la Izquierda
 	ImGui::SetNextWindowPos(viewport->WorkPos, ImGuiCond_Always);
-
-	// TAMAÑO: Forzamos las dimensiones calculadas
 	ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_Always);
 
-	// Fondo visible
-	ImGui::SetNextWindowBgAlpha(1.0f);
+	// Fondo Sólido (Gris Oscuro)
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
 	if (ImGui::Begin("MenuConstruccion", NULL, construcFlag))
 	{
-		// 1. OBTENER TAMAÑO REAL DEL MENÚ (NO DE LA PANTALLA)
 		ImVec2 winSize = ImGui::GetWindowSize();
 
-		// --- ESTILOS ---
+		// ---------------------------------------------------------
+		// 1. TÍTULO
+		// ---------------------------------------------------------
+		ImGui::SetWindowFontScale(1.5f);
+		const char* titulo = "CONSTRUCCION";
+		ImVec2 textSize = ImGui::CalcTextSize(titulo);
+
+		ImGui::SetCursorPos(ImVec2((winSize.x - textSize.x) * 0.5f, winSize.y * 0.05f));
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), titulo);
+
+		ImGui::Spacing();
+		ImGui::Separator();
+
+		// ---------------------------------------------------------
+		// 2. BOTONES DE TORRETAS
+		// ---------------------------------------------------------
 		cambiarEstiloBotones();
 		ImGui::SetWindowFontScale(1.0f);
 
-		// --- TÍTULO (Centrado relativo al menú) ---
-		const char* titulo = "Construccion";
-		ImVec2 textSize = ImGui::CalcTextSize(titulo);
+		const char* nombresTorretas[] = {
+			"Ametralladora",
+			"Congeladora",
+			"Laser",
+			"Veneno",
+			"Francotirador"
+		};
 
-		// Cálculo X: (AnchoMenu - AnchoTexto) / 2
-		float textPosX = (winSize.x - textSize.x) * 0.5f;
-		// Cálculo Y: Al 10% de la altura del menú (puedes ajustar el 0.1f)
-		float textPosY = winSize.y * 0.1f;
+		// Cálculos de alineación para el margen izquierdo del 10%
+		float margenDeseado = winSize.x * 0.10f;
+		float centroBotonX = margenDeseado + 100.0f;
+		float porX_Calculado = centroBotonX / winSize.x;
 
-		ImGui::SetCursorPos(ImVec2(textPosX, textPosY));
-		ImGui::TextColored(ImVec4(0.0f, 0.0f, 0.0f, 1.0f), titulo);
-		ImGui::SetWindowFontScale(1.0f);
+		float startY = 0.20f;
+		float stepY = 0.10f;
 
-		// --- Seleccionar torreta ---
-
-		// Dibujamos el botón
-		ImVec2 btnAm = colocarBoton(0.2f, 0.20f);
-		if (ImGui::Button("Ametralladora", btnAm))
+		for (int i = 0; i < 5; i++)
 		{
-			idTipoTorreta = 0;
+			ImGui::PushID(i);
+
+			// Para comprobar la seleccion del boton
+			// Cambia el color de este a Verde (se cierra el menu antes de visualizarlo)
+			bool esSeleccionado = (idTipoTorreta == i);
+			if (esSeleccionado) {
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.2f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.7f, 0.3f, 1.0f));
+			}
+
+			// Posición
+			float porY = startY + (stepY * i);
+			ImVec2 btnSize = colocarBoton(porX_Calculado, porY);
+
+			// --- LÓGICA DE CLIC ---
+			if (ImGui::Button(nombresTorretas[i], btnSize))
+			{
+				// Asigna la torreta
+				idTipoTorreta = i;
+				// Cierra el menu
+				show_menu_construccion = false; 
+			}
+
+			if (esSeleccionado) {
+				ImGui::PopStyleColor(2);
+			}
+			ImGui::PopID();
 		}
 
-		ImVec2 btnCon = colocarBoton(0.2f, 0.350f);
-		if (ImGui::Button("Congeladora", btnCon))
-		{
-			idTipoTorreta = 0;
-		}
-
-		ImVec2 btnLas = colocarBoton(0.2f, 0.50f);
-		if (ImGui::Button("Laser", btnLas))
-		{
-			idTipoTorreta = 0;
-		}
-
-		ImVec2 btnVen = colocarBoton(0.2f, 0.65f);
-		if (ImGui::Button("Veneno", btnVen))
-		{
-			idTipoTorreta = 0;
-		}
-
-		ImVec2 btnFran = colocarBoton(0.2f, 0.80f);
-		if (ImGui::Button("Francotirador", btnFran))
-		{
-			idTipoTorreta = 0;
-		}
-
-		
-
-
-
-		// --- BOTÓN CERRAR ---
-
-		// Forzamos la fuente grande para este botón
+		// ---------------------------------------------------------
+		// 3. BOTÓN CERRAR (CANCELAR)
+		// ---------------------------------------------------------
 		ImGui::SetWindowFontScale(1.5f);
-
-		// Usamos colocarBoton para situarlo abajo, igual que el botón "Salir"
 		ImVec2 btnSize = colocarBoton(0.5f, 0.90f);
+
+		// Estilo Rojo para cancelar
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.2f, 0.2f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.3f, 0.3f, 1.0f));
+
 		if (ImGui::Button("Cerrar", btnSize))
 		{
 			show_menu_construccion = false;
 		}
+		ImGui::PopStyleColor(2);
 
 		ImGui::SetWindowFontScale(1.0f);
 		regresarEstiloBotones();
 	}
 	ImGui::End();
+
+	ImGui::PopStyleColor();
 }
+
 
 //--------------------------------------------------------------//
 //					Funciones de prubas							//
