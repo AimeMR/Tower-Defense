@@ -21,6 +21,7 @@ bool show_menu_construccion = false;
 
 int idTipoTorreta = -1; //Hueco vacio
 int idTorretaSeleccionada = -1; //Sin torreta seleccionada
+bool torretaComprada = false; //Control para activar compra
 
 //------------- Variables globales para modo pruebas------------------
 bool enable_debug_mode = true; // Variable de configuracion para mostrar el boton (CAMBIAR AQUI)
@@ -462,10 +463,11 @@ void menuConstruccion()
 			// --- LÓGICA DE CLIC ---
 			if (ImGui::Button(nombresTorretas[i], btnSize))
 			{
-				// Asigna la torreta
+				// Asigna el tipo de torreta
 				idTipoTorreta = i;
 				// Cierra el menu
 				show_menu_construccion = false; 
+				torretaComprada = true;
 			}
 
 			if (esSeleccionado) {

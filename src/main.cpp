@@ -514,6 +514,8 @@ void buyTurret(int id, int type)
 		Player::GetInstance().turretPlaced();
 		Player::GetInstance().modifyMoney(-price);
 	}
+	modifyTurret(id, type);
+	Player::GetInstance().turretPlaced();
 }
 
 void buyTurretUpgrade(int id, int stat) 
@@ -650,7 +652,7 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 						fprintf(stderr, "Menu construccion\n");
 						
 						show_menu_construccion = true;
-						idTorretaSeleccionada = t->getID();
+						idTorretaSeleccionada = t->getID() - 1;
 
 						//Selcciona el espacio y coloca la torreta selccoinada en el menu de compra
 						//modifyTurret(t->getID() - 1, idTipoTorreta);
@@ -1168,7 +1170,13 @@ int main(void)
 		{
 			po.renderPicking();
 		}
-		
+		if (torretaComprada)
+		{
+			buyTurret(idTorretaSeleccionada, idTipoTorreta);
+			torretaComprada = false;
+		}
+
+
 		// CONSTRUIMOS EL VECTOR DE LUZ DESDE LOS SLIDERS
 		glm::vec3 lightDir(debug_lightDir[0], debug_lightDir[1], debug_lightDir[2]);
 

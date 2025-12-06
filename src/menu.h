@@ -12,6 +12,7 @@ extern bool show_menu_construccion;
 
 extern int idTipoTorreta;
 extern int idTorretaSeleccionada;
+extern bool torretaComprada;
 
 // --- VARIABLES DE CONTROL DE PRUEBAS ---
 extern bool debug_detener_tiempo; // Controla si el timer corre
