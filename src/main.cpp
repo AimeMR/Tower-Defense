@@ -127,7 +127,10 @@ void InitGL()
 	mm.initialSetup();
 	createObject(mm.getMapa());
 
+	//Carga player
+	player = &Player::GetInstance();
 
+	//Carga camaras
 	nCamaras = 6;
 	camaras = std::vector<Camara>(nCamaras, Camara(w,h));
 
@@ -151,6 +154,7 @@ void InitGL()
 	pitchCamera = 45; 
 	sensibilidad = 0.5;
 
+	//Carga iluminación
 	luz.InitIluminacion(w, h);
 	direccionSol = glm::vec3(-0.9f, -3.0f, 2.0f);
 	ambientIntensity = 0.3;
@@ -165,12 +169,20 @@ void InitGL()
 	luz.enemigos = &enemies;
 	luz.turrets = turrets;
 
+	//Carga PO
 	po = PickingObjects3D(w, h, poShaderID);
 	po.m_cam = &mainCamara;
 	po.m_turrets = turrets;
 	po.m_objectes = &objects;
 	luz.m_po = &po;
 	
+	//Carga variables juego
+	isInConstructionMode = true;
+	enemyCount = 0;
+	currentWeight = 0;
+	maxEnemy = 0;
+	enemySpawnTimer = 0.0f;
+	turretAmount = 0;
 
 	initVAOList();	// Inicialtzar llista de VAO'S.
 }
@@ -260,6 +272,13 @@ void InitAPI()
 	glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)wglGetProcAddress("glVertexAttribPointer");
 }
 
+void finishRound()
+{
+	isInConstructionMode = true;
+	fprintf(stderr, "Round Finished:\n");
+	player->increaseRound();
+}
+
 Enemy* spawnEnemy(int type)
 {
 	Enemy* newEnemy = new Enemy(mm.getEnemy(type), type);
@@ -279,6 +298,9 @@ Enemy* spawnEnemy(int type)
 
 	newEnemy->startMoving();
 
+	enemyCount++;
+	fprintf(stderr, "EnemyAmount: %d\n", enemyCount);
+
 	return newEnemy;
 }
 
@@ -287,6 +309,15 @@ void destroyEnemies(Enemy* en)
 	auto it = std::find(enemies.begin(), enemies.end(), en);
 	if (it == enemies.end()) return;
 	if (en->mustDestroy()) return;
+
+	enemyCount--;
+	Player::GetInstance().enemyDefeated();
+	fprintf(stderr, "EnemyAmount: %d\n", enemyCount);
+
+	if (enemyCount == 0 && !isInConstructionMode && currentWeight == 0) 
+	{
+		finishRound();
+	}
 
 	enemies.erase(it);
 	delete en;
@@ -300,13 +331,14 @@ void divideEnemy(Enemy* en)
 		Path* nt = en->getTarget();
 		Enemy* div = spawnEnemy(DivisibleDIV);
 		div->copyMovementData(nt);
+		div->setNPath(en->getNPath());
 		div->translate(en->getPos() + glm::vec3(0.25f, 0.25f, 0.0f));
 
 		div = spawnEnemy(DivisibleDIV);
 		div->copyMovementData(nt);
+		div->setNPath(en->getNPath());
 		div->translate(en->getPos() + glm::vec3(-0.25f, -0.25f, 0.0f));
 	}
-
 }
 
 GameObject* createObject(COBJModel* model)
@@ -412,19 +444,27 @@ void destroyObject(GameObject* obj)
 	}
 }
 
-void modifyTurret(int id, int type)
+void modifyTurret(int id, int type, int price = 0)
 {
 	turrets[id]->setTurretFloor(mm.getFloor());
 	turrets[id]->setRadio(mm.getRadius());
 	turrets[id]->hideRadio();
 	if (type == -1) 
 	{
+		if (turrets[id]->getType() != -1) {
+			turretAmountByType[turrets[id]->getType()]--;
+			turretAmount--;
+			int cashback = round(turrets[id]->getPrice() * 0.5f);
+			Player::GetInstance().modifyMoney(cashback);
+		}
 		std::vector<COBJModel*> emptyModels;
-		turrets[id]->loadTurret(type, emptyModels);
+		turrets[id]->loadTurret(type, emptyModels, 0);
 	}
 	else 
 	{
-		turrets[id]->loadTurret(type, mm.getTurret(type));
+		turrets[id]->loadTurret(type, mm.getTurret(type), price);
+		turretAmountByType[type]++;
+		turretAmount++;
 	}
 }
 
@@ -450,6 +490,41 @@ void setUpTurrets()
 		turrets[i] = new Turret(i+1);
 		turrets[i]->setPos(pos[i]);
 		turrets[i]->setEnemiesVector(&enemies);
+	}
+}
+
+int getTurretPrice(int type) 
+{
+	return turretBasePrice[type] + round((turretAmount * (turretAmountByType[type] + 1) * turretBasePrice[type] * 0.1f));
+}
+
+glm::vec3 getTurretUpgradesPrices(int id) 
+{
+	glm::vec3 level = turrets[id]->getUpgradeLevel();
+	glm::vec3 prices = glm::vec3(turretUpgradePrices[(int)level[0]], turretUpgradePrices[(int)level[1]], turretUpgradePrices[(int)level[2]]);
+	return prices;
+}
+
+void buyTurret(int id, int type) 
+{
+	int price = getTurretPrice(type);
+	if (Player::GetInstance().getMoney() >= price) 
+	{
+		modifyTurret(id, type);
+		Player::GetInstance().turretPlaced();
+		Player::GetInstance().modifyMoney(-price);
+	}
+}
+
+void buyTurretUpgrade(int id, int stat) 
+{
+	if (stat < 0 || stat > 2) return;
+	int price = getTurretUpgradesPrices(id)[stat];
+	if (Player::GetInstance().getMoney() >= price)
+	{
+		turrets[id]->upgradeStat(stat);
+		Player::GetInstance().turretUpgraded();
+		Player::GetInstance().modifyMoney(-price);
 	}
 }
 
@@ -488,6 +563,47 @@ void OnVistaSkyBox()
 		};
 		cubemapTexture = loadCubemap(faces);
 	}
+}
+
+void spawnEnemies(float deltaTime)
+{
+	if (enemySpawnTimer > 0)	enemySpawnTimer -= deltaTime;
+	else if (currentWeight > 0)
+	{
+		int enemyType = trunc(((float)rand() / (float)RAND_MAX) * (maxEnemy + 1));
+		fprintf(stderr, "Spawining an enemy of type: %d\n", enemyType);
+		while (enemyType >= 0)
+		{
+			if (currentWeight >= enemyWeights[enemyType])
+			{
+				spawnEnemy(enemyType);
+				currentWeight -= enemyWeights[enemyType];
+				if(currentWeight > 0) 
+					enemySpawnTimer = (float)rand() / (float)RAND_MAX;
+				break;
+			}
+			enemyType--;
+		}
+	}
+}
+
+void startSpawningEnemies() 
+{
+	currentWeight = trunc((player->getRound() * 2.0f - 1.0f) * player->getDifficulty());
+	maxEnemy = min((player->getRound() - 1) / 2, 5);
+	enemySpawnTimer = 0.2f;
+	fprintf(stderr, "Round: %d\n", player->getRound());
+	fprintf(stderr, "Difficulty: %f\n", player->getDifficulty());
+	fprintf(stderr, "Weight: %d\n", currentWeight);
+	fprintf(stderr, "ME: %d\n", maxEnemy);
+}
+
+void startNextRound()
+{
+	if (!isInConstructionMode) return;
+	fprintf(stderr, "Round Started:\n");
+	isInConstructionMode = false;
+	startSpawningEnemies();
 }
 
 
@@ -643,7 +759,7 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			break;
 		case GLFW_KEY_T:
 			for (Enemy* e : enemies)
-				e->takeDamage(2.5f);
+				e->takeDamage(15.0f);
 			break;
 		case GLFW_KEY_1:
 			spawnEnemy(Basic);
@@ -668,6 +784,12 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			break;
 		case GLFW_KEY_Z:
 			camaraActual--;
+			break;
+		case GLFW_KEY_O:
+			startNextRound();
+			break;
+		case GLFW_KEY_P:
+			finishRound();
 			break;
 		default:
 			break;
@@ -831,6 +953,8 @@ void CamerasUpdate()
 
 void Update(float timer, float deltaTime) 
 {
+	spawnEnemies(deltaTime);
+
 	for (Enemy* e : enemies) 
 	{
 		e->move(deltaTime, timer);
@@ -963,8 +1087,6 @@ int main(void)
 			fullscreen = false;
 		}
 	}
-
-	
 
 	setUpPath();
 	setUpTurrets();

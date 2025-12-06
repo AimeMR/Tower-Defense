@@ -1,6 +1,7 @@
 #pragma once
 #include "material.h"
 #include "objLoader.h"
+#include "player.h"
 #include <vector>
 
 class modelManager

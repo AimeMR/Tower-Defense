@@ -2,7 +2,7 @@
 
 void Enemy::setUpEnemyStats(float difficulty)
 {
-	float baseH = 20.0f;
+	float baseH = 15.0f;
 	float baseS = 5.0f;
 	switch (m_type) {
 	case Basic:
@@ -54,6 +54,8 @@ void Enemy::setUpEnemyStats(float difficulty)
 		die();
 	}
 
+	m_baseHealth *= difficulty;
+	m_speed *= (1.0f + difficulty) / 2.0f;
 	m_health = m_baseHealth;
 	m_reward = (int)((float)m_weight * difficulty * 100.0f);
 }
@@ -135,9 +137,8 @@ void Enemy::reachPathEnd()
 
 	if (m_target == nullptr)
 	{
-		//Restar vida al jugador
-		//Explota
-		//Eliminar enemigo
+		Player::GetInstance().modifyHealth(-m_damage);
+		fprintf(stderr, "Health: %d\n", Player::GetInstance().getHealth());
 		die();
 		return;
 	}
@@ -422,33 +423,23 @@ void Enemy::takeDamage(float damage)
 
 void Enemy::die()
 {
-	if (m_target)
+	if (m_target != nullptr)
 		switch (m_type) {
 		case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
-			//Pagar al jugador rewardS
-			//Explota
+			Player::GetInstance().modifyMoney(m_reward);
 			break;
 		case Accelerador:
-
-			//No paguem
 			m_health = m_baseHealth;
-			m_defSpeed *= 2.0f;
+			m_defSpeed *= 2.5f;
 			m_speed = m_defSpeed * m_target->getSpeedMultiplier();
 			m_damage = 1;
 			m_type = 6;
-			//Crear un nuevo enemigo ACCELERADORACT
-
-
-
 			return;
-		case Divisible:
-			//No paguem
-			//Explota
-			//Creem 2 enemics 7 a la seva posició actual amb la seva direcció actual
-			break;
 		default:
 			break;
 		}
+
+	fprintf(stderr, "Money: %d\n", Player::GetInstance().getMoney());
 	m_Move = false;
 }
 
