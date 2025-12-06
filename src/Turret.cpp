@@ -41,9 +41,11 @@ std::vector<Enemy*> Turret::selectAllTargetsInRange()
 
 void Turret::draw(GLuint shader)
 {
+	m_floor->dibuixarObjecte(shader);
 	if (m_type == -1) return;
 	m_baseObj->dibuixarObjecte(shader);
 	m_headObj->dibuixarObjecte(shader);
+	m_radio->dibuixarObjecte(shader);
 	if (m_auxObject) m_auxObject->dibuixarObjecte(shader);
 }
 
@@ -79,8 +81,8 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models, int price = 0)
 	for (int i = 2; i < models.size(); i++)
 		m_auxModels.push_back(models[i]);
 
-	m_baseObj->setPOID((m_id) * 2654435760);
-	m_headObj->setPOID((m_id) * 2654435760);
+	m_baseObj->setPOID(m_poid);
+	m_headObj->setPOID(m_poid);
 
 	float zBase = 0.0f;
 
@@ -135,7 +137,7 @@ void Turret::mainUpdate(float deltaTime)
 	if (m_type < 0 || m_type > 4) return;
 
 	animate(deltaTime);
-
+	m_radio->rotate(glm::rotate(glm::mat4(1.0f), glm::radians(deltaTime) * 20, glm::vec3(0, 0, 1)));
 	if (m_type == LASER) updateLaser(deltaTime);
 	else if (m_type == CONGELADORA) updateIce(deltaTime);
 	else updateCannon(deltaTime);
@@ -276,10 +278,12 @@ void Turret::spawnAuxObj(int id)
 
 void Turret::deleteAuxObj() 
 {
-	if (m_auxObject == nullptr) return;
+	if (m_auxObject != nullptr)
+	{
+		delete m_auxObject;
+		m_auxObject = nullptr;
+	}
 
-	delete m_auxObject;
-	m_auxObject = nullptr;
 }
 
 void Turret::shootAnimation() 

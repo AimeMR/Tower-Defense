@@ -77,7 +77,7 @@ void PickingObjects3D::renderPicking()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void PickingObjects3D::getClickedObject(GLFWwindow* window, CPoint mousePos)
+int PickingObjects3D::getClickedObject(GLFWwindow* window, CPoint mousePos)
 {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pickingFB);
@@ -91,7 +91,7 @@ void PickingObjects3D::getClickedObject(GLFWwindow* window, CPoint mousePos)
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
+	return pickedID;
 	fprintf(stderr, "Objeto clicado con la id: %d\n", pickedID);
 }
 

@@ -13,7 +13,7 @@ public:
 
 	void renderPicking();
 
-	void getClickedObject(GLFWwindow* window, CPoint mousePos);
+	int getClickedObject(GLFWwindow* window, CPoint mousePos);
 	void updatePickingObjectSize(int width, int height);
 	void debug();
 
