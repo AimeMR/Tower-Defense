@@ -508,14 +508,18 @@ glm::vec3 getTurretUpgradesPrices(int id)
 void buyTurret(int id, int type) 
 {
 	int price = getTurretPrice(type);
+	fprintf(stderr, "Turret Price: %d\n", price);
+	fprintf(stderr, "Money: %d\n", Player::GetInstance().getMoney());
+	fprintf(stderr, "Amount: %d\n", turretAmount);
+	fprintf(stderr, "Tipo: %d\n", turrets[id]->getType());
+
+
 	if (Player::GetInstance().getMoney() >= price) 
 	{
 		modifyTurret(id, type);
 		Player::GetInstance().turretPlaced();
 		Player::GetInstance().modifyMoney(-price);
 	}
-	modifyTurret(id, type);
-	Player::GetInstance().turretPlaced();
 }
 
 void buyTurretUpgrade(int id, int stat) 
@@ -661,12 +665,8 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 					{
 						fprintf(stderr, "Menu mejoras\n");
 
-
-						modifyTurret(t->getID() - 1, ((t->getType() + 2) % 6) - 1);
-
 					}
 					t->showRadio();
-
 				}
 			}
 
@@ -1094,14 +1094,14 @@ int main(void)
 	setUpTurrets();
 	luz.TurretsWereLoaded();
 	modifyTurret(0, -1);
-	modifyTurret(1, CONGELADORA);
-	modifyTurret(2, LASER);
-	modifyTurret(3, METRALLADORA);
-	modifyTurret(4, VERI);
-	modifyTurret(5, FRANCOTIRADORA);
-	modifyTurret(6, CONGELADORA);
-	modifyTurret(7, LASER);
-	modifyTurret(8, METRALLADORA);
+	modifyTurret(1, -1);
+	modifyTurret(2, -1);
+	modifyTurret(3, -1);
+	modifyTurret(4, -1);
+	modifyTurret(5, -1);
+	modifyTurret(6, -1);
+	modifyTurret(7, -1);
+	modifyTurret(8, -1);
 
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
