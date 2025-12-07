@@ -15,25 +15,28 @@ extern int idTorretaSeleccionada;
 extern bool torretaComprada;
 
 // --- VARIABLES DE CONTROL DE PRUEBAS ---
-extern bool debug_detener_tiempo; // Controla si el timer corre
-extern bool debug_resetear_todo;  // Orden de matar y reiniciar
-extern int debug_id_enemigo_spawn; // Id del enemigo
+extern bool debug_detener_tiempo;	// Controla si el timer corre
+extern bool debug_resetear_todo;	// Orden de matar y reiniciar
+extern int debug_id_enemigo_spawn;  // Id del enemigo
 extern int debug_num_enemigo_spawn; // Cantidad de enemigos
-extern bool debug_solicitar_spawn; // La orden de spawnear
-extern bool show_submenu_shadows; // Booleano para ventana de sombras
-extern bool show_submenu_light;
-extern float debug_speedMult;
+extern bool debug_solicitar_spawn;  // La orden de spawnear
+extern bool show_submenu_shadows;	// Booleano para ventana de sombras
+extern bool show_submenu_light;		// Booleano para ventana de luces
+extern float debug_speedMult;		// Booleano para ventana de sombras
 
 // --- VARIABLES SOMBRAS Y RENDER ---
-extern float debug_lightDir[3];   // Vector direccion luz
-extern float debug_boxSize;       // Tamano caja sombras
-extern float debug_nearPlane;     // Plano cercano
-extern float debug_farPlane;      // Plano lejano
-extern float debug_ambientIntensity;
-extern float debug_lightColor[3];
-extern int debug_renderMode;      // Modo de renderizado 
+extern float debug_lightDir[3];		 // Vector direccion luz
+extern float debug_boxSize;			 // Tamano caja sombras
+extern float debug_nearPlane;		 // Plano cercano
+extern float debug_farPlane;		 // Plano lejano
+extern float debug_ambientIntensity; // Intensidad de los colores
+extern float debug_lightColor[3];	 // Vector RGB color
+extern int debug_renderMode;		 // Modo de renderizado 
 
 
+
+
+// ----------- Funciones menus -----------
 void menu(bool& salir);
 void iniciarPartida(bool& salir);
 void menuPausa(bool& salir, const ImGuiViewport* viewport);
@@ -41,6 +44,7 @@ void menuAjustes();
 void menuCreditos();
 void menuConstruccion();
 
+// ----------- Funciones para pruebas -----------
 void menuPruebas(bool& salir);
 void menuShadows();
 void menuLight();
@@ -53,4 +57,47 @@ void cambiarEstiloSlider();
 void regresarEstiloSlider();
 
 
+// =========================================================
+//  GESTIÓN DE IMÁGENES 
+// =========================================================
 
+#include <vector>
+#include <string>
+
+// 1. Estructura que agrupa TODO lo de una imagen (ID y tamaño)
+//    Asi no tienes que pasar 3 variables distintas.
+struct ImagenData {
+    GLuint id = 0;
+    int ancho = 0;
+    int alto = 0;
+};
+
+// 2. Estructura para definir texto superpuesto
+struct TextoOverlay {
+    std::string texto;
+    float offsetX; // Posición X relativa a la esquina de la imagen
+    float offsetY; // Posición Y relativa a la esquina de la imagen
+    ImVec4 color;  // Color del texto
+
+    // Constructor rápido
+    TextoOverlay(std::string t, float x, float y, ImVec4 c = ImVec4(1, 1, 1, 1))
+        : texto(t), offsetX(x), offsetY(y), color(c) {
+    }
+};
+
+// --- VARIABLES GLOBALES DE IMÁGENES ---
+// Las definimos aquí para usarlas en cualquier menú
+extern ImagenData imgVida;
+extern ImagenData imgDinero;
+extern ImagenData imgRonda;
+extern ImagenData imgTorretas[5]; // Array para las 5 torretas
+
+// --- FUNCIONES ---
+
+// Carga todas las imágenes del juego (Llamar una vez al inicio)
+void InicializarGestorImagenes();
+
+// Dibuja una imagen en una posición relativa (0.0 a 1.0) de la pantalla
+// Permite pasar una lista de textos para poner encima.
+// escala: 1.0f = Tamaño original, 0.5f = Mitad de tamaño, etc.
+void DibujarImagen(const ImagenData& img, float porX, float porY, float escala, const std::vector<TextoOverlay>& textos = {});

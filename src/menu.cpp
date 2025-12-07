@@ -9,6 +9,7 @@
 #include "visualitzacio.h"
 #include "escena.h"
 #include "menu.h"
+#include "player.h"
 
 //------------- Variables Globales -------------
 bool show_menu_inicio = true;
@@ -46,6 +47,91 @@ int debug_renderMode = 0; // 0 = DEFAULT
 
 // Variable de Brillo (1.0 = Normal, 0.0 = Negro total)
 float nivelBrillo = 1.0f;
+
+// =========================================================
+//  IMPLEMENTACIÓN DE IMÁGENES (AGREGAR EN MENU.CPP)
+// =========================================================
+
+// Descomenta esto SI NO lo tienes en otro archivo ya:
+// #define STB_IMAGE_IMPLEMENTATION 
+#include "stb_image.h" // Asegurate de tener este archivo o la ruta correcta
+
+// Definición de las variables globales declaradas en el .h
+ImagenData imgVida;
+ImagenData imgDinero;
+ImagenData imgRonda;
+ImagenData imgTorretas[5];
+
+// --- FUNCION PRIVADA DE CARGA (Ahora recibe la estructura limpia) ---
+bool CargarTexturaInterna(const char* filename, ImagenData& out_img)
+{
+	int w, h, channels;
+	unsigned char* data = stbi_load(filename, &w, &h, &channels, 4);
+
+	if (data == NULL) return false;
+
+	glGenTextures(1, &out_img.id);
+	glBindTexture(GL_TEXTURE_2D, out_img.id);
+
+	// Configuración para iconos nítidos
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	stbi_image_free(data);
+
+	out_img.ancho = w;
+	out_img.alto = h;
+
+	return true;
+}
+
+// --- INICIALIZADOR PRINCIPAL ---
+void InicializarGestorImagenes()
+{
+	// Carga HUD
+	CargarTexturaInterna(".\\textures\\imagenes\\vida.png", imgVida);
+	CargarTexturaInterna(".\\textures\\imagenes\\ronda.png", imgRonda);
+	CargarTexturaInterna(".\\textures\\imagenes\\dinero.png", imgDinero);
+
+	// Carga Torretas
+	CargarTexturaInterna(".\\textures\\imagenes\\ametralladora.png", imgTorretas[0]);
+	CargarTexturaInterna(".\\textures\\imagenes\\congeladora.png", imgTorretas[1]);
+	CargarTexturaInterna(".\\textures\\imagenes\\laser.png", imgTorretas[2]);
+	CargarTexturaInterna(".\\textures\\imagenes\\veneno.png", imgTorretas[3]);
+	CargarTexturaInterna(".\\textures\\imagenes\\francotiradora.png", imgTorretas[4]);
+}
+
+// --- FUNCIÓN DE DIBUJADO INTELIGENTE ---
+void DibujarImagen(const ImagenData& img, float porX, float porY, float escala, const std::vector<TextoOverlay>& textos)
+{
+	if (img.id == 0) return;
+	ImVec2 winSize = ImGui::GetWindowSize();
+
+	// Calculamos el NUEVO tamaño basado en la escala
+	float anchoFinal = img.ancho * escala;
+	float altoFinal = img.alto * escala;
+
+	// Posicion esquina superior izquierda (Centrada según el nuevo tamaño)
+	float imgX = (winSize.x * porX) - (anchoFinal * 0.5f);
+	float imgY = (winSize.y * porY) - (altoFinal * 0.5f);
+
+	ImGui::SetCursorPos(ImVec2(imgX, imgY));
+
+	// Le decimos a ImGui que dibuje con el tamaño escalado
+	ImGui::Image((void*)(intptr_t)img.id, ImVec2(anchoFinal, altoFinal));
+
+	for (const auto& item : textos) {
+		// El texto se coloca relativo a la esquina de la imagen
+		// NOTA: Si reduces mucho la imagen, tendrás que ajustar los offsets del texto
+		ImGui::SetCursorPos(ImVec2(imgX + item.offsetX, imgY + item.offsetY));
+		ImGui::TextColored(item.color, "%s", item.texto.c_str());
+	}
+}
+////////////////////
+
 
 //------------- PROTOTIPOS DE FUNCIONES ------------------
 //(al tener el menu arriba hace falta precargar las funciones)
@@ -205,6 +291,68 @@ void menu(bool& salir)
 void iniciarPartida(bool& salir)
 {
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// =========================================================
+	// 1. HUD OVERLAY (NUEVO CODIGO AQUI)
+	// =========================================================
+
+	// Configurar ventana transparente que cubre toda la pantalla
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+	ImGui::SetNextWindowBgAlpha(0.0f); // Totalmente transparente
+
+	// Flags: No inputs (Click Through), No decoration, No title bar
+	ImGuiWindowFlags hudFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs |
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNav;
+
+	if (ImGui::Begin("HUD_Overlay_Images", nullptr, hudFlags))
+	{
+		// ----------------------------------------------------
+		// DATOS DINÁMICOS (Sustituir con tus variables reales del juego)
+		// ----------------------------------------------------
+		// Ejemplo: int vida = gestorJuego.getVida();
+		int vida_mock = Player::GetInstance().getHealth();
+		int dinero_mock = Player::GetInstance().getMoney();
+		int ronda_mock = Player::GetInstance().getRound();
+
+		char txtVida[16]; sprintf_s(txtVida, "%d", vida_mock);
+		char txtDinero[16]; sprintf_s(txtDinero, "%d", dinero_mock);
+		char txtRonda[32]; sprintf_s(txtRonda, "%d", ronda_mock);
+
+		// Aumentamos un poco la fuente para que se vea bien
+		ImGui::SetWindowFontScale(2.2f);
+
+		// ----------------------------------------------------
+		// A. DIBUJAR VIDA (Arriba Izquierda)
+		// ----------------------------------------------------
+		// Imagen al 5% ancho, 8% alto.
+		// Texto: +40px a la derecha, +15px abajo (Relativo a la imagen)
+		DibujarImagen(imgVida, 0.9f, 0.05f, 0.23f, {
+			TextoOverlay(txtVida, 120.0f, 25.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
+			});
+
+		// ----------------------------------------------------
+		// B. DIBUJAR DINERO (Debajo de la vida)
+		// ----------------------------------------------------
+		// Imagen al 5% ancho, 18% alto.
+		// Texto: +40px a la derecha, +15px abajo (Verde claro)
+		DibujarImagen(imgDinero, 0.77f, 0.05f, 0.15f, {
+			TextoOverlay(txtDinero, 100.0f, 27.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
+			});
+
+		// ----------------------------------------------------
+		// C. DIBUJAR RONDA (Centro Arriba)
+		// ----------------------------------------------------
+		// Imagen al 50% ancho, 8% alto.
+		// Texto: Centrado en la imagen (ajustar offset según tamaño imagen)
+		DibujarImagen(imgRonda, 0.50f, 0.05f, 0.28f, {
+			TextoOverlay(txtRonda, 100.0f, 8.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
+			});
+
+		ImGui::SetWindowFontScale(1.0f); // Restaurar fuente
+	}
+	ImGui::End();
 
 	// -----------------------------------------------------
 	// HUD (Botón Pausa)

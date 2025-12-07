@@ -1106,7 +1106,8 @@ int main(void)
 	glEnable(GL_DEPTH_TEST);
 	bool salir = false;
 
-
+	//Inicailiza las imagenes usadas
+	InicializarGestorImagenes();
 
     while (!glfwWindowShouldClose(window) and !salir)
     {  
@@ -1114,9 +1115,6 @@ int main(void)
 		delta = now - previous;
 		previous = now;
 		deltaTime = delta;
-
-		// --- ERROR EN TU CÓDIGO ORIGINAL ---
-		// frameTimer += deltaTime;  <-- BORRA ESTO DE AQUÍ (si lo dejas, el tiempo avanza aunque estés en pausa)
 
 		// Poll for and process events
 		glfwPollEvents();
