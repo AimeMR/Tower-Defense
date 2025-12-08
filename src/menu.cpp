@@ -524,7 +524,7 @@ void imprimirFotoTorreta(ImVec2 winSize, int idT, float porX, float porY, float 
 		TextoOverlay(tDmg, 210.0f, 50.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
 		TextoOverlay(tVel, 200.0f, 125.0f,  ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
 		TextoOverlay(tRng, 200.0f, 200.0f,  ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
-		TextoOverlay(tPrecio, 10.0f, altoImgPx + 2.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
+		TextoOverlay(tPrecio, 10.0f, altoImgPx + 2.0f, ImVec4(0.96f, 0.75f, 0.113f, 1.0f))
 		});
 
 	// Calcular coordenadas absolutas de la esquina superior izquierda de la imagen
@@ -532,27 +532,22 @@ void imprimirFotoTorreta(ImVec2 winSize, int idT, float porX, float porY, float 
 	float yInicioImagen = (winSize.y * porY) - (altoImgPx * 0.5f);
 
 	// Definir posición del botón
-	float xPosBoton = xInicioImagen + 180.0f;
+	float xPosBoton = xInicioImagen + 170.0f;
 	float yPosBoton = yInicioImagen + altoImgPx;
 
 	ImGui::SetCursorPos(ImVec2(xPosBoton, yPosBoton));
 
-	// Cambiar color si está seleccionado
-	if (idTipoTorreta == idT) 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.2f, 1.0f));
+	//Actualiza el id para que no confunda botones
+	ImGui::PushID(idT);
 
-	if (ImGui::Button("Comprar", ImVec2(120, 40))) 
+	if (ImGui::Button("Comprar", ImVec2(120, 40)))
 	{
 		idTipoTorreta = idT;
 		show_menu_construccion = false;
 		torretaComprada = true;
 	}
 
-	if (idTipoTorreta == idT)
-	{
-		ImGui::PopStyleColor();
-	}
-		
+	ImGui::PopID();
 }
 
 // Menu para
@@ -602,7 +597,7 @@ void menuConstruccion()
 		sprintf_s(tDmg, "%d", 4);
 		sprintf_s(tVel, "%.1f", 1.5f);
 		sprintf_s(tRng, "%d", 100);
-		sprintf_s(tPrecio, "Precio: %d $", getTurretPrice(idT));
+		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
 
@@ -616,7 +611,7 @@ void menuConstruccion()
 		sprintf_s(tDmg, "%d", 10);
 		sprintf_s(tVel, "%.1f", 1.5f);
 		sprintf_s(tRng, "%d", 100);
-		sprintf_s(tPrecio, "Precio: %d $", getTurretPrice(idT));
+		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 
 		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
@@ -627,13 +622,13 @@ void menuConstruccion()
 		// TORRETA 3: LASER (Medio Izquierda)
 		// =========================================================
 		idT = 2;
-		porX = 0.23f; porY = 0.55f;
+		porX = 0.23f; porY = 0.52f;
 		escalaImg = 0.56f; 
 
-		sprintf_s(tDmg, "Dmg: %d", 25);
-		sprintf_s(tVel, "Vel: %.1f", 5.0f);
-		sprintf_s(tRng, "Rng: %d", 150);
-		sprintf_s(tPrecio, "Precio: %d $", getTurretPrice(idT));
+		sprintf_s(tDmg, "%d", 25);
+		sprintf_s(tVel, "%.1f", 5.0f);
+		sprintf_s(tRng, "%d", 150);
+		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 
 		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
@@ -644,13 +639,13 @@ void menuConstruccion()
 		// TORRETA 4: VENENO (Medio Derecha)
 		// =========================================================
 		idT = 3;
-		porX = 0.70f; porY = 0.55f;
+		porX = 0.75f; porY = 0.52f;
 		escalaImg = 0.5555f; 
 
-		sprintf_s(tDmg, "Dmg: %d", 2);
-		sprintf_s(tVel, "Vel: %.1f", 0.5f);
-		sprintf_s(tRng, "Rng: %d", 90);
-		sprintf_s(tPrecio, "Precio: %d $", getTurretPrice(idT));
+		sprintf_s(tDmg, "%d", 2);
+		sprintf_s(tVel, "%.1f", 0.5f);
+		sprintf_s(tRng, "%d", 90);
+		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
 
@@ -660,13 +655,13 @@ void menuConstruccion()
 		// TORRETA 5: SNIPER (Abajo Centro)
 		// =========================================================
 		idT = 4;
-		porX = 0.50f; porY = 0.85f;
+		porX = 0.23f; porY = 0.82f;
 		escalaImg = 0.30f; 
 
-		sprintf_s(tDmg, "Dmg: %d", 100);
-		sprintf_s(tVel, "Vel: %.1f", 0.2f);
-		sprintf_s(tRng, "Rng: %d", 300);
-		sprintf_s(tPrecio, "Precio: %d $", getTurretPrice(idT));
+		sprintf_s(tDmg, "%d", 100);
+		sprintf_s(tVel, "%.1f", 0.2f);
+		sprintf_s(tRng, "%d", 300);
+		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
 
