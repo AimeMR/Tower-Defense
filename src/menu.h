@@ -1,6 +1,10 @@
 #pragma once
+#include <vector>
+#include <string>
 
-//ImGui: Gestió de finestres de menú ImGui
+// -----------------------------------------------------------
+//            Variables para el control de menus
+// -----------------------------------------------------------
 
 extern bool show_menu_inicio;
 extern bool show_menu_ajustes;
@@ -14,7 +18,10 @@ extern int idTipoTorreta;
 extern int idTorretaSeleccionada;
 extern bool torretaComprada;
 
-// --- VARIABLES DE CONTROL DE PRUEBAS ---
+// -----------------------------------------------------------
+//        Variables para el control de menus de prueba
+// -----------------------------------------------------------
+
 extern bool debug_detener_tiempo;	// Controla si el timer corre
 extern bool debug_resetear_todo;	// Orden de matar y reiniciar
 extern int debug_id_enemigo_spawn;  // Id del enemigo
@@ -24,7 +31,9 @@ extern bool show_submenu_shadows;	// Booleano para ventana de sombras
 extern bool show_submenu_light;		// Booleano para ventana de luces
 extern float debug_speedMult;		// Booleano para ventana de sombras
 
-// --- VARIABLES SOMBRAS Y RENDER ---
+// -----------------------------------------------------------
+//    Variables para el control de menus de prueba de luces
+// -----------------------------------------------------------
 extern float debug_lightDir[3];		 // Vector direccion luz
 extern float debug_boxSize;			 // Tamano caja sombras
 extern float debug_nearPlane;		 // Plano cercano
@@ -43,6 +52,8 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport);
 void menuAjustes();
 void menuCreditos();
 void menuConstruccion();
+void imprimirFotoTorreta(ImVec2 winSize, int idT, float porX, float porY, float escalaImg, char tDmg[16], char tVel[16], char tRng[16], char tPrecio[16]);
+
 
 // ----------- Funciones para pruebas -----------
 void menuPruebas(bool& salir);
@@ -61,18 +72,15 @@ void regresarEstiloSlider();
 //  GESTIÓN DE IMÁGENES 
 // =========================================================
 
-#include <vector>
-#include <string>
 
-// 1. Estructura que agrupa TODO lo de una imagen (ID y tamaño)
-//    Asi no tienes que pasar 3 variables distintas.
+// Estructura que agrupa todos los parametros de la imagen (ID y tamaño)
 struct ImagenData {
     GLuint id = 0;
     int ancho = 0;
     int alto = 0;
 };
 
-// 2. Estructura para definir texto superpuesto
+// Estructura para definir texto superpuesto
 struct TextoOverlay {
     std::string texto;
     float offsetX; // Posición X relativa a la esquina de la imagen
@@ -86,7 +94,6 @@ struct TextoOverlay {
 };
 
 // --- VARIABLES GLOBALES DE IMÁGENES ---
-// Las definimos aquí para usarlas en cualquier menú
 extern ImagenData imgVida;
 extern ImagenData imgDinero;
 extern ImagenData imgRonda;

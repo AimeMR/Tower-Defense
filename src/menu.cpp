@@ -10,6 +10,12 @@
 #include "escena.h"
 #include "menu.h"
 #include "player.h"
+#include "Turret.h"
+
+// ---------------------------------------------------------
+// DECLARACIÓN EXTERNA (Conecta con main.cpp)
+// ---------------------------------------------------------
+extern int getTurretPrice(int type);
 
 //------------- Variables Globales -------------
 bool show_menu_inicio = true;
@@ -48,21 +54,16 @@ int debug_renderMode = 0; // 0 = DEFAULT
 // Variable de Brillo (1.0 = Normal, 0.0 = Negro total)
 float nivelBrillo = 1.0f;
 
-// =========================================================
-//  IMPLEMENTACIÓN DE IMÁGENES (AGREGAR EN MENU.CPP)
-// =========================================================
+// ================ FUNCIONES IMAGENES ================
 
-// Descomenta esto SI NO lo tienes en otro archivo ya:
-// #define STB_IMAGE_IMPLEMENTATION 
-#include "stb_image.h" // Asegurate de tener este archivo o la ruta correcta
+#include "stb_image.h" 
 
-// Definición de las variables globales declaradas en el .h
 ImagenData imgVida;
 ImagenData imgDinero;
 ImagenData imgRonda;
 ImagenData imgTorretas[5];
 
-// --- FUNCION PRIVADA DE CARGA (Ahora recibe la estructura limpia) ---
+// --- FUNCION  DE CARGA ---
 bool CargarTexturaInterna(const char* filename, ImagenData& out_img)
 {
 	int w, h, channels;
@@ -88,7 +89,7 @@ bool CargarTexturaInterna(const char* filename, ImagenData& out_img)
 	return true;
 }
 
-// --- INICIALIZADOR PRINCIPAL ---
+// --- Llama a todas las fotos que se quieren usar ---
 void InicializarGestorImagenes()
 {
 	// Carga HUD
@@ -104,13 +105,14 @@ void InicializarGestorImagenes()
 	CargarTexturaInterna(".\\textures\\imagenes\\francotiradora.png", imgTorretas[4]);
 }
 
-// --- FUNCIÓN DE DIBUJADO INTELIGENTE ---
+// --- FUNCIÓN DE DIBUJADO ---
 void DibujarImagen(const ImagenData& img, float porX, float porY, float escala, const std::vector<TextoOverlay>& textos)
 {
+	//En caso de que no hay la imagen no hace nada
 	if (img.id == 0) return;
 	ImVec2 winSize = ImGui::GetWindowSize();
 
-	// Calculamos el NUEVO tamaño basado en la escala
+	// Reajusta la escala de la imagen
 	float anchoFinal = img.ancho * escala;
 	float altoFinal = img.alto * escala;
 
@@ -120,17 +122,16 @@ void DibujarImagen(const ImagenData& img, float porX, float porY, float escala, 
 
 	ImGui::SetCursorPos(ImVec2(imgX, imgY));
 
-	// Le decimos a ImGui que dibuje con el tamaño escalado
+	// ImGui dibuja con el tamaño escalado
 	ImGui::Image((void*)(intptr_t)img.id, ImVec2(anchoFinal, altoFinal));
 
 	for (const auto& item : textos) {
 		// El texto se coloca relativo a la esquina de la imagen
-		// NOTA: Si reduces mucho la imagen, tendrás que ajustar los offsets del texto
 		ImGui::SetCursorPos(ImVec2(imgX + item.offsetX, imgY + item.offsetY));
 		ImGui::TextColored(item.color, "%s", item.texto.c_str());
 	}
 }
-////////////////////
+// ================ FIN FUNCIONES IMAGENES ================
 
 
 //------------- PROTOTIPOS DE FUNCIONES ------------------
@@ -159,7 +160,7 @@ void aplicarEfectoBrillo();
 //--------------------------------------------------------------//
 
 
-//Menu inicial al ejecutar
+// Menu inicial al ejecutar
 void menu(bool& salir)
 {
 	// Inicializa frame de ImGui
@@ -172,7 +173,7 @@ void menu(bool& salir)
 	// pero NO a los menús que dibujamos ahora encima.
 	aplicarEfectoBrillo();
 
-	// Obtenemos viewport para posicionar ventana
+	// viewport para posicionar ventana
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	// =========================================================
@@ -245,6 +246,7 @@ void menu(bool& salir)
 		}
 		ImGui::End();
 	}
+
 	// =========================================================
 	// ESTADO DE JUEGO (HUD + PAUSA)
 	// =========================================================
@@ -252,6 +254,7 @@ void menu(bool& salir)
 	{
 		iniciarPartida(salir);
 	}
+
 	// =========================================================
 	// MODO PRUEBAS
 	// =========================================================
@@ -263,12 +266,13 @@ void menu(bool& salir)
 		{
 			menuShadows();
 		}
-		// Si el submenu de sombras está activo, lo dibujamos
+		// Si el submenu de luces está activo, lo dibujamos
 		if (show_submenu_light)
 		{
 			menuLight();
 		}
 	}
+
 	// =========================================================
 	// MENU AJUSTES
 	// =========================================================
@@ -276,6 +280,7 @@ void menu(bool& salir)
 	{
 		menuAjustes();
 	}
+
 	// =========================================================
 	// CREDITOS
 	// =========================================================
@@ -292,65 +297,48 @@ void iniciarPartida(bool& salir)
 {
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-	// =========================================================
-	// 1. HUD OVERLAY (NUEVO CODIGO AQUI)
-	// =========================================================
+	// ------------ Cargar imagenes ------------
 
 	// Configurar ventana transparente que cubre toda la pantalla
 	ImGui::SetNextWindowPos(viewport->Pos);
 	ImGui::SetNextWindowSize(viewport->Size);
 	ImGui::SetNextWindowBgAlpha(0.0f); // Totalmente transparente
 
-	// Flags: No inputs (Click Through), No decoration, No title bar
 	ImGuiWindowFlags hudFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
 		ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNav;
 
 	if (ImGui::Begin("HUD_Overlay_Images", nullptr, hudFlags))
 	{
-		// ----------------------------------------------------
-		// DATOS DINÁMICOS (Sustituir con tus variables reales del juego)
-		// ----------------------------------------------------
-		// Ejemplo: int vida = gestorJuego.getVida();
+		
+		// Geters variables informativas
 		int vida_mock = Player::GetInstance().getHealth();
 		int dinero_mock = Player::GetInstance().getMoney();
 		int ronda_mock = Player::GetInstance().getRound();
 
+		// Establecer los codigos de las variables informativas
 		char txtVida[16]; sprintf_s(txtVida, "%d", vida_mock);
 		char txtDinero[16]; sprintf_s(txtDinero, "%d", dinero_mock);
 		char txtRonda[32]; sprintf_s(txtRonda, "%d", ronda_mock);
 
-		// Aumentamos un poco la fuente para que se vea bien
 		ImGui::SetWindowFontScale(2.2f);
 
-		// ----------------------------------------------------
-		// A. DIBUJAR VIDA (Arriba Izquierda)
-		// ----------------------------------------------------
-		// Imagen al 5% ancho, 8% alto.
-		// Texto: +40px a la derecha, +15px abajo (Relativo a la imagen)
+		// Icono Vida
 		DibujarImagen(imgVida, 0.9f, 0.05f, 0.23f, {
 			TextoOverlay(txtVida, 120.0f, 25.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
 			});
-
-		// ----------------------------------------------------
-		// B. DIBUJAR DINERO (Debajo de la vida)
-		// ----------------------------------------------------
-		// Imagen al 5% ancho, 18% alto.
-		// Texto: +40px a la derecha, +15px abajo (Verde claro)
+		
+		// Icono Dinero
 		DibujarImagen(imgDinero, 0.77f, 0.05f, 0.15f, {
 			TextoOverlay(txtDinero, 100.0f, 27.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
 			});
 
-		// ----------------------------------------------------
-		// C. DIBUJAR RONDA (Centro Arriba)
-		// ----------------------------------------------------
-		// Imagen al 50% ancho, 8% alto.
-		// Texto: Centrado en la imagen (ajustar offset según tamaño imagen)
+		// Icono Ronda
 		DibujarImagen(imgRonda, 0.50f, 0.05f, 0.28f, {
 			TextoOverlay(txtRonda, 100.0f, 8.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
 			});
 
-		ImGui::SetWindowFontScale(1.0f); // Restaurar fuente
+		ImGui::SetWindowFontScale(1.0f); 
 	}
 	ImGui::End();
 
@@ -391,7 +379,7 @@ void iniciarPartida(bool& salir)
 	}
 }
 
-//Menu de control de ajustes al que accede el usuario
+// Menu de control de ajustes al que accede el usuario
 void menuAjustes()
 {
 	show_menu_inicio = false;
@@ -441,11 +429,8 @@ void menuAjustes()
 
 		// --- BOTÓN CERRAR ---
 		cambiarEstiloBotones();
-
-		// Forzamos la fuente grande para este botón
 		ImGui::SetWindowFontScale(1.5f);
 
-		// Usamos colocarBoton para situarlo abajo, igual que el botón "Salir"
 		ImVec2 btnSize = colocarBoton(0.5f, 0.80f);
 		if (ImGui::Button("Guardar y Cerrar", btnSize))
 		{
@@ -458,12 +443,11 @@ void menuAjustes()
 	}
 	ImGui::End();
 
-
 	// Quita el fondo de color negro
 	ImGui::PopStyleColor();
 }
 
-//Menu informativo de los integrantes del grupo y su respectivo trabajo
+// Menu informativo de los integrantes del grupo y su respectivo trabajo
 void menuCreditos()
 {
 	show_menu_inicio = false;
@@ -476,7 +460,7 @@ void menuCreditos()
 	ImGui::End();
 }
 
-//Menu de pausa 
+// Menu de pausa 
 void menuPausa(bool& salir, const ImGuiViewport* viewport)
 {
 	// Configuración ventana Fullscreen
@@ -486,14 +470,13 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport)
 	// Fondo negro menu
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-	// Transparencia del fondo (0.8 = bastante opaco)
+	// Transparencia del fondo
 	ImGui::SetNextWindowBgAlpha(0.8f);
 
 	ImGuiWindowFlags pausaFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
 	if (ImGui::Begin("Menu_Pausa_Fullscreen", &juego_pausado, pausaFlags))
 	{
-		// Establece estilos de botones personalizados
 		cambiarEstiloBotones();
 		ImGui::SetWindowFontScale(1.5f);
 
@@ -522,7 +505,6 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport)
 			salir = true;
 		}
 
-		// Devuelve estilo original a la fuente y botones
 		ImGui::SetWindowFontScale(1.0f);
 		regresarEstiloBotones();
 	}
@@ -532,122 +514,182 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport)
 	ImGui::PopStyleColor();
 }
 
+// Funcion auxiliar para imprimir todas las imagenes de la tienda de construcción de las torretas
+void imprimirFotoTorreta(ImVec2 winSize, int idT, float porX, float porY, float escalaImg, char tDmg[16], char tVel[16], char tRng[16], char tPrecio[16])
+{
+	float altoImgPx = imgTorretas[idT].alto * escalaImg; // Altura real en pantalla
+	float anchoImgPx = imgTorretas[idT].ancho * escalaImg; //Ancho real en pantalla
+
+	DibujarImagen(imgTorretas[idT], porX, porY, escalaImg, {
+		TextoOverlay(tDmg, 210.0f, 50.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
+		TextoOverlay(tVel, 200.0f, 125.0f,  ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
+		TextoOverlay(tRng, 200.0f, 200.0f,  ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
+		TextoOverlay(tPrecio, 10.0f, altoImgPx + 2.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
+		});
+
+	// Calcular coordenadas absolutas de la esquina superior izquierda de la imagen
+	float xInicioImagen = (winSize.x * porX) - (anchoImgPx * 0.5f);
+	float yInicioImagen = (winSize.y * porY) - (altoImgPx * 0.5f);
+
+	// Definir posición del botón
+	float xPosBoton = xInicioImagen + 180.0f;
+	float yPosBoton = yInicioImagen + altoImgPx;
+
+	ImGui::SetCursorPos(ImVec2(xPosBoton, yPosBoton));
+
+	// Cambiar color si está seleccionado
+	if (idTipoTorreta == idT) 
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.2f, 1.0f));
+
+	if (ImGui::Button("Comprar", ImVec2(120, 40))) 
+	{
+		idTipoTorreta = idT;
+		show_menu_construccion = false;
+		torretaComprada = true;
+	}
+
+	if (idTipoTorreta == idT)
+	{
+		ImGui::PopStyleColor();
+	}
+		
+}
+
+// Menu para
 void menuConstruccion()
 {
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	// Configuración de la ventana
-	ImGuiWindowFlags construcFlag = ImGuiWindowFlags_NoDecoration
-		| ImGuiWindowFlags_NoMove
-		| ImGuiWindowFlags_NoSavedSettings
-		| ImGuiWindowFlags_NoNav;
+	ImGuiWindowFlags construcFlag = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNav;
 
-	// --- DIMENSIONES ---
-	float menuWidth = viewport->WorkSize.x * 0.30f; 
+	// Dimensiones
+	float menuWidth = viewport->WorkSize.x * 0.35f;
 	float menuHeight = viewport->WorkSize.y;
 
-	// Posición: Arriba a la Izquierda
 	ImGui::SetNextWindowPos(viewport->WorkPos, ImGuiCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_Always);
-
-	// Fondo Sólido (Gris Oscuro)
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
 	if (ImGui::Begin("MenuConstruccion", NULL, construcFlag))
 	{
 		ImVec2 winSize = ImGui::GetWindowSize();
 
-		// ---------------------------------------------------------
-		// 1. TÍTULO
-		// ---------------------------------------------------------
-		ImGui::SetWindowFontScale(1.5f);
+		// --- TÍTULO ---
+		ImGui::SetWindowFontScale(3.0f);
 		const char* titulo = "CONSTRUCCION";
 		ImVec2 textSize = ImGui::CalcTextSize(titulo);
-
-		ImGui::SetCursorPos(ImVec2((winSize.x - textSize.x) * 0.5f, winSize.y * 0.05f));
+		ImGui::SetCursorPos(ImVec2((winSize.x - textSize.x) * 0.5f, winSize.y * 0.03f));
 		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), titulo);
+		ImGui::Spacing(); ImGui::Separator();
 
-		ImGui::Spacing();
-		ImGui::Separator();
 
-		// ---------------------------------------------------------
-		// 2. BOTONES DE TORRETAS
-		// ---------------------------------------------------------
 		cambiarEstiloBotones();
-		ImGui::SetWindowFontScale(1.0f);
+		ImGui::SetWindowFontScale(2.0f); 
 
-		const char* nombresTorretas[] = {
-			"Ametralladora",
-			"Congeladora",
-			"Laser",
-			"Veneno",
-			"Francotirador"
-		};
+		// Variables auxiliares reutilizables
+		float porX, porY, escalaImg, altoImgPx, anchoImgPx, offsetBtnY, xInicioImagen, yInicioImagen, xPosBoton, yPosBoton;
+		char tDmg[16], tVel[16], tRng[16], tPrecio[16];
+		int idT;
 
-		// Cálculos de alineación para el margen izquierdo del 10%
-		float margenDeseado = winSize.x * 0.10f;
-		float centroBotonX = margenDeseado + 100.0f;
-		float porX_Calculado = centroBotonX / winSize.x;
+		// =========================================================
+		// TORRETA 1: AMETRALLADORA (Arriba Izquierda)
+		// =========================================================
+		idT = 0; // ID Array
+		porX = 0.23f; porY = 0.21f; // Posición 
+		escalaImg = 0.30f; 
 
-		float startY = 0.20f;
-		float stepY = 0.10f;
+		sprintf_s(tDmg, "%d", 4);
+		sprintf_s(tVel, "%.1f", 1.5f);
+		sprintf_s(tRng, "%d", 100);
+		sprintf_s(tPrecio, "Precio: %d $", getTurretPrice(idT));
 
-		for (int i = 0; i < 5; i++)
-		{
-			ImGui::PushID(i);
+		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
 
-			// Para comprobar la seleccion del boton
-			// Cambia el color de este a Verde (se cierra el menu antes de visualizarlo)
-			bool esSeleccionado = (idTipoTorreta == i);
-			if (esSeleccionado) {
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.6f, 0.2f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.7f, 0.3f, 1.0f));
-			}
+		// =========================================================
+		// TORRETA 2: CONGELADORA (Arriba Derecha)
+		// =========================================================
+		idT = 1;
+		porX = 0.75f; porY = 0.21f;
+		escalaImg = 0.557f; 
 
-			// Posición
-			float porY = startY + (stepY * i);
-			ImVec2 btnSize = colocarBoton(porX_Calculado, porY);
+		sprintf_s(tDmg, "%d", 10);
+		sprintf_s(tVel, "%.1f", 1.5f);
+		sprintf_s(tRng, "%d", 100);
+		sprintf_s(tPrecio, "Precio: %d $", getTurretPrice(idT));
 
-			// --- LÓGICA DE CLIC ---
-			if (ImGui::Button(nombresTorretas[i], btnSize))
-			{
-				// Asigna el tipo de torreta
-				idTipoTorreta = i;
-				// Cierra el menu
-				show_menu_construccion = false; 
-				torretaComprada = true;
-			}
 
-			if (esSeleccionado) {
-				ImGui::PopStyleColor(2);
-			}
-			ImGui::PopID();
-		}
+		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
 
-		// ---------------------------------------------------------
-		// 3. BOTÓN CERRAR (CANCELAR)
-		// ---------------------------------------------------------
-		ImGui::SetWindowFontScale(1.5f);
-		ImVec2 btnSize = colocarBoton(0.5f, 0.90f);
 
-		// Estilo Rojo para cancelar
+
+		// =========================================================
+		// TORRETA 3: LASER (Medio Izquierda)
+		// =========================================================
+		idT = 2;
+		porX = 0.23f; porY = 0.55f;
+		escalaImg = 0.56f; 
+
+		sprintf_s(tDmg, "Dmg: %d", 25);
+		sprintf_s(tVel, "Vel: %.1f", 5.0f);
+		sprintf_s(tRng, "Rng: %d", 150);
+		sprintf_s(tPrecio, "Precio: %d $", getTurretPrice(idT));
+
+
+		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
+
+
+
+		// =========================================================
+		// TORRETA 4: VENENO (Medio Derecha)
+		// =========================================================
+		idT = 3;
+		porX = 0.70f; porY = 0.55f;
+		escalaImg = 0.5555f; 
+
+		sprintf_s(tDmg, "Dmg: %d", 2);
+		sprintf_s(tVel, "Vel: %.1f", 0.5f);
+		sprintf_s(tRng, "Rng: %d", 90);
+		sprintf_s(tPrecio, "Precio: %d $", getTurretPrice(idT));
+
+		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
+
+
+
+		// =========================================================
+		// TORRETA 5: SNIPER (Abajo Centro)
+		// =========================================================
+		idT = 4;
+		porX = 0.50f; porY = 0.85f;
+		escalaImg = 0.30f; 
+
+		sprintf_s(tDmg, "Dmg: %d", 100);
+		sprintf_s(tVel, "Vel: %.1f", 0.2f);
+		sprintf_s(tRng, "Rng: %d", 300);
+		sprintf_s(tPrecio, "Precio: %d $", getTurretPrice(idT));
+
+		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
+
+
+
+		// =========================================================
+		// BOTÓN CERRAR (Abajo Derecha)
+		// =========================================================
+		ImGui::SetWindowFontScale(1.2f);
+		ImGui::SetCursorPos(ImVec2(winSize.x * 0.75f, winSize.y * 0.92f));
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.2f, 0.2f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.3f, 0.3f, 1.0f));
-
-		if (ImGui::Button("Cerrar", btnSize))
+		if (ImGui::Button("Cerrar", ImVec2(100, 40)))
 		{
 			show_menu_construccion = false;
 		}
-		ImGui::PopStyleColor(2);
+		ImGui::PopStyleColor();
 
 		ImGui::SetWindowFontScale(1.0f);
 		regresarEstiloBotones();
 	}
 	ImGui::End();
-
 	ImGui::PopStyleColor();
 }
-
 
 //--------------------------------------------------------------//
 //					Funciones de prubas							//
