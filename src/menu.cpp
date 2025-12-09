@@ -16,6 +16,8 @@
 // DECLARACIÓN EXTERNA (Conecta con main.cpp)
 // ---------------------------------------------------------
 extern int getTurretPrice(int type);
+extern glm::vec3 getTurretUpgradesPrices(int id);
+
 
 //------------- Variables Globales -------------
 bool show_menu_inicio = true;
@@ -25,10 +27,14 @@ bool show_menu_creditos = false;
 bool show_menu_pruebas = false; 
 bool juego_pausado = false;   //flag para el control del timer (activado o pausado)
 bool show_menu_construccion = false;
+bool show_menu_mejora = false;
 
 int idTipoTorreta = -1; //Hueco vacio
 int idTorretaSeleccionada = -1; //Sin torreta seleccionada
 bool torretaComprada = false; //Control para activar compra
+int idStat = -1;
+bool mejoraComprada = false;
+Turret* tur = nullptr;
 
 //------------- Variables globales para modo pruebas------------------
 bool enable_debug_mode = true; // Variable de configuracion para mostrar el boton (CAMBIAR AQUI)
@@ -62,6 +68,7 @@ ImagenData imgVida;
 ImagenData imgDinero;
 ImagenData imgRonda;
 ImagenData imgTorretas[5];
+ImagenData imgTorretasMejora[5];
 
 // --- FUNCION  DE CARGA ---
 bool CargarTexturaInterna(const char* filename, ImagenData& out_img)
@@ -103,6 +110,13 @@ void InicializarGestorImagenes()
 	CargarTexturaInterna(".\\textures\\imagenes\\laser.png", imgTorretas[2]);
 	CargarTexturaInterna(".\\textures\\imagenes\\veneno.png", imgTorretas[3]);
 	CargarTexturaInterna(".\\textures\\imagenes\\francotiradora.png", imgTorretas[4]);
+
+	// Carga Torretas Mejoras
+	CargarTexturaInterna(".\\textures\\imagenes\\ametralladoraMejora.png", imgTorretasMejora[0]);
+	CargarTexturaInterna(".\\textures\\imagenes\\congeladoraMejora.png", imgTorretasMejora[1]);
+	CargarTexturaInterna(".\\textures\\imagenes\\laserMejora.png", imgTorretasMejora[2]);
+	CargarTexturaInterna(".\\textures\\imagenes\\venenoMejora.png", imgTorretasMejora[3]);
+	CargarTexturaInterna(".\\textures\\imagenes\\francotiradoraMejora.png", imgTorretasMejora[4]);
 }
 
 // --- FUNCIÓN DE DIBUJADO ---
@@ -143,6 +157,7 @@ void menuAjustes();
 void menuCreditos();
 void iniciarPartida(bool& salir);
 void menuConstruccion();
+void menuMejora();
 
 void menuShadows();
 void menuLight();
@@ -372,6 +387,10 @@ void iniciarPartida(bool& salir)
 	{
 		menuConstruccion();
 	}
+	if (show_menu_mejora)
+	{
+		menuMejora();
+	}
 
 	if (juego_pausado)
 	{
@@ -550,7 +569,7 @@ void imprimirFotoTorreta(ImVec2 winSize, int idT, float porX, float porY, float 
 	ImGui::PopID();
 }
 
-// Menu para
+// Menu para construir una torreta
 void menuConstruccion()
 {
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -676,6 +695,308 @@ void menuConstruccion()
 		if (ImGui::Button("Cerrar", ImVec2(100, 40)))
 		{
 			show_menu_construccion = false;
+		}
+		ImGui::PopStyleColor();
+
+		ImGui::SetWindowFontScale(1.0f);
+		regresarEstiloBotones();
+	}
+	ImGui::End();
+	ImGui::PopStyleColor();
+}
+
+void menuMejora()
+{
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	ImGuiWindowFlags construcFlag = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNav;
+
+	float menuWidth = viewport->WorkSize.x * 0.35f;
+	float menuHeight = viewport->WorkSize.y;
+
+	ImGui::SetNextWindowPos(viewport->WorkPos, ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_Always);
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	if (ImGui::Begin("MenuMejora", NULL, construcFlag))
+	{
+		ImVec2 winSize = ImGui::GetWindowSize();
+
+		// --- BOTÓN DESTRUIR ---
+		ImGui::SetWindowFontScale(1.2f);
+		ImGui::SetCursorPos(ImVec2(winSize.x * 0.78f, winSize.y * 0.03f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.1f, 1.0f));
+		if (ImGui::Button("Destruir", ImVec2(100, 35)))
+		{
+			show_menu_mejora = false;
+		}
+		ImGui::PopStyleColor();
+
+		// --- TÍTULO ---
+		ImGui::SetWindowFontScale(3.0f);
+		const char* titulo = "MEJORA";
+		ImVec2 textSize = ImGui::CalcTextSize(titulo);
+		ImGui::SetCursorPos(ImVec2((winSize.x - textSize.x) * 0.5f, winSize.y * 0.03f));
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), titulo);
+		ImGui::Spacing(); ImGui::Separator();
+
+		cambiarEstiloBotones();
+
+		// VARIABLES INDEPENDIENTES DE POSICIÓN
+		// ---------------------------------------------------------
+		float porX_Img = 0.5f;    // Imagen centrada
+		float porX_Stats = 0.23f; // Estadísticas a la izquierda 
+		float porY = 0.23f;       // Altura base de la imagen
+		// ---------------------------------------------------------
+
+		float escalaImg, altoImgPx, anchoImgPx;
+		char tDmg[16], tVel[16], tRng[16], tPrecio[16];
+		int idT = idTipoTorreta;
+
+		switch (idT) {
+		case 0: escalaImg = 0.30f; break;
+		case 1: escalaImg = 0.557f; break;
+		case 2: escalaImg = 0.56f; break;
+		case 3: escalaImg = 0.5555f; break;
+		case 4: escalaImg = 0.30f; break;
+		default: escalaImg = 0.30f; break;
+		}
+
+		glm::vec3 stats = tur->getUpgradeLevel();
+		glm::vec3 pStats = getTurretUpgradesPrices(tur->getID());
+
+
+		altoImgPx = imgTorretasMejora[idT].alto * escalaImg;
+		anchoImgPx = imgTorretasMejora[idT].ancho * escalaImg;
+
+		// DIBUJAR IMAGEN (Usando porX_Img = 0.5f)
+		DibujarImagen(imgTorretasMejora[idT], porX_Img, porY, escalaImg, {});
+
+		// CALCULO DE POSICIONES
+		// Para calcular la altura (Y), seguimos usando la imagen como referencia para que quede abajo
+		float yPosInicioStats = (winSize.y * porY) + (altoImgPx * 0.5f) + 30.0f;
+
+		// Para la posición X, usamos la variable independiente (0.23f)
+		// Restamos un pequeño margen fijo (20px) para cuadrarlo visualmente
+		float xTextoStart = (winSize.x * porX_Stats) - 20.0f;
+
+		// El botón estará desplazado a la derecha desde donde empieza el texto
+		float xBotonFijo = xTextoStart + 280.0f;
+
+		// Posicionar cursor para el separador inicial
+		ImGui::SetCursorPos(ImVec2(xTextoStart, yPosInicioStats));
+
+		ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+		ImGui::Separator();
+		ImGui::PopStyleColor();
+		ImGui::Dummy(ImVec2(0.0f, 15.0f));
+
+		// =========================================================
+		//  LAMBDA PARA ESTADÍSTICAS
+		// =========================================================
+		auto mostrarEstadistica = [&](const char* nombre, int nivel, float valActual, float valMejorado, int precio, int tipoStat)
+			{
+				ImGui::PushID(tipoStat);
+
+				// -- GRUPO TEXTO --
+				ImGui::BeginGroup();
+				ImGui::SetWindowFontScale(2.2f);
+				ImGui::TextColored(ImVec4(0.95f, 0.8f, 0.2f, 1.0f), "%s", nombre);
+
+				ImGui::SetWindowFontScale(1.7f);
+				ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "Nivel: %d", nivel);
+
+				ImGui::Text("%.1f -> ", valActual);
+				ImGui::SameLine();
+				ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "%.1f", valMejorado);
+				ImGui::EndGroup();
+
+				// -- BOTÓN MEJORAR --
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(xBotonFijo); // Usamos la X calculada independientemente de la foto
+
+				float currentY = ImGui::GetCursorPosY();
+				ImGui::SetCursorPosY(currentY + 5.0f);
+
+				char btnText[32];
+				sprintf_s(btnText, "Mejorar\n$%d", precio);
+
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.6f, 0.1f, 1.0f));
+				if (ImGui::Button(btnText, ImVec2(150, 80)))
+				{
+					if (tipoStat == 0) { /* Daño */ }
+					if (tipoStat == 1) { /* Vel */ }
+					if (tipoStat == 2) { /* Rango */ }
+				}
+				ImGui::PopStyleColor();
+
+				ImGui::Dummy(ImVec2(0.0f, 15.0f));
+				ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+				ImGui::Separator();
+				ImGui::PopStyleColor();
+				ImGui::Dummy(ImVec2(0.0f, 15.0f));
+
+				ImGui::PopID();
+			};
+
+		// LLAMADAS A LAS ESTADÍSTICAS
+		// Ahora usamos xTextoStart, que está basado en 0.23f
+
+		// 1. DAÑO
+		int lvlDmg = (int)stats[0];
+		float valDmgA = 10.0f + (lvlDmg * 2.5f);
+		float valDmgN = 10.0f + ((lvlDmg + 1) * 2.5f);
+		ImGui::SetCursorPosX(xTextoStart);
+		mostrarEstadistica("Dano", lvlDmg, valDmgA, valDmgN, (int)pStats[0], 0);
+
+		// 2. VELOCIDAD
+		int lvlVel = (int)stats[1];
+		float valVelA = 1.0f + (lvlVel * 0.1f);
+		float valVelN = 1.0f + ((lvlVel + 1) * 0.1f);
+		ImGui::SetCursorPosX(xTextoStart);
+		mostrarEstadistica("Velocidad", lvlVel, valVelA, valVelN, (int)pStats[1], 1);
+
+		// 3. RANGO
+		int lvlRng = (int)stats[2];
+		float valRngA = 150.0f + (lvlRng * 10.0f);
+		float valRngN = 150.0f + ((lvlRng + 1) * 10.0f);
+		ImGui::SetCursorPosX(xTextoStart);
+		mostrarEstadistica("Rango", lvlRng, valRngA, valRngN, (int)pStats[2], 2);
+
+
+		// --- CERRAR ---
+		ImGui::SetWindowFontScale(1.2f);
+		ImGui::SetCursorPos(ImVec2(winSize.x * 0.75f, winSize.y * 0.92f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.2f, 0.2f, 1.0f));
+		if (ImGui::Button("Cerrar", ImVec2(100, 40)))
+		{
+			show_menu_mejora = false;
+		}
+		ImGui::PopStyleColor();
+
+		ImGui::SetWindowFontScale(1.0f);
+		regresarEstiloBotones();
+	}
+	ImGui::End();
+	ImGui::PopStyleColor();
+}
+
+void menuMejora2()
+{
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// Configuración de la ventana
+	ImGuiWindowFlags construcFlag = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNav;
+
+	// Dimensiones
+	float menuWidth = viewport->WorkSize.x * 0.35f;
+	float menuHeight = viewport->WorkSize.y;
+
+	ImGui::SetNextWindowPos(viewport->WorkPos, ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_Always);
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	if (ImGui::Begin("MenuMejora", NULL, construcFlag))
+	{
+		ImVec2 winSize = ImGui::GetWindowSize();
+
+		// --- TÍTULO ---
+		ImGui::SetWindowFontScale(3.0f);
+		const char* titulo = "MEJORA";
+		ImVec2 textSize = ImGui::CalcTextSize(titulo);
+		ImGui::SetCursorPos(ImVec2((winSize.x - textSize.x) * 0.5f, winSize.y * 0.03f));
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), titulo);
+		ImGui::Spacing(); ImGui::Separator();
+
+
+		cambiarEstiloBotones();
+		ImGui::SetWindowFontScale(2.0f);
+
+		// Variables auxiliares reutilizables
+		float porX, porY, escalaImg, altoImgPx, anchoImgPx, offsetBtnY, xInicioImagen, yInicioImagen, xPosBoton, yPosBoton;
+		char tDmg[16], tVel[16], tRng[16], tPrecio[16] , tP_Dmg[16], tP_Vel[16], tP_Rng[16];
+		int idT;
+
+		// =========================================================
+		// TORRETA A Mejorar (Arriba Izquierda)
+		// =========================================================
+		idT = idTipoTorreta; // ID Array
+		porX = 0.23f; porY = 0.21f; // Posición 
+		
+		switch (idT)
+		{
+			case 0:
+				escalaImg = 0.30f;
+				break;
+			case 1:
+				escalaImg = 0.557f;
+				break;
+			case 2:
+				escalaImg = 0.56f;
+				break;
+			case 3:
+				escalaImg = 0.5555f;
+				break;
+			case 4:
+				escalaImg = 0.30f;
+				break;
+		}
+
+		glm::vec3 stats = tur->getUpgradeLevel();
+		glm::vec3 pStats = getTurretUpgradesPrices(tur->getID());
+
+		sprintf_s(tDmg, "%d", (int)stats[0]);
+		sprintf_s(tVel, "%d", (int)stats[1]);
+		sprintf_s(tRng, "%d", (int)stats[2]);
+		sprintf_s(tP_Dmg, "%d", (int)pStats[0]);
+		sprintf_s(tP_Vel, "%d", (int)pStats[1]);
+		sprintf_s(tP_Rng, "%d", (int)pStats[2]);
+		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
+
+
+		 altoImgPx = imgTorretasMejora[idT].alto * escalaImg; // Altura real en pantalla
+		 anchoImgPx = imgTorretasMejora[idT].ancho * escalaImg; //Ancho real en pantalla
+
+		DibujarImagen(imgTorretasMejora[idT], porX, porY, escalaImg, {
+			TextoOverlay(tDmg, 210.0f, 50.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
+			TextoOverlay(tVel, 200.0f, 125.0f,  ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
+			TextoOverlay(tRng, 200.0f, 200.0f,  ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
+			TextoOverlay(tPrecio, 10.0f, altoImgPx + 2.0f, ImVec4(0.96f, 0.75f, 0.113f, 1.0f))
+			});
+
+		// Calcular coordenadas absolutas de la esquina superior izquierda de la imagen
+		 xInicioImagen = (winSize.x * porX) - (anchoImgPx * 0.5f);
+		 yInicioImagen = (winSize.y * porY) - (altoImgPx * 0.5f);
+
+		// Definir posición del botón
+		 xPosBoton = xInicioImagen + 170.0f;
+		 yPosBoton = yInicioImagen + altoImgPx;
+
+		ImGui::SetCursorPos(ImVec2(xPosBoton, yPosBoton));
+
+		//Actualiza el id para que no confunda botones
+		ImGui::PushID(idT);
+
+		if (ImGui::Button("Comprar", ImVec2(120, 40)))
+		{
+			idTipoTorreta = idT;
+			show_menu_construccion = false;
+			torretaComprada = true;
+		}
+
+		ImGui::PopID();
+
+
+
+		// =========================================================
+		// BOTÓN CERRAR (Abajo Derecha)
+		// =========================================================
+		ImGui::SetWindowFontScale(1.2f);
+		ImGui::SetCursorPos(ImVec2(winSize.x * 0.75f, winSize.y * 0.92f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.2f, 0.2f, 1.0f));
+		if (ImGui::Button("Cerrar", ImVec2(100, 40)))
+		{
+			show_menu_mejora = false;
 		}
 		ImGui::PopStyleColor();
 

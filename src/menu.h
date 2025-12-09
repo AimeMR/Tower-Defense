@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "Turret.h"
 
 // -----------------------------------------------------------
 //            Variables para el control de menus
@@ -13,10 +14,14 @@ extern bool show_menu_creditos;
 extern bool juego_pausado;
 extern bool show_menu_pruebas;
 extern bool show_menu_construccion;
+extern bool show_menu_mejora;
 
 extern int idTipoTorreta;
 extern int idTorretaSeleccionada;
 extern bool torretaComprada;
+extern int idStat;
+extern bool mejoraComprada;
+extern Turret *tur;
 
 // -----------------------------------------------------------
 //        Variables para el control de menus de prueba
@@ -52,6 +57,7 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport);
 void menuAjustes();
 void menuCreditos();
 void menuConstruccion();
+void menuMejora();
 void imprimirFotoTorreta(ImVec2 winSize, int idT, float porX, float porY, float escalaImg, char tDmg[16], char tVel[16], char tRng[16], char tPrecio[16]);
 
 
@@ -98,6 +104,7 @@ extern ImagenData imgVida;
 extern ImagenData imgDinero;
 extern ImagenData imgRonda;
 extern ImagenData imgTorretas[5]; // Array para las 5 torretas
+extern ImagenData imgTorretasMejora[5]; // Array para las 5 torretas menu mejoras
 
 // --- FUNCIONES ---
 

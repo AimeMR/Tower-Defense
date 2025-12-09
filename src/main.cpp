@@ -654,17 +654,18 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 					if (t->getType() == -1) 
 					{ //espacio vacio, menu de construccion
 						fprintf(stderr, "Menu construccion\n");
-						
+						show_menu_mejora = false;
 						show_menu_construccion = true;
 						idTorretaSeleccionada = t->getID() - 1;
-
-						//Selcciona el espacio y coloca la torreta selccoinada en el menu de compra
-						//modifyTurret(t->getID() - 1, idTipoTorreta);
 					}
 					else //torreta ya puesta, menu de edicion
 					{
 						fprintf(stderr, "Menu mejoras\n");
-
+						show_menu_construccion = false;
+						show_menu_mejora = true;
+						idTorretaSeleccionada = t->getID() - 1;
+						idTipoTorreta = t->getType();
+						tur = t;
 					}
 					t->showRadio();
 				}
@@ -1172,6 +1173,11 @@ int main(void)
 		{
 			buyTurret(idTorretaSeleccionada, idTipoTorreta);
 			torretaComprada = false;
+		}
+		if (mejoraComprada)
+		{
+			buyTurretUpgrade(idTorretaSeleccionada, idStat);
+			mejoraComprada = false;
 		}
 
 
