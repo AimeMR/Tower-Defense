@@ -76,7 +76,7 @@ float enemySpawnTimer = 0.0f;
 int turretAmount = 0;
 int turretAmountByType[] = { 0, 0, 0, 0, 0 };
 int turretBasePrice[] = { 2000, 3500, 3000, 2500, 4000 };
-int turretUpgradePrices[] = { 250, 500, 750, 999999 };
+int turretUpgradePrices[] = { 250, 750, 2000, 999999 };
 
 
 

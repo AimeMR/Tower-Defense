@@ -35,7 +35,7 @@ private:
     Player()
     {
         //Variables
-        m_money = 20000;
+        m_money = 5000;
         m_health = 10;
         m_nRound = 1;
         m_difficulty = 1;
