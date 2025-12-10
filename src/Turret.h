@@ -65,7 +65,9 @@ public:
 	int getID() { return m_id; }
 	void upgradeStat(int stat);
 	void updateStats();
+	glm::vec3 getStatsUpgrade();
 	glm::vec3 getUpgradeLevel() { return glm::vec3(m_levelCD, m_levelDmg, m_levelRange); }
+	glm::vec3 getStatValue() { return glm::vec3(m_defCD, m_damage, m_range); }
 	int getPrice() { return m_price; }
 
 private:

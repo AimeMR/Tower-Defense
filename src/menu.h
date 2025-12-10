@@ -15,6 +15,7 @@ extern bool juego_pausado;
 extern bool show_menu_pruebas;
 extern bool show_menu_construccion;
 extern bool show_menu_mejora;
+extern bool enConstruccion;
 
 extern int idTipoTorreta;
 extern int idTorretaSeleccionada;

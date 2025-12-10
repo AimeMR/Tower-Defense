@@ -516,7 +516,7 @@ void buyTurret(int id, int type)
 
 	if (Player::GetInstance().getMoney() >= price) 
 	{
-		modifyTurret(id, type);
+		modifyTurret(id, type, price);
 		Player::GetInstance().turretPlaced();
 		Player::GetInstance().modifyMoney(-price);
 	}
@@ -650,24 +650,29 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 				t->hideRadio();
 				if (t->getPOID() == clickedObject)
 				{
-					fprintf(stderr, "Torreta clicada: %d\n", t->getID());
-					if (t->getType() == -1) 
-					{ //espacio vacio, menu de construccion
-						fprintf(stderr, "Menu construccion\n");
-						show_menu_mejora = false;
-						show_menu_construccion = true;
-						idTorretaSeleccionada = t->getID() - 1;
-					}
-					else //torreta ya puesta, menu de edicion
-					{
-						fprintf(stderr, "Menu mejoras\n");
-						show_menu_construccion = false;
-						show_menu_mejora = true;
-						idTorretaSeleccionada = t->getID() - 1;
-						idTipoTorreta = t->getType();
-						tur = t;
-					}
 					t->showRadio();
+
+					fprintf(stderr, "Torreta clicada: %d\n", t->getID());
+					if (enConstruccion)
+					{
+						if (t->getType() == -1)
+						{ //espacio vacio, menu de construccion
+							fprintf(stderr, "Menu construccion\n");
+							show_menu_mejora = false;
+							show_menu_construccion = true;
+							idTorretaSeleccionada = t->getID() - 1;
+						}
+						else //torreta ya puesta, menu de edicion
+						{
+							fprintf(stderr, "Menu mejoras\n");
+							show_menu_construccion = false;
+							show_menu_mejora = true;
+							idTorretaSeleccionada = t->getID() - 1;
+							idTipoTorreta = t->getType();
+							tur = t;
+						}
+					}
+					
 				}
 			}
 

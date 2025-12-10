@@ -151,16 +151,26 @@ void Turret::updateStats()
 	m_cd = m_defCD;
 }
 
+glm::vec3 Turret::getStatsUpgrade()
+{
+	return glm::vec3(
+		m_baseDEFCD * (1 - (m_levelCD + 1) * 0.15f),
+		m_baseDMG * (1 + (m_levelDmg + 1) * 0.2f),
+		m_baseRNG * (1 + (m_levelRange + 1) * 0.15f));
+}
+
 void Turret::upgradeStat(int stat)
 {
 	if (stat == SHOOT_SPEED && m_levelCD < 3)
 		m_levelCD++;
 	else if (stat == DAMAGE && m_levelDmg < 3)
-		m_baseDMG++;
+		m_levelDmg++;
 	else if (stat == RANGE && m_levelRange < 3)
-		m_baseRNG++;
+		m_levelRange++;
 
 	updateStats();
+	showRadio();
+
 }
 
 void Turret::updateLaser(float deltaTime)
