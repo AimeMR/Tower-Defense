@@ -565,6 +565,25 @@ void resetGame()
 
 	//Camaras
 	camaraActual = 0;
+	freeCameraPos = glm::vec3(0, 0, 0);
+	distancia = 25;
+	yawCamera = -135;
+	pitchCamera = 45;
+
+	float yawRadiants = glm::radians(yawCamera);
+	float pitchRadiants = glm::radians(pitchCamera);
+
+	glm::vec3 forward;
+
+	forward.x = glm::cos(yawRadiants) * glm::cos(pitchRadiants);
+	forward.y = glm::sin(yawRadiants) * glm::cos(pitchRadiants);
+	forward.z = glm::sin(pitchRadiants);
+
+	forward = glm::normalize(forward);
+	cameraDir = forward;
+	cameraRight = glm::normalize(glm::cross(forward, glm::vec3(0, 0, 1)));
+
+	//Menus
 }
 
 void OnSize(GLFWwindow* window, int width, int height)
@@ -774,12 +793,7 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 	if (camaraActual != CAM_FREE)
 	{
 		freeCameraPos = forward * distancia;
-
 	}
-
-
-
-
 }
 
 
@@ -1244,6 +1258,7 @@ int main(void)
 
 		if (!show_jugar && !show_menu_pruebas)
 		{
+			resetGame();
 			camaraActual = CAM_INICIAL;
 		}
 
