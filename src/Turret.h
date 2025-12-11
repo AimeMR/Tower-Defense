@@ -31,7 +31,7 @@ public:
 	}
 
 	void draw(GLuint shader);
-	void loadTurret(int type, std::vector<COBJModel*> models, int price);
+	void loadTurret(int type, std::vector<COBJModel*> models);
 	void mainUpdate(float deltaTime);
 	int getType() { return m_type; }
 	void setEnemiesVector(std::vector<Enemy*>* e) { enemies = e; }
@@ -68,7 +68,6 @@ public:
 	glm::vec3 getStatsUpgrade();
 	glm::vec3 getUpgradeLevel() { return glm::vec3(m_levelCD, m_levelDmg, m_levelRange); }
 	glm::vec3 getStatValue() { return glm::vec3(m_defCD, m_damage, m_range); }
-	int getPrice() { return m_price; }
 
 private:
 	void updateLaser(float deltaTime);
@@ -83,7 +82,7 @@ private:
 	Enemy* selectTarget();
 	std::vector<Enemy*> selectAllTargetsInRange();
 
-	int m_type = -1, m_id = 0, m_poid = 0, m_levelRange = 0, m_levelDmg = 0, m_levelCD = 0, m_price = 0;
+	int m_type = -1, m_id = 0, m_poid = 0, m_levelRange = 0, m_levelDmg = 0, m_levelCD = 0;
 	float m_damage = 0, m_baseDMG = 0, m_range = 0, m_baseRNG = 0, m_defCD = 0, m_baseDEFCD = 0, m_cd = 0, m_headZ = 0;
 	glm::vec2 m_pos;
 

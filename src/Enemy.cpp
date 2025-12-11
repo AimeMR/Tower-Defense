@@ -57,7 +57,7 @@ void Enemy::setUpEnemyStats(float difficulty)
 	m_baseHealth *= difficulty;
 	m_speed *= (1.0f + difficulty) / 2.0f;
 	m_health = m_baseHealth;
-	m_reward = (int)((float)m_weight * difficulty * 100.0f);
+	m_reward = (int)((float)m_weight * (1 + difficulty * 0.1f) * 100.0f);
 }
 
 //Función auxiliar rotación

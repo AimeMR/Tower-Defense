@@ -18,6 +18,7 @@ public:
     void modifyMoney(int amount) { m_money += amount; if(amount > 0) m_totalMoneyEarned += amount; }
     void modifyHealth(int amount) { m_health += amount; }
     void increaseRound();
+    void resetPlayer();
 
     //Getters
     int getMoney() { return m_money; }
@@ -43,10 +44,12 @@ private:
         //Stats
         m_enemiesDefeated = 0;
         m_totalMoneyEarned = 0;
+        m_turretsPlaced = 0;
+        m_UpgradesPurchased = 0;
     }
 
     //Variables
-    int m_money, m_health, m_nRound, m_weight;
+    int m_money, m_health, m_nRound;
     float m_difficulty;
 
     //Stats

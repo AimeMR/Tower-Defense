@@ -444,7 +444,12 @@ void destroyObject(GameObject* obj)
 	}
 }
 
-void modifyTurret(int id, int type, int price = 0)
+int getTurretPrice(int type)
+{
+	return turretBasePrice[type] + round((turretAmount * (turretAmountByType[type] + 1) * turretBasePrice[type] * 0.1f));
+}
+
+void modifyTurret(int id, int type)
 {
 	turrets[id]->setTurretFloor(mm.getFloor());
 	turrets[id]->setRadio(mm.getRadius());
@@ -454,15 +459,15 @@ void modifyTurret(int id, int type, int price = 0)
 		if (turrets[id]->getType() != -1) {
 			turretAmountByType[turrets[id]->getType()]--;
 			turretAmount--;
-			int cashback = round(turrets[id]->getPrice() * 0.5f);
+			int cashback = round(getTurretPrice(turrets[id]->getType()) * 0.5f);
 			Player::GetInstance().modifyMoney(cashback);
 		}
 		std::vector<COBJModel*> emptyModels;
-		turrets[id]->loadTurret(type, emptyModels, 0);
+		turrets[id]->loadTurret(type, emptyModels);
 	}
 	else 
 	{
-		turrets[id]->loadTurret(type, mm.getTurret(type), price);
+		turrets[id]->loadTurret(type, mm.getTurret(type));
 		turretAmountByType[type]++;
 		turretAmount++;
 	}
@@ -493,11 +498,6 @@ void setUpTurrets()
 	}
 }
 
-int getTurretPrice(int type) 
-{
-	return turretBasePrice[type] + round((turretAmount * (turretAmountByType[type] + 1) * turretBasePrice[type] * 0.1f));
-}
-
 glm::vec3 getTurretUpgradesPrices(int id) 
 {
 	glm::vec3 level = turrets[id]->getUpgradeLevel();
@@ -513,10 +513,9 @@ void buyTurret(int id, int type)
 	fprintf(stderr, "Amount: %d\n", turretAmount);
 	fprintf(stderr, "Tipo: %d\n", turrets[id]->getType());
 
-
 	if (Player::GetInstance().getMoney() >= price) 
 	{
-		modifyTurret(id, type, price);
+		modifyTurret(id, type);
 		Player::GetInstance().turretPlaced();
 		Player::GetInstance().modifyMoney(-price);
 	}
@@ -532,6 +531,36 @@ void buyTurretUpgrade(int id, int stat)
 		Player::GetInstance().turretUpgraded();
 		Player::GetInstance().modifyMoney(-price);
 	}
+}
+
+void resetGame() 
+{
+	isInConstructionMode = true;
+
+	//Enemies
+	for (Enemy* en : enemies)
+		delete en;
+
+	enemies.clear();
+	enemyCount = 0;
+	enemySpawnTimer = 0;
+	currentWeight = 0;
+	maxEnemy = 0;
+
+	//Turrets
+	for (int i = 0; i < NTURRETS; i++) 
+		modifyTurret(i, -1);
+
+	turretAmount = 0;
+
+	for (int i = 0; i < 5; i++)
+		turretAmountByType[i] = 0;
+
+	//Money & stats
+	player->resetPlayer();
+
+	//Camaras
+	camaraActual = 0;
 }
 
 void OnSize(GLFWwindow* window, int width, int height)
@@ -609,6 +638,9 @@ void startNextRound()
 	if (!isInConstructionMode) return;
 	fprintf(stderr, "Round Started:\n");
 	isInConstructionMode = false;
+	show_menu_mejora = false;
+	show_menu_construccion = false;
+	//ESCONDER BOTÓN NEXT WAVE
 	startSpawningEnemies();
 }
 
@@ -653,7 +685,7 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 					t->showRadio();
 
 					fprintf(stderr, "Torreta clicada: %d\n", t->getID());
-					if (enConstruccion)
+					if (isInConstructionMode)
 					{
 						if (t->getType() == -1)
 						{ //espacio vacio, menu de construccion
@@ -685,7 +717,6 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 
 void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 {
-
 	if (m_ButoEAvall)
 	{
 		double deltaX = xpos - m_PosEAvall.x;
@@ -736,19 +767,15 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 	camaras[CAM_ORBIT].translate(forward * distancia);
 	camaras[CAM_ORBIT].target(glm::vec3(0, 0, 0));
 
-
-
 	//ZOOM
-
 	if (m_ButoDAvall)
 	{
 		distancia += m_PosDAvall.y - ypos;
 		if (distancia < 2) { distancia = 2; }
 		if (distancia > 50) { distancia = 50; }
-		m_PosDAvall.x = xpos;				m_PosDAvall.y = ypos;
+		m_PosDAvall.x = xpos;				
+		m_PosDAvall.y = ypos;
 	}
-	
-
 }
 
 
@@ -798,6 +825,9 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			break;
 		case GLFW_KEY_P:
 			finishRound();
+			break;
+		case GLFW_KEY_R:
+			resetGame();
 			break;
 		default:
 			break;

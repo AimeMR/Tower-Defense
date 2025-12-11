@@ -49,7 +49,7 @@ void Turret::draw(GLuint shader)
 	if (m_auxObject) m_auxObject->dibuixarObjecte(shader);
 }
 
-void Turret::loadTurret(int type, std::vector<COBJModel*> models, int price = 0)
+void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 {
 	m_type = type;
 
@@ -63,7 +63,6 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models, int price = 0)
 
 	if (type == -1) 
 	{
-		m_price = 0;
 		m_damage = 0; 
 		m_range = 0; 
 		m_defCD = 0; 
@@ -74,7 +73,6 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models, int price = 0)
 		return;
 	}
 
-	m_price = price;
 	m_baseObj = new GameObject(models[0]);
 	m_headObj = new GameObject(models[1]);
 
@@ -104,7 +102,7 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models, int price = 0)
 		break;
 	case LASER:
 		m_baseDMG = 0.65f;
-		m_baseDEFCD = 0.0f;
+		m_baseDEFCD = 1.5f;
 		m_baseRNG = 5;
 		zBase = -0.05f;
 		m_headZ = 0.87f;
@@ -182,7 +180,7 @@ void Turret::updateLaser(float deltaTime)
 		if (auxBool) 
 		{
 			auxVec3 = target->getPos() - vec3(0, 0, 0.25f);
-			float laserDMG = max(target->getHealth() * 0.5f, m_damage * 2);
+			float laserDMG = max(target->getHealth() * 0.5f, m_defCD);
 			target->takeDamage(laserDMG * deltaTime * m_damage);
 			if (!m_auxObject) 
 			{

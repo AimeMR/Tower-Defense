@@ -18,7 +18,7 @@
 extern int getTurretPrice(int type);
 extern glm::vec3 getTurretUpgradesPrices(int id);
 extern void buyTurretUpgrade(int id, int stat);
-extern void modifyTurret(int id, int type, int price = 0);
+extern void modifyTurret(int id, int type);
 
 
 
