@@ -132,11 +132,11 @@ void InitGL()
 	player = &Player::GetInstance();
 
 	//Carga camaras
-	nCamaras = 6;
+	nCamaras = 7;
 	camaras = std::vector<Camara>(nCamaras, Camara(w,h));
 
-	camaraActual = 0;
-	mainCamara = &camaras[CAM_ORBIT];
+	camaraActual = CAM_INICIAL;
+	mainCamara = &camaras[CAM_INICIAL];
 
 	camaras[CAM_TOP].translate(glm::vec3(-2, 1.51f, 30));
 	camaras[CAM_TOP].target(glm::vec3(-2, 1.5f, 0));
@@ -146,6 +146,9 @@ void InitGL()
 
 	camaras[CAM_RIGHT].translate(glm::vec3(0, -20, 20));
 	camaras[CAM_RIGHT].target(glm::vec3(0, 0, 0));
+
+	camaras[CAM_INICIAL].translate(glm::vec3(-50.3f, 30, 9.8f));
+	camaras[CAM_INICIAL].target(glm::vec3(0, 0, 5));
 
 	freeCameraPos = glm::vec3(0, 0, 0);
 
@@ -771,6 +774,7 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 	if (camaraActual != CAM_FREE)
 	{
 		freeCameraPos = forward * distancia;
+
 	}
 
 
@@ -815,10 +819,18 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			spawnEnemy(Divisible);
 			break;
 		case GLFW_KEY_X:
-			camaraActual++;
+			if (show_jugar || show_menu_pruebas) //EJECUTAR SI ESTA EN EL JUEGO, NO EN EL MENU
+			{
+				camaraActual++;
+
+			}
 			break;
 		case GLFW_KEY_Z:
-			camaraActual--;
+			if (show_jugar || show_menu_pruebas) //EJECUTAR SI ESTA EN EL JUEGO, NO EN EL MENU
+			{
+				camaraActual--;
+
+			}
 			break;
 		case GLFW_KEY_O:
 			startNextRound();
@@ -832,10 +844,13 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 		default:
 			break;
 		}
+		if (show_jugar || show_menu_pruebas) //EJECUTAR SI ESTA EN EL JUEGO, NO EN EL MENU
+		{
+			int nCicleCameras = nCamaras - 1;
+			camaraActual = (camaraActual % nCicleCameras + nCicleCameras) % nCicleCameras;
+		}
 
-		camaraActual = (camaraActual % nCamaras + nCamaras) % nCamaras;
 
-		mainCamara = &camaras[camaraActual];
 
 
 		if (key == GLFW_KEY_W) keyW = true;
@@ -986,8 +1001,14 @@ void CamerasUpdate()
 	camaras[CAM_FREE].translate(freeCameraPos);
 	camaras[CAM_FREE].target(freeCameraPos - cameraDir);
 
+	//fprintf(stderr, "Pos: %f,%f,%f\n", freeCameraPos.x, freeCameraPos.y, freeCameraPos.z);
+
+
 	camaras[CAM_ORBIT].translate(cameraDir * distancia);
 	camaras[CAM_ORBIT].target(glm::vec3(0, 0, 0));
+
+	mainCamara = &camaras[camaraActual];
+
 }
 
 //-----------------Variables globales
@@ -1214,7 +1235,19 @@ int main(void)
 		{
 			Update(frameTimer, deltaTime * debug_speedMult);
 			frameTimer += deltaTime * debug_speedMult;
+			if (camaraActual == CAM_INICIAL)
+			{
+				camaraActual = CAM_ORBIT;
+
+			}
 		}
+
+		if (!show_jugar && !show_menu_pruebas)
+		{
+			camaraActual = CAM_INICIAL;
+		}
+
+
 		CamerasUpdate();
 		if (debug_renderMode == PICKING_OBJECTS)
 		{
@@ -1230,6 +1263,7 @@ int main(void)
 			buyTurretUpgrade(idTorretaSeleccionada, idStat);
 			mejoraComprada = false;
 		}
+		//fprintf(stderr, "Cam: %d\n", camaraActual);
 
 
 		// CONSTRUIMOS EL VECTOR DE LUZ DESDE LOS SLIDERS

@@ -21,7 +21,7 @@
 #define CAM_RIGHT 3
 #define CAM_FOLLOW 4
 #define CAM_FREE 5
-
+#define CAM_INICIAL 6
 
 
 //--------------- VGI: Tipus de Càmera
