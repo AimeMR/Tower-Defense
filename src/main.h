@@ -60,6 +60,7 @@ glm::vec3 cameraDir;
 glm::vec3 cameraRight;
 glm::vec3 freeCameraPos;
 
+
 //Modelos
 modelManager mm;
 
@@ -281,8 +282,10 @@ int turretUpgradePrices[] = { 500, 1300, 2700, 999999 };
 	void OnMouseButton(GLFWwindow* window, int button, int action, int mods);
 	void OnMouseMove(GLFWwindow* window, double xpos, double ypos);
 	void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void OnScroll(GLFWwindow* window, double xoffset, double yoffset);
 // ---------------- Entorn VGI: Funcions locals a main.cpp
 	void OnFull_Screen(GLFWmonitor* monitor, GLFWwindow* window);
+
 // ---------------- Entorn VGI: Tractament d'errors
 	void error_callback(int code, const char* description);
 	GLenum glCheckError_(const char* file, int line);

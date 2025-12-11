@@ -40,7 +40,7 @@ public:
 	void setTurretFloor(COBJModel* f) 
 	{ 
 		m_floor = new GameObject(f);
-		m_floor->translate(glm::vec3(m_pos, 0.05f));
+		m_floor->translate(glm::vec3(m_pos, 0.034f));
 		m_floor->setPOID((m_id) * 26544);
 
 	}

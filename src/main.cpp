@@ -122,6 +122,7 @@ void InitGL()
 // Entorn VGI: Altres variables
 	mida = 1.0;			nom = "";		buffer = "";
 	
+
 	//Carga modelos
 	mm = modelManager();
 	mm.initialSetup();
@@ -485,7 +486,7 @@ void setUpTurrets()
 	pos[3] = glm::vec2(1.85f, 11.125f);
 	pos[4] = glm::vec2(-5.45f, 6.45f);
 	pos[5] = glm::vec2(-6.2f, -9.1f);
-	pos[6] = glm::vec2(-12.75f, -4.75f);
+	pos[6] = glm::vec2(-13.0f, -4.75f);
 	pos[7] = glm::vec2(-9.9f, -0.6f);
 	pos[8] = glm::vec2(-15.5f, 3.9f);
 
@@ -645,6 +646,7 @@ void startNextRound()
 }
 
 
+
 /* ------------------------------------------------------------------------- */
 /*                           CONTROL DEL RATOLI                              */
 /* ------------------------------------------------------------------------- */
@@ -659,17 +661,17 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 
 	if (!io.WantCaptureMouse) {
 		// OnLButtonDown
-		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
 		{
 			m_ButoEAvall = true;
 			m_PosEAvall.x = xpos;	m_PosEAvall.y = ypos;
 			m_EsfeEAvall = OPV;
 		}
 		// OnLButtonUp
-		else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+		else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
 			m_ButoEAvall = false;
 		// OnRButtonDown
-		else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+		else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 		{
 			m_ButoDAvall = true;
 			m_PosDAvall.x = xpos;	m_PosDAvall.y = ypos;
@@ -710,9 +712,16 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 
 		}
 		// OnRButtonUp
-		else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+		else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 			m_ButoDAvall = false;
 	}
+}
+
+void OnScroll(GLFWwindow* window, double xoffset, double yoffset)
+{
+	distancia -= yoffset;
+	if (distancia < 2) { distancia = 2; }
+	if (distancia > 50) { distancia = 50; }
 }
 
 void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
@@ -764,18 +773,9 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 		freeCameraPos = forward * distancia;
 	}
 
-	camaras[CAM_ORBIT].translate(forward * distancia);
-	camaras[CAM_ORBIT].target(glm::vec3(0, 0, 0));
 
-	//ZOOM
-	if (m_ButoDAvall)
-	{
-		distancia += m_PosDAvall.y - ypos;
-		if (distancia < 2) { distancia = 2; }
-		if (distancia > 50) { distancia = 50; }
-		m_PosDAvall.x = xpos;				
-		m_PosDAvall.y = ypos;
-	}
+
+
 }
 
 
@@ -985,6 +985,9 @@ void CamerasUpdate()
 
 	camaras[CAM_FREE].translate(freeCameraPos);
 	camaras[CAM_FREE].target(freeCameraPos - cameraDir);
+
+	camaras[CAM_ORBIT].translate(cameraDir * distancia);
+	camaras[CAM_ORBIT].target(glm::vec3(0, 0, 0));
 }
 
 //-----------------Variables globales
@@ -1079,6 +1082,7 @@ int main(void)
 	glfwSetFramebufferSizeCallback(window, OnSize);									// - Windows Size in Pixel Coordinates
 	glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)OnMouseButton);			// - Directly redirect GLFW mouse button events
 	glfwSetCursorPosCallback(window, (GLFWcursorposfun)OnMouseMove);				// - Directly redirect GLFW mouse position events
+	glfwSetScrollCallback(window, OnScroll);
 	glfwSetKeyCallback(window, OnKeyDown);										// - Directly redirect GLFW key events
 	//glfwSetCharCallback(window, OnTextDown);										// - Directly redirect GLFW char events
 	glfwSetErrorCallback(error_callback);											// Error callback
@@ -1144,16 +1148,28 @@ int main(void)
 
 	//Inicailiza las imagenes usadas
 	InicializarGestorImagenes();
-
     while (!glfwWindowShouldClose(window) and !salir)
     {  
+
+	
+		// Poll for and process events
+		glfwPollEvents();
+
 		now = glfwGetTime();
 		delta = now - previous;
 		previous = now;
 		deltaTime = delta;
 
-		// Poll for and process events
-		glfwPollEvents();
+		if (delta > 0.15)
+		{
+			deltaTime = 0.15;
+		}
+		else
+		{
+			deltaTime = delta; 
+		}
+
+
 
 		// Draws the UI
 		menu(salir);
@@ -1240,6 +1256,7 @@ int main(void)
 
 		// Entorn VGI: Transfer�ncia del buffer OpenGL a buffer de pantalla
 		glfwSwapBuffers(window);
+
     }
 
 	// Check if the ESC key was pressed or the window was closed o boton salir presionado
