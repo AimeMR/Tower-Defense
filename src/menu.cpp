@@ -603,7 +603,7 @@ void menuConstruccion()
 
 
 		cambiarEstiloBotones();
-		ImGui::SetWindowFontScale(2.0f); 
+		ImGui::SetWindowFontScale(2.0f);
 
 		// Variables auxiliares reutilizables
 		float porX, porY, escalaImg, altoImgPx, anchoImgPx, offsetBtnY, xInicioImagen, yInicioImagen, xPosBoton, yPosBoton;
@@ -615,11 +615,11 @@ void menuConstruccion()
 		// =========================================================
 		idT = 0; // ID Array
 		porX = 0.23f; porY = 0.21f; // Posición 
-		escalaImg = 0.30f; 
+		escalaImg = 0.30f;
 
-		sprintf_s(tDmg, "%d", 4);
-		sprintf_s(tVel, "%.1f", 1.5f);
-		sprintf_s(tRng, "%d", 100);
+		sprintf_s(tDmg, "%.2f", 0.5f);
+		sprintf_s(tVel, "%.2f", 0.5f);
+		sprintf_s(tRng, "%d", 8);
 		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
@@ -629,11 +629,11 @@ void menuConstruccion()
 		// =========================================================
 		idT = 1;
 		porX = 0.75f; porY = 0.21f;
-		escalaImg = 0.557f; 
+		escalaImg = 0.557f;
 
-		sprintf_s(tDmg, "%d", 10);
-		sprintf_s(tVel, "%.1f", 1.5f);
-		sprintf_s(tRng, "%d", 100);
+		sprintf_s(tDmg, "%.2f", 1.5f);
+		sprintf_s(tVel, "%.2f", 3.5f);
+		sprintf_s(tRng, "%d", 6);
 		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 
@@ -646,11 +646,11 @@ void menuConstruccion()
 		// =========================================================
 		idT = 2;
 		porX = 0.23f; porY = 0.52f;
-		escalaImg = 0.56f; 
+		escalaImg = 0.56f;
 
-		sprintf_s(tDmg, "%d", 25);
-		sprintf_s(tVel, "%.1f", 5.0f);
-		sprintf_s(tRng, "%d", 150);
+		sprintf_s(tDmg, "%.2f", 0.55f);
+		sprintf_s(tVel, "%.2f", 1.5f);
+		sprintf_s(tRng, "%d", 5);
 		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 
@@ -663,11 +663,11 @@ void menuConstruccion()
 		// =========================================================
 		idT = 3;
 		porX = 0.75f; porY = 0.52f;
-		escalaImg = 0.5555f; 
+		escalaImg = 0.5555f;
 
-		sprintf_s(tDmg, "%d", 2);
-		sprintf_s(tVel, "%.1f", 0.5f);
-		sprintf_s(tRng, "%d", 90);
+		sprintf_s(tDmg, "%.2f", 0.2f);
+		sprintf_s(tVel, "%.2f", 1.0f);
+		sprintf_s(tRng, "%d", 6);
 		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
@@ -679,11 +679,11 @@ void menuConstruccion()
 		// =========================================================
 		idT = 4;
 		porX = 0.23f; porY = 0.82f;
-		escalaImg = 0.30f; 
+		escalaImg = 0.30f;
 
-		sprintf_s(tDmg, "%d", 100);
-		sprintf_s(tVel, "%.1f", 0.2f);
-		sprintf_s(tRng, "%d", 300);
+		sprintf_s(tDmg, "%.2f", 2.5f);
+		sprintf_s(tVel, "%.2f", 2.0f);
+		sprintf_s(tRng, "%d", 13);
 		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 		imprimirFotoTorreta(winSize, idT, porX, porY, escalaImg, tDmg, tVel, tRng, tPrecio);
