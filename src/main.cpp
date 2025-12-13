@@ -540,7 +540,7 @@ void buyTurretUpgrade(int id, int stat)
 void resetGame() 
 {
 	enConstruccion = true;
-
+	debug_speedMult = 1.0f;
 	//Enemies
 	for (Enemy* en : enemies)
 		delete en;
@@ -1256,10 +1256,11 @@ int main(void)
 			}
 		}
 
-		if (!show_jugar && !show_menu_pruebas)
+		if (reiniciar)
 		{
 			resetGame();
 			camaraActual = CAM_INICIAL;
+			reiniciar = false;
 		}
 
 

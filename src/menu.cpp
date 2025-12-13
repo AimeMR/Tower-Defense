@@ -33,6 +33,7 @@ bool juego_pausado = false;   //flag para el control del timer (activado o pausa
 bool show_menu_construccion = false;
 bool show_menu_mejora = false;
 bool enConstruccion = true;
+bool reiniciar = false;
 
 int idTipoTorreta = -1; //Hueco vacio
 int idTorretaSeleccionada = -1; //Sin torreta seleccionada
@@ -544,6 +545,14 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport)
 		}
 
 		btnSize = colocarBoton(0.5f, 0.55f);
+		if (ImGui::Button("Reinciar", btnSize))
+		{
+			reiniciar = true;
+			juego_pausado = false;
+			show_jugar = true;
+		}
+
+		btnSize = colocarBoton(0.5f, 0.70f);
 		if (ImGui::Button("Menu Principal", btnSize))
 		{
 			juego_pausado = false;

@@ -16,6 +16,7 @@ extern bool show_menu_pruebas;
 extern bool show_menu_construccion;
 extern bool show_menu_mejora;
 extern bool enConstruccion;
+extern bool reiniciar;
 
 extern int idTipoTorreta;
 extern int idTorretaSeleccionada;
