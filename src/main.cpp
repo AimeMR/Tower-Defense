@@ -130,6 +130,7 @@ void InitGL()
 
 	//Carga player
 	player = &Player::GetInstance();
+	pl = player;
 
 	//Carga camaras
 	nCamaras = 7;

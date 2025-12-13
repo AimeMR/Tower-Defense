@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "Turret.h"
+#include "player.h"
 
 // -----------------------------------------------------------
 //            Variables para el control de menus
@@ -15,6 +16,7 @@ extern bool juego_pausado;
 extern bool show_menu_pruebas;
 extern bool show_menu_construccion;
 extern bool show_menu_mejora;
+extern bool show_menu_muerte;
 extern bool enConstruccion;
 extern bool reiniciar;
 
@@ -24,6 +26,7 @@ extern bool torretaComprada;
 extern int idStat;
 extern bool mejoraComprada;
 extern Turret *tur;
+extern Player *pl;
 
 // -----------------------------------------------------------
 //        Variables para el control de menus de prueba
@@ -60,6 +63,7 @@ void menuAjustes();
 void menuCreditos();
 void menuConstruccion();
 void menuMejora();
+void menuMuerte();
 void imprimirFotoTorreta(ImVec2 winSize, int idT, float porX, float porY, float escalaImg, char tDmg[16], char tVel[16], char tRng[16], char tPrecio[16]);
 
 
@@ -107,6 +111,7 @@ extern ImagenData imgDinero;
 extern ImagenData imgRonda;
 extern ImagenData imgTorretas[5]; // Array para las 5 torretas
 extern ImagenData imgTorretasMejora[5]; // Array para las 5 torretas menu mejoras
+extern ImagenData imgMuerte; //Imagen de la pantalla de muerte
 
 // --- FUNCIONES ---
 

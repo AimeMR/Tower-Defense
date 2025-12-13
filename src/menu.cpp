@@ -12,6 +12,7 @@
 #include "player.h"
 #include "Turret.h"
 
+
 // ---------------------------------------------------------
 // DECLARACIÓN EXTERNA (Conecta con main.cpp)
 // ---------------------------------------------------------
@@ -32,6 +33,7 @@ bool show_menu_pruebas = false;
 bool juego_pausado = false;   //flag para el control del timer (activado o pausado)
 bool show_menu_construccion = false;
 bool show_menu_mejora = false;
+bool show_menu_muerte = true;
 bool enConstruccion = true;
 bool reiniciar = false;
 
@@ -41,6 +43,7 @@ bool torretaComprada = false; //Control para activar compra
 int idStat = -1;
 bool mejoraComprada = false;
 Turret* tur = nullptr;
+Player* pl = nullptr;
 
 //------------- Variables globales para modo pruebas------------------
 bool enable_debug_mode = true; // Variable de configuracion para mostrar el boton (CAMBIAR AQUI)
@@ -75,6 +78,7 @@ ImagenData imgDinero;
 ImagenData imgRonda;
 ImagenData imgTorretas[5];
 ImagenData imgTorretasMejora[5];
+ImagenData imgMuerte;
 
 // --- FUNCION  DE CARGA ---
 bool CargarTexturaInterna(const char* filename, ImagenData& out_img)
@@ -123,6 +127,9 @@ void InicializarGestorImagenes()
 	CargarTexturaInterna(".\\textures\\imagenes\\laserMejora.png", imgTorretasMejora[2]);
 	CargarTexturaInterna(".\\textures\\imagenes\\venenoMejora.png", imgTorretasMejora[3]);
 	CargarTexturaInterna(".\\textures\\imagenes\\francotiradoraMejora.png", imgTorretasMejora[4]);
+
+	// Cargar pantalla de muerte
+	CargarTexturaInterna(".\\textures\\imagenes\\muerte.png", imgMuerte);
 }
 
 // --- FUNCIÓN DE DIBUJADO ---
@@ -197,10 +204,26 @@ void menu(bool& salir)
 	// viewport para posicionar ventana
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
+	//Comprobación de la vida del usuario
+	if (pl->getHealth() <= 0)
+	{
+		show_menu_muerte = true;
+	}
+
+
+	if (show_menu_muerte)
+	{
+		show_menu_construccion = false;
+		show_menu_mejora = false;
+		juego_pausado = false;
+		show_jugar = false;
+		menuMuerte();
+	}
+
 	// =========================================================
 	// MENÚ DE INICIO (Pantalla Completa)
 	// =========================================================
-	if (show_menu_inicio)
+	else if (show_menu_inicio)
 	{
 		// Configuración ventana fullscreen transparente
 		ImGui::SetNextWindowPos(viewport->Pos);
@@ -309,6 +332,7 @@ void menu(bool& salir)
 	{
 		menuCreditos();
 	}
+
 
 	ImGui::Render();
 }
@@ -426,7 +450,7 @@ void iniciarPartida(bool& salir)
 		menuMejora();
 	}
 
-	if (juego_pausado)
+	if (juego_pausado && !show_menu_muerte)
 	{
 		menuPausa(salir, viewport);
 	}
@@ -921,6 +945,81 @@ void menuMejora()
 	}
 	ImGui::End();
 	ImGui::PopStyleColor();
+}
+
+void menuMuerte()
+{
+	// viewport para posicionar ventana
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// Configuración ventana fullscreen transparente
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+
+	// Eliminamos el relleno (padding) interno de la ventana y el grosor del borde
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+	if (ImGui::Begin("Menu_Muerte", &show_menu_muerte, flags))
+	{
+		std::vector<int> statsFinales = pl->getStatsFinales();
+
+		char tEnemigos[64], tDinero[64], tTorretas[64], tMejoras[64];
+
+		sprintf_s(tEnemigos, "Enemigos derrotados: %d", statsFinales[0]);
+		sprintf_s(tDinero, "Dinero consegido: %d $", statsFinales[1]);
+		sprintf_s(tTorretas, "Torretas colocadas: %d", statsFinales[2]);
+		sprintf_s(tMejoras, "Mejoras consegidas: %d", statsFinales[3]);
+
+		ImGui::SetWindowFontScale(2.0f);
+
+
+		// Imagen de fondo
+		DibujarImagen(imgMuerte, 0.5f, 0.5f, 2.0f, {
+			TextoOverlay(tEnemigos, viewport->Size.x / 3  , 350.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
+			TextoOverlay(tDinero, viewport->Size.x / 3 , 400.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
+			TextoOverlay(tTorretas, viewport->Size.x / 3, 450.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
+			TextoOverlay(tMejoras, viewport->Size.x / 3, 500.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)) });
+		
+		//DibujarImagen(imgMuerte, 0.5f, 0.5f, 2.0f, {});
+		cambiarEstiloBotones();
+		ImGui::SetWindowFontScale(1.5f);
+
+		// Ajuste vertical para el contenido
+		ImGui::SetCursorPosY(viewport->Size.y * 0.2f);
+
+		// --- BOTONES  ---
+		ImVec2 btnSize = colocarBoton(0.5f, 0.55f);
+		if (ImGui::Button("Reinciar", btnSize))
+		{
+			reiniciar = true;
+			juego_pausado = false;
+			show_jugar = true;
+			show_menu_inicio = false;
+			show_menu_muerte = false;
+		}
+
+		btnSize = colocarBoton(0.5f, 0.70f);
+		if (ImGui::Button("Menu Principal", btnSize))
+		{
+			juego_pausado = false;
+			show_jugar = false;
+			show_menu_inicio = true;
+			show_menu_muerte = false;
+		}
+
+
+		ImGui::SetWindowFontScale(1.0f);
+		regresarEstiloBotones();
+
+	}
+	ImGui::End();
+
+	ImGui::PopStyleVar(2);
 }
 
 //--------------------------------------------------------------//

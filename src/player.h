@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 class Player {
 public:
@@ -25,6 +26,7 @@ public:
     int getHealth() { return m_health; }
     int getRound() { return m_nRound; }
     float getDifficulty() { return m_difficulty; }
+    std::vector<int> getStatsFinales() {return { m_enemiesDefeated, m_totalMoneyEarned, m_turretsPlaced, m_UpgradesPurchased};}
 
     //Stats
     void enemyDefeated() { m_enemiesDefeated++; }
