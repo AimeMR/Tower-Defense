@@ -19,6 +19,7 @@ extern int getTurretPrice(int type);
 extern glm::vec3 getTurretUpgradesPrices(int id);
 extern void buyTurretUpgrade(int id, int stat);
 extern void modifyTurret(int id, int type);
+extern void startNextRound();
 
 
 
@@ -387,6 +388,34 @@ void iniciarPartida(bool& salir)
 		}
 		ImGui::End();
 	}
+	
+	if (!juego_pausado && enConstruccion)
+	{
+		ImGuiWindowFlags btnFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBackground;
+		float padding = 20.0f; // Un poco de margen desde el borde
+
+		// Posicionamiento Abajo Derecha
+		// Usamos Pivot (1,1) para indicar que la posición se refiere a la esquina inferior derecha de la ventana
+		ImGui::SetNextWindowPos(
+			ImVec2(viewport->WorkPos.x + viewport->WorkSize.x - padding, viewport->WorkPos.y + viewport->WorkSize.y - padding),
+			ImGuiCond_Always,
+			ImVec2(1.0f, 1.0f) // Pivot: Inferior-Derecha
+		);
+		if (ImGui::Begin("HudSiguienteRonda", NULL, btnFlags))
+		{
+			cambiarEstiloBotones();
+			// He hecho el botón un poco más grande para que sea fácil de clicar
+			ImGui::SetWindowFontScale(1.5f);
+			if (ImGui::Button("Siguiente ronda", ImVec2(180, 50)))
+			{
+				startNextRound();
+			}
+			regresarEstiloBotones();
+			ImGui::SetWindowFontScale(1.0f);
+		}
+		ImGui::End();
+	}
+
 	if (show_menu_construccion)
 	{
 		menuConstruccion();

@@ -181,7 +181,7 @@ void InitGL()
 	luz.m_po = &po;
 	
 	//Carga variables juego
-	isInConstructionMode = true;
+	enConstruccion = true;
 	enemyCount = 0;
 	currentWeight = 0;
 	maxEnemy = 0;
@@ -278,7 +278,7 @@ void InitAPI()
 
 void finishRound()
 {
-	isInConstructionMode = true;
+	enConstruccion = true;
 	fprintf(stderr, "Round Finished:\n");
 	player->increaseRound();
 }
@@ -318,7 +318,7 @@ void destroyEnemies(Enemy* en)
 	Player::GetInstance().enemyDefeated();
 	fprintf(stderr, "EnemyAmount: %d\n", enemyCount);
 
-	if (enemyCount == 0 && !isInConstructionMode && currentWeight == 0) 
+	if (enemyCount == 0 && !enConstruccion && currentWeight == 0) 
 	{
 		finishRound();
 	}
@@ -539,7 +539,7 @@ void buyTurretUpgrade(int id, int stat)
 
 void resetGame() 
 {
-	isInConstructionMode = true;
+	enConstruccion = true;
 
 	//Enemies
 	for (Enemy* en : enemies)
@@ -658,9 +658,9 @@ void startSpawningEnemies()
 
 void startNextRound()
 {
-	if (!isInConstructionMode) return;
+	if (!enConstruccion) return;
 	fprintf(stderr, "Round Started:\n");
-	isInConstructionMode = false;
+	enConstruccion = false;
 	show_menu_mejora = false;
 	show_menu_construccion = false;
 	//ESCONDER BOTÓN NEXT WAVE
@@ -709,7 +709,7 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 					t->showRadio();
 
 					fprintf(stderr, "Torreta clicada: %d\n", t->getID());
-					if (isInConstructionMode)
+					if (enConstruccion)
 					{
 						if (t->getType() == -1)
 						{ //espacio vacio, menu de construccion
