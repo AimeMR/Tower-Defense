@@ -176,7 +176,7 @@ std::vector<COBJModel*> modelManager::getEnemy(int type)
 	case DivisibleDIV:
 		return getModelRange(m_modelsEnemics, 28, 30);
 	default:
-		break;
+		return getModelRange(m_modelsEnemics, 0, 0);
 	}
 }
 

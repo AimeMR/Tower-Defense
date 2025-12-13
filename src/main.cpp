@@ -183,6 +183,7 @@ void InitGL()
 	
 	//Carga variables juego
 	enConstruccion = true;
+	debugMode = false;
 	enemyCount = 0;
 	currentWeight = 0;
 	maxEnemy = 0;
@@ -316,7 +317,6 @@ void destroyEnemies(Enemy* en)
 	if (en->mustDestroy()) return;
 
 	enemyCount--;
-	Player::GetInstance().enemyDefeated();
 	fprintf(stderr, "EnemyAmount: %d\n", enemyCount);
 
 	if (enemyCount == 0 && !enConstruccion && currentWeight == 0) 
@@ -518,7 +518,7 @@ void buyTurret(int id, int type)
 	fprintf(stderr, "Amount: %d\n", turretAmount);
 	fprintf(stderr, "Tipo: %d\n", turrets[id]->getType());
 
-	if (Player::GetInstance().getMoney() >= price) 
+	if (Player::GetInstance().getMoney() >= price || debugMode)
 	{
 		modifyTurret(id, type);
 		Player::GetInstance().turretPlaced();
@@ -530,7 +530,7 @@ void buyTurretUpgrade(int id, int stat)
 {
 	if (stat < 0 || stat > 2) return;
 	int price = getTurretUpgradesPrices(id)[stat];
-	if (Player::GetInstance().getMoney() >= price)
+	if (Player::GetInstance().getMoney() >= price || debugMode)
 	{
 		turrets[id]->upgradeStat(stat);
 		Player::GetInstance().turretUpgraded();
@@ -585,6 +585,11 @@ void resetGame()
 	cameraRight = glm::normalize(glm::cross(forward, glm::vec3(0, 0, 1)));
 
 	//Menus
+	juego_pausado = false;
+	show_menu_construccion = false;
+	show_menu_mejora = false;
+	show_menu_muerte = false;
+	enConstruccion = true;
 }
 
 void OnSize(GLFWwindow* window, int width, int height)
@@ -710,7 +715,7 @@ void OnMouseButton(GLFWwindow* window, int button, int action, int mods)
 					t->showRadio();
 
 					fprintf(stderr, "Torreta clicada: %d\n", t->getID());
-					if (enConstruccion)
+					if (enConstruccion || debugMode)
 					{
 						if (t->getType() == -1)
 						{ //espacio vacio, menu de construccion
@@ -774,8 +779,6 @@ void OnMouseMove(GLFWwindow* window, double xpos, double ypos)
 
 		while (yawCamera >= 360.0f) yawCamera -= 360.0f;
 		while (yawCamera < 0.0f)    yawCamera += 360.0f;
-
-
 	}
 
 	float yawRadiants = glm::radians(yawCamera);

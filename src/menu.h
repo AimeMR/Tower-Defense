@@ -18,6 +18,7 @@ extern bool show_menu_construccion;
 extern bool show_menu_mejora;
 extern bool show_menu_muerte;
 extern bool enConstruccion;
+extern bool debugMode;
 extern bool reiniciar;
 
 extern int idTipoTorreta;

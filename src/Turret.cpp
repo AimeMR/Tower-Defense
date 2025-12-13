@@ -94,7 +94,7 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		m_headZ = 0.8f;
 		break;
 	case CONGELADORA:
-		m_baseDMG = 1.0f;
+		m_baseDMG = 0.5f;
 		m_baseDEFCD = 3.5f;
 		m_baseRNG = 5;
 		zBase = -0.05f;
@@ -108,7 +108,7 @@ void Turret::loadTurret(int type, std::vector<COBJModel*> models)
 		m_headZ = 0.87f;
 		break;
 	case VERI:
-		m_baseDMG = 0.2f;
+		m_baseDMG = 0.4f;
 		m_baseDEFCD = 1.0f;
 		m_baseRNG = 6;
 		zBase = -0.05f;
@@ -222,7 +222,7 @@ void Turret::updateCannon(float deltaTime)
 			shootAnimation();
 			auxVec3 = target->getPos() - vec3(0, 0, 0.25f);
 
-			if(m_type == VERI) target->setPoison(2.5f + m_damage * 2.5f);
+			if(m_type == VERI) target->setPoison(2.5f + m_damage * 1.25f);
 
 			target->takeDamage(m_damage);
 			m_cd = m_defCD;
@@ -248,7 +248,7 @@ void Turret::updateIce(float deltaTime)
 			for (Enemy* e : affectedEnemies)
 			{
 				e->takeDamage(m_damage);
-				e->setSlow(2.0f + m_damage);
+				e->setSlow(2.5f + m_damage);
 			}
 		}
 	}

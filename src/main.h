@@ -68,7 +68,6 @@ modelManager mm;
 Player* player;
 
 //Game Info
-bool isInConstructionMode;
 int enemyCount = 0;
 int currentWeight = 0;
 int maxEnemy = 0;

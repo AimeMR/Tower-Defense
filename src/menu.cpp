@@ -33,8 +33,10 @@ bool show_menu_pruebas = false;
 bool juego_pausado = false;   //flag para el control del timer (activado o pausado)
 bool show_menu_construccion = false;
 bool show_menu_mejora = false;
-bool show_menu_muerte = true;
+bool show_menu_muerte = false;
 bool enConstruccion = true;
+bool debugMode = false;
+bool enterDebugMode = false;
 bool reiniciar = false;
 
 int idTipoTorreta = -1; //Hueco vacio
@@ -205,11 +207,10 @@ void menu(bool& salir)
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	//Comprobación de la vida del usuario
-	if (pl->getHealth() <= 0)
+	if (pl->getHealth() <= 0 && !debugMode)
 	{
 		show_menu_muerte = true;
 	}
-
 
 	if (show_menu_muerte)
 	{
@@ -241,9 +242,12 @@ void menu(bool& salir)
 			ImVec2 btnSize = colocarBoton(0.5f, 0.35f);
 			if (ImGui::Button("Jugar", btnSize))
 			{
+				reiniciar = true;
 				show_menu_inicio = false;
 				show_jugar = true;
 				juego_pausado = false;
+				enConstruccion = true;
+				debugMode = false;
 			}
 
 			// --- BOTÓN AJUSTES ---
@@ -270,8 +274,10 @@ void menu(bool& salir)
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
 				if (ImGui::Button("Modo Pruebas", btnSize))
 				{
+					reiniciar = true;
 					show_menu_inicio = false;
 					show_menu_pruebas = true;
+					debugMode = true;
 				}
 				ImGui::PopStyleColor();
 			}
@@ -294,7 +300,7 @@ void menu(bool& salir)
 	// =========================================================
 	// ESTADO DE JUEGO (HUD + PAUSA)
 	// =========================================================
-	else if (show_jugar)
+	else if (show_jugar && !debugMode)
 	{
 		iniciarPartida(salir);
 	}
@@ -304,6 +310,7 @@ void menu(bool& salir)
 	// =========================================================
 	else if (show_menu_pruebas)
 	{
+		iniciarPartida(salir);
 		menuPruebas(salir);
 		// Si el submenu de sombras está activo, lo dibujamos
 		if (show_submenu_shadows)
@@ -355,16 +362,29 @@ void iniciarPartida(bool& salir)
 
 	if (ImGui::Begin("HUD_Overlay_Images", nullptr, hudFlags))
 	{
-		
-		// Geters variables informativas
-		int vida_mock = Player::GetInstance().getHealth();
-		int dinero_mock = Player::GetInstance().getMoney();
+		char txtVida[16];
+		char txtDinero[16];
+		char txtRonda[32];
+
 		int ronda_mock = Player::GetInstance().getRound();
 
-		// Establecer los codigos de las variables informativas
-		char txtVida[16]; sprintf_s(txtVida, "%d", vida_mock);
-		char txtDinero[16]; sprintf_s(txtDinero, "%d", dinero_mock);
-		char txtRonda[32]; sprintf_s(txtRonda, "%d", ronda_mock);
+		if (debugMode) 
+		{
+			sprintf_s(txtVida, "%d", 999);
+			sprintf_s(txtDinero, "%d", 9999999);
+			sprintf_s(txtRonda, "%d", ronda_mock);
+		}
+		else 
+		{
+			// Geters variables informativas
+			int vida_mock = Player::GetInstance().getHealth();
+			int dinero_mock = Player::GetInstance().getMoney();
+
+			// Establecer los codigos de las variables informativas
+			sprintf_s(txtVida, "%d", vida_mock);
+			sprintf_s(txtDinero, "%d", dinero_mock);
+			sprintf_s(txtRonda, "%d", ronda_mock);
+		}
 
 		ImGui::SetWindowFontScale(2.2f);
 
@@ -414,7 +434,7 @@ void iniciarPartida(bool& salir)
 		ImGui::End();
 	}
 	
-	if (!juego_pausado && enConstruccion)
+	if (!juego_pausado && enConstruccion && !debugMode)
 	{
 		ImGuiWindowFlags btnFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBackground;
 		float padding = 20.0f; // Un poco de margen desde el borde
@@ -579,9 +599,12 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport)
 		btnSize = colocarBoton(0.5f, 0.70f);
 		if (ImGui::Button("Menu Principal", btnSize))
 		{
+			reiniciar = true;
 			juego_pausado = false;
 			show_jugar = false;
 			show_menu_inicio = true;
+			show_menu_muerte = false;
+			debugMode = false;
 		}
 
 		btnSize = colocarBoton(0.1f, 0.90f);
@@ -693,9 +716,9 @@ void menuConstruccion()
 		porX = 0.75f; porY = 0.21f;
 		escalaImg = 0.557f;
 
-		sprintf_s(tDmg, "%.2f", 1.5f);
+		sprintf_s(tDmg, "%.2f", 0.5f);
 		sprintf_s(tVel, "%.2f", 3.5f);
-		sprintf_s(tRng, "%d", 6);
+		sprintf_s(tRng, "%d", 5);
 		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
 
 
@@ -710,7 +733,7 @@ void menuConstruccion()
 		porX = 0.23f; porY = 0.52f;
 		escalaImg = 0.56f;
 
-		sprintf_s(tDmg, "%.2f", 0.55f);
+		sprintf_s(tDmg, "%.2f", 0.65f);
 		sprintf_s(tVel, "%.2f", 1.5f);
 		sprintf_s(tRng, "%d", 5);
 		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
@@ -727,7 +750,7 @@ void menuConstruccion()
 		porX = 0.75f; porY = 0.52f;
 		escalaImg = 0.5555f;
 
-		sprintf_s(tDmg, "%.2f", 0.2f);
+		sprintf_s(tDmg, "%.2f", 0.4f);
 		sprintf_s(tVel, "%.2f", 1.0f);
 		sprintf_s(tRng, "%d", 6);
 		sprintf_s(tPrecio, "%d $", getTurretPrice(idT));
@@ -920,7 +943,7 @@ void menuMejora()
 
 		// DAÑO
 		ImGui::SetCursorPosX(xTextoStart);
-		mostrarEstadistica("Dano", (int)levelStats[1], statsActuals[1], statsProx[1], (int)priceStats[1], 1);
+		mostrarEstadistica("Ataque", (int)levelStats[1], statsActuals[1], statsProx[1], (int)priceStats[1], 1);
 
 		// VELOCIDAD
 		ImGui::SetCursorPosX(xTextoStart);
@@ -971,9 +994,9 @@ void menuMuerte()
 		char tEnemigos[64], tDinero[64], tTorretas[64], tMejoras[64];
 
 		sprintf_s(tEnemigos, "Enemigos derrotados: %d", statsFinales[0]);
-		sprintf_s(tDinero, "Dinero consegido: %d $", statsFinales[1]);
+		sprintf_s(tDinero, "Dinero conseguido: %d $", statsFinales[1]);
 		sprintf_s(tTorretas, "Torretas colocadas: %d", statsFinales[2]);
-		sprintf_s(tMejoras, "Mejoras consegidas: %d", statsFinales[3]);
+		sprintf_s(tMejoras, "Mejoras conseguidas: %d", statsFinales[3]);
 
 		ImGui::SetWindowFontScale(2.0f);
 
@@ -1006,10 +1029,12 @@ void menuMuerte()
 		btnSize = colocarBoton(0.5f, 0.70f);
 		if (ImGui::Button("Menu Principal", btnSize))
 		{
+			reiniciar = true;
 			juego_pausado = false;
 			show_jugar = false;
 			show_menu_inicio = true;
 			show_menu_muerte = false;
+			debugMode = false;
 		}
 
 

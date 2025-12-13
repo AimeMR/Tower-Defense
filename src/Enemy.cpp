@@ -73,7 +73,7 @@ void Enemy::move(float deltaTime, float timer)
 	dieAnimation(deltaTime);
 	if (!m_Move || !m_target) return;
 
-	float speed = m_speed * deltaTime * (1 - (max(m_slowCounter, 0.0f) / 4.0f));
+	float speed = m_speed * deltaTime * (1 - (max(m_slowCounter, 0.0f) / 4.5f));
 	m_pos += glm::vec3(m_dir.x, m_dir.y, 0) * speed;
 
 	TrackPathProgress();
@@ -427,6 +427,7 @@ void Enemy::die()
 		switch (m_type) {
 		case Basic: case Rapid: case Tanc: case Volador: case AcceleradorACT: case DivisibleDIV:
 			Player::GetInstance().modifyMoney(m_reward);
+			Player::GetInstance().enemyDefeated();
 			break;
 		case Accelerador:
 			m_health = m_baseHealth;
