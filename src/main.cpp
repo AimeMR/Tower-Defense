@@ -815,61 +815,56 @@ void OnKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods) 
 			OnFull_Screen(primary, window);
 			break;
 		case GLFW_KEY_T:
-			for (Enemy* e : enemies)
-				e->takeDamage(15.0f);
+			if (debugMode) for (Enemy* e : enemies) e->takeDamage(15.0f);
 			break;
 		case GLFW_KEY_1:
-			spawnEnemy(Basic);
+			if (debugMode) spawnEnemy(Basic);
 			break;
 		case GLFW_KEY_2:
-			spawnEnemy(Rapid);
+			if(debugMode) spawnEnemy(Rapid);
 			break;
 		case GLFW_KEY_3:
-			spawnEnemy(Tanc);
+			if (debugMode) spawnEnemy(Tanc);
 			break;
 		case GLFW_KEY_4:
-			spawnEnemy(Volador);
+			if (debugMode) spawnEnemy(Volador);
 			break;
 		case GLFW_KEY_5:
-			spawnEnemy(Accelerador);
+			if (debugMode) spawnEnemy(Accelerador);
 			break;
 		case GLFW_KEY_6:
-			spawnEnemy(Divisible);
+			if (debugMode) spawnEnemy(Divisible);
 			break;
 		case GLFW_KEY_X:
 			if (show_jugar || show_menu_pruebas) //EJECUTAR SI ESTA EN EL JUEGO, NO EN EL MENU
 			{
 				camaraActual++;
-
 			}
 			break;
 		case GLFW_KEY_Z:
 			if (show_jugar || show_menu_pruebas) //EJECUTAR SI ESTA EN EL JUEGO, NO EN EL MENU
 			{
 				camaraActual--;
-
 			}
 			break;
 		case GLFW_KEY_O:
-			startNextRound();
+			if (debugMode) startNextRound();
 			break;
 		case GLFW_KEY_P:
-			finishRound();
+			if (debugMode) finishRound();
 			break;
 		case GLFW_KEY_R:
-			resetGame();
+			if (debugMode) resetGame();
 			break;
 		default:
 			break;
 		}
+
 		if (show_jugar || show_menu_pruebas) //EJECUTAR SI ESTA EN EL JUEGO, NO EN EL MENU
 		{
 			int nCicleCameras = nCamaras - 1;
 			camaraActual = (camaraActual % nCicleCameras + nCicleCameras) % nCicleCameras;
 		}
-
-
-
 
 		if (key == GLFW_KEY_W) keyW = true;
 		if (key == GLFW_KEY_A) keyA = true;

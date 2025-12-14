@@ -145,7 +145,7 @@ void Turret::updateStats()
 {
 	m_defCD = m_baseDEFCD * (1 - m_levelCD * 0.15f);
 	m_damage = m_baseDMG * (1 + m_levelDmg * 0.2f);
-	m_range = m_baseRNG * (1 + m_levelRange * 0.15f);
+	m_range = m_baseRNG * (1 + m_levelRange * 0.10f);
 	m_cd = m_defCD;
 }
 
@@ -154,7 +154,7 @@ glm::vec3 Turret::getStatsUpgrade()
 	return glm::vec3(
 		m_baseDEFCD * (1 - (m_levelCD + 1) * 0.15f),
 		m_baseDMG * (1 + (m_levelDmg + 1) * 0.2f),
-		m_baseRNG * (1 + (m_levelRange + 1) * 0.15f));
+		m_baseRNG * (1 + (m_levelRange + 1) * 0.10f));
 }
 
 void Turret::upgradeStat(int stat)
