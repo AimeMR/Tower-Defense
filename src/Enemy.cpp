@@ -6,8 +6,8 @@ void Enemy::setUpEnemyStats(float difficulty)
 	float baseS = 5.0f;
 	switch (m_type) {
 	case Basic:
-		m_baseHealth = baseH * 0.6f;
-		m_defSpeed = baseS * 0.6f;
+		m_baseHealth = baseH * 0.55f;
+		m_defSpeed = baseS * 0.5f;
 		m_damage = 1;
 		m_weight = 1;
 		break;
