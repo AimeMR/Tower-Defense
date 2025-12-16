@@ -33,7 +33,7 @@ bool show_menu_pruebas = false;
 bool juego_pausado = false;   //flag para el control del timer (activado o pausado)
 bool show_menu_construccion = false;
 bool show_menu_mejora = false;
-bool show_menu_muerte = true;
+bool show_menu_muerte = false;
 bool enConstruccion = true;
 bool debugMode = false;
 bool enterDebugMode = false;
@@ -81,6 +81,7 @@ ImagenData imgRonda;
 ImagenData imgTorretas[5];
 ImagenData imgTorretasMejora[5];
 ImagenData imgMuerte;
+ImagenData imgTitulo;
 
 // --- FUNCION  DE CARGA ---
 bool CargarTexturaInterna(const char* filename, ImagenData& out_img)
@@ -132,6 +133,10 @@ void InicializarGestorImagenes()
 
 	// Cargar pantalla de muerte
 	CargarTexturaInterna(".\\textures\\imagenes\\muerte.png", imgMuerte);
+
+	// Cargar titulo del juego
+	CargarTexturaInterna(".\\textures\\imagenes\\titulo.png", imgTitulo);
+
 }
 
 // --- FUNCIÓN DE DIBUJADO ---
@@ -234,12 +239,15 @@ void menu(bool& salir)
 
 		if (ImGui::Begin("Menu_Principal_Fullscreen", &show_menu_inicio, flags))
 		{
+			
+			DibujarImagen(imgTitulo, 0.5f, 0.2f, 0.2f, {});
+
 			// Aplicamos estilos y fuente 
 			cambiarEstiloBotones();
 			ImGui::SetWindowFontScale(1.5f);
 
 			// --- BOTÓN JUGAR ---
-			ImVec2 btnSize = colocarBoton(0.5f, 0.35f);
+			ImVec2 btnSize = colocarBoton(0.5f, 0.50f);
 			if (ImGui::Button("Jugar", btnSize))
 			{
 				reiniciar = true;
@@ -251,7 +259,7 @@ void menu(bool& salir)
 			}
 
 			// --- BOTÓN AJUSTES ---
-			btnSize = colocarBoton(0.5f, 0.50f);
+			btnSize = colocarBoton(0.5f, 0.60f);
 			if (ImGui::Button("Ajustes", btnSize))
 			{
 				show_menu_inicio = false;
@@ -259,7 +267,7 @@ void menu(bool& salir)
 			}
 
 			// --- BOTÓN CREDITOS ---
-			btnSize = colocarBoton(0.5f, 0.65f);
+			btnSize = colocarBoton(0.5f, 0.70f);
 			if (ImGui::Button("Creditos", btnSize))
 			{
 				show_menu_inicio = false;
@@ -272,7 +280,7 @@ void menu(bool& salir)
 				btnSize = colocarBoton(0.5f, 0.80f);
 				// Cambiamos color para diferenciarlo
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
-				if (ImGui::Button("Modo Pruebas", btnSize))
+				if (ImGui::Button("Modo creativo", btnSize))
 				{
 					reiniciar = true;
 					show_menu_inicio = false;

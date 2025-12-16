@@ -113,6 +113,7 @@ extern ImagenData imgRonda;
 extern ImagenData imgTorretas[5]; // Array para las 5 torretas
 extern ImagenData imgTorretasMejora[5]; // Array para las 5 torretas menu mejoras
 extern ImagenData imgMuerte; //Imagen de la pantalla de muerte
+extern ImagenData imgTitulo; //Imagen con el titulo del juego
 
 // --- FUNCIONES ---
 
