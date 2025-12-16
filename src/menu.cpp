@@ -586,6 +586,7 @@ void menuAjustes()
 }
 
 // Menu informativo de los integrantes del grupo y su respectivo trabajo
+// Menu informativo de los integrantes del grupo y su respectivo trabajo
 void menuCreditos()
 {
 	// Aseguramos que el menu de inicio no se pinte debajo
@@ -611,45 +612,75 @@ void menuCreditos()
 		const char* titulo = "CREDITOS";
 		ImVec2 titleSize = ImGui::CalcTextSize(titulo);
 
-		// Centrar título horizontalmente y colocarlo al 15% de altura
+		// Centrar título horizontalmente y colocarlo al 10% de altura
 		ImGui::SetCursorPos(ImVec2((viewport->Size.x - titleSize.x) * 0.5f, viewport->Size.y * 0.10f));
 		// Color Cobre para el título (Opcional, para estilo)
 		ImGui::TextColored(ImVec4(0.85f, 0.55f, 0.25f, 1.0f), titulo);
 
-		// ---------------- LISTA DE INTEGRANTES ----------------
-		ImGui::SetWindowFontScale(2.0f); // Fuente mediana para el texto
+		// ---------------- RECUADRO GRIS INDUSTRIAL ----------------
 
-		// Posición inicial vertical (30% de la pantalla)
-		float currentY = viewport->Size.y * 0.20f;
-		// Espacio entre lineas (7% de la pantalla)
-		float spacingY = viewport->Size.y * 0.03f;
+		// Definimos el tamaño del panel (70% ancho, 55% alto de la pantalla)
+		ImVec2 panelSize(viewport->Size.x * 0.7f, viewport->Size.y * 0.55f);
 
-		// Array de textos para iterar y centrar fácilmente
-		const char* creditos[] = {
-			"Modelaje de mapa: Joan Aguilar",
-			"Animacion de enemigos: Joan Aguilar y Gerard Benet",
-			"Visualizacion e iluminacion del entorno: Javier Emparan",
-			"Interfaz de usuario: Aime Moral",
-			"Algoritmos y balanceo: Gerard Benet",
-			"",
-			"EXTERNO",
-			"Modelaje de torretas: Marti Barrio"
-		};
+		// Centramos el panel en pantalla (debajo del titulo)
+		ImGui::SetCursorPos(ImVec2((viewport->Size.x - panelSize.x) * 0.5f, viewport->Size.y * 0.20f));
 
-		for (const char* texto : creditos)
+		// Estilo del Panel: Fondo Gris Oscuro Metalizado, Borde Cobre
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.15f, 0.15f, 0.17f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.85f, 0.55f, 0.25f, 1.0f)); // Cobre
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 3.0f); // Borde grueso
+
+		// Creamos el panel (true activa el borde)
+		if (ImGui::BeginChild("PanelCreditos", panelSize, true))
 		{
-			ImVec2 txtSize = ImGui::CalcTextSize(texto);
-			// Centrar texto: (AnchoPantalla - AnchoTexto) / 2
-			ImGui::SetCursorPos(ImVec2((viewport->Size.x - txtSize.x) * 0.5f, currentY));
-			ImGui::Text(texto);
+			// ---------------- LISTA DE INTEGRANTES ----------------
+			ImGui::SetWindowFontScale(1.0f); // Fuente mediana para el texto
 
-			// Bajar la posición Y para la siguiente línea
-			currentY += spacingY;
+			// Posición inicial vertical DENTRO del panel
+			float currentY = panelSize.y * 0.10f; // Empezar un poco bajado
+			// Espacio entre lineas
+			float spacingY = panelSize.y * 0.08f;
+
+			// Array de textos para iterar y centrar fácilmente
+			const char* creditos[] = {
+				"Modelaje de mapa: Joan Aguilar",
+				"Animacion de enemigos: Joan Aguilar y Gerard Benet",
+				"Visualizacion e iluminacion del entorno: Javier Emparan",
+				"Interfaz de usuario: Aime Moral",
+				"Algoritmos y balanceo: Gerard Benet",
+				"",
+				"EXTERNO",
+				"Modelaje de torretas: Marti Barrio"
+			};
+
+			for (const char* texto : creditos)
+			{
+				ImVec2 txtSize = ImGui::CalcTextSize(texto);
+
+				// Centrar texto RELATIVO AL PANEL: (AnchoPanel - AnchoTexto) / 2
+				ImGui::SetCursorPos(ImVec2((panelSize.x - txtSize.x) * 0.5f, currentY));
+
+				// Si el texto es "EXTERNO", lo pintamos de otro color para destacar
+				if (strcmp(texto, "EXTERNO") == 0)
+					ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), texto); // Naranja
+				else
+					ImGui::Text(texto);
+
+				// Bajar la posición Y para la siguiente línea
+				currentY += spacingY;
+			}
 		}
+		ImGui::EndChild();
+
+		// Restauramos estilos del panel
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
+
 
 		// ---------------- BOTÓN CERRAR ----------------
 		cambiarEstiloBotones();
-		ImGui::SetWindowFontScale(1.0f); // Restaurar fuente botón
+		ImGui::SetWindowFontScale(1.5f); // Restaurar fuente botón
 
 		// Usamos colocarBoton para situarlo abajo al centro (0.5x, 0.85y)
 		ImVec2 btnSize = colocarBoton(0.5f, 0.85f);
@@ -658,6 +689,7 @@ void menuCreditos()
 			show_menu_creditos = false;
 			show_menu_inicio = true;
 		}
+		ImGui::SetWindowFontScale(1.0f); // Restaurar fuente botón
 
 		regresarEstiloBotones();
 	}
