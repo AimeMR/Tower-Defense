@@ -81,6 +81,7 @@ ImagenData imgRonda;
 ImagenData imgTorretas[5];
 ImagenData imgTorretasMejora[5];
 ImagenData imgMuerte;
+ImagenData imgTitulo;
 
 // --- FUNCION  DE CARGA ---
 bool CargarTexturaInterna(const char* filename, ImagenData& out_img)
@@ -132,6 +133,10 @@ void InicializarGestorImagenes()
 
 	// Cargar pantalla de muerte
 	CargarTexturaInterna(".\\textures\\imagenes\\muerte.png", imgMuerte);
+
+	// Cargar titulo del juego
+	CargarTexturaInterna(".\\textures\\imagenes\\titulo.png", imgTitulo);
+
 }
 
 // --- FUNCIÓN DE DIBUJADO ---
@@ -234,12 +239,15 @@ void menu(bool& salir)
 
 		if (ImGui::Begin("Menu_Principal_Fullscreen", &show_menu_inicio, flags))
 		{
+			
+			DibujarImagen(imgTitulo, 0.5f, 0.2f, 0.2f, {});
+
 			// Aplicamos estilos y fuente 
 			cambiarEstiloBotones();
 			ImGui::SetWindowFontScale(1.5f);
 
 			// --- BOTÓN JUGAR ---
-			ImVec2 btnSize = colocarBoton(0.5f, 0.35f);
+			ImVec2 btnSize = colocarBoton(0.5f, 0.50f);
 			if (ImGui::Button("Jugar", btnSize))
 			{
 				reiniciar = true;
@@ -251,7 +259,7 @@ void menu(bool& salir)
 			}
 
 			// --- BOTÓN AJUSTES ---
-			btnSize = colocarBoton(0.5f, 0.50f);
+			btnSize = colocarBoton(0.5f, 0.60f);
 			if (ImGui::Button("Ajustes", btnSize))
 			{
 				show_menu_inicio = false;
@@ -259,7 +267,7 @@ void menu(bool& salir)
 			}
 
 			// --- BOTÓN CREDITOS ---
-			btnSize = colocarBoton(0.5f, 0.65f);
+			btnSize = colocarBoton(0.5f, 0.70f);
 			if (ImGui::Button("Creditos", btnSize))
 			{
 				show_menu_inicio = false;
@@ -272,7 +280,7 @@ void menu(bool& salir)
 				btnSize = colocarBoton(0.5f, 0.80f);
 				// Cambiamos color para diferenciarlo
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
-				if (ImGui::Button("Modo Pruebas", btnSize))
+				if (ImGui::Button("Modo creativo", btnSize))
 				{
 					reiniciar = true;
 					show_menu_inicio = false;
@@ -403,7 +411,36 @@ void iniciarPartida(bool& salir)
 			TextoOverlay(txtRonda, 100.0f, 8.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
 			});
 
-		ImGui::SetWindowFontScale(1.0f); 
+		ImGui::SetWindowFontScale(1.0f);
+
+
+		ImGuiWindowFlags btnFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBackground;
+
+		// Posicionamiento esquina superior derecha
+		ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->WorkSize.x / 2 - 160.0f, viewport->WorkPos.y + 12.0f), ImGuiCond_Always);
+
+		// Fondo invisible
+		ImGui::SetNextWindowBgAlpha(0.0f);
+
+		if (ImGui::Begin("BtnVelocidad", NULL, btnFlags))
+		{
+			cambiarEstiloBotones();
+			ImGui::SetWindowFontScale(1.5f);
+			char texto[16];
+			int velocidad = debug_speedMult;
+			sprintf_s(texto, "x%d", velocidad);
+			if (ImGui::Button(texto, ImVec2(50, 50)))
+			{
+				if (debug_speedMult < 3.0f)
+					debug_speedMult += 1.0f;
+				else
+					debug_speedMult = 1.0f;
+
+			}
+			ImGui::SetWindowFontScale(1.0f);
+			regresarEstiloBotones();
+		}
+		
 	}
 	ImGui::End();
 
@@ -459,7 +496,11 @@ void iniciarPartida(bool& salir)
 			ImGui::SetWindowFontScale(1.0f);
 		}
 		ImGui::End();
+
+		
 	}
+	
+
 
 	if (show_menu_construccion)
 	{
@@ -547,14 +588,100 @@ void menuAjustes()
 // Menu informativo de los integrantes del grupo y su respectivo trabajo
 void menuCreditos()
 {
-	show_menu_inicio = false;
-	ImGui::Begin("Menu Creditos", &show_menu_creditos);
-	if (ImGui::Button("Cerrar"))
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+	ImGui::SetNextWindowBgAlpha(0.5f);
+
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+
+	if (ImGui::Begin("Menu_Creditos_Fullscreen", &show_menu_creditos, flags))
 	{
-		show_menu_creditos = false;
-		show_menu_inicio = true;
+		// ---------------- TÍTULO ----------------
+		ImGui::SetWindowFontScale(3.0f); 
+		const char* titulo = "CREDITOS";
+		ImVec2 titleSize = ImGui::CalcTextSize(titulo);
+
+		// Centrar título horizontalmente y colocarlo al 10% de altura
+		ImGui::SetCursorPos(ImVec2((viewport->Size.x - titleSize.x) * 0.5f, viewport->Size.y * 0.10f));
+		// Color Cobre para el título 
+		ImGui::TextColored(ImVec4(0.85f, 0.55f, 0.25f, 1.0f), titulo);
+
+		// ---------------- RECUADRO GRIS INDUSTRIAL ----------------
+
+		// Tamaño del panel 
+		ImVec2 panelSize(viewport->Size.x * 0.7f, viewport->Size.y * 0.55f);
+
+		// Centramos el panel en pantalla 
+		ImGui::SetCursorPos(ImVec2((viewport->Size.x - panelSize.x) * 0.5f, viewport->Size.y * 0.20f));
+
+		// Estilo del Panel
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.15f, 0.15f, 0.17f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.85f, 0.55f, 0.25f, 1.0f)); // Cobre
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 3.0f); // Borde grueso
+
+		if (ImGui::BeginChild("PanelCreditos", panelSize, true))
+		{
+			// ---------------- Información ----------------
+			ImGui::SetWindowFontScale(1.0f); 
+
+			float currentY = panelSize.y * 0.10f; 
+			float spacingY = panelSize.y * 0.08f; 			// Espacio entre lineas
+
+			const char* creditos[] = {
+				"Modelaje de mapa: Joan Aguilar",
+				"Animacion de enemigos: Joan Aguilar y Gerard Benet",
+				"Visualizacion e iluminacion del entorno: Javier Emparan",
+				"Interfaz de usuario: Aime Moral",
+				"Algoritmos y balanceo: Gerard Benet",
+				"",
+				"EXTERNO",
+				"Modelaje de torretas: Marti Barrio"
+			};
+
+			for (const char* texto : creditos)
+			{
+				ImVec2 txtSize = ImGui::CalcTextSize(texto);
+
+				// Centrar texto relativo al panel
+				ImGui::SetCursorPos(ImVec2((panelSize.x - txtSize.x) * 0.5f, currentY));
+
+				// Titulo externo pintado difernte
+				if (strcmp(texto, "EXTERNO") == 0)
+					ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), texto); // Naranja
+				else
+					ImGui::Text(texto);
+
+				// Bajar la posición Y para la siguiente línea
+				currentY += spacingY;
+			}
+		}
+		ImGui::EndChild();
+
+		// Restauramos estilos del panel
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
+
+
+		// ---------------- BOTÓN CERRAR ----------------
+		cambiarEstiloBotones();
+		ImGui::SetWindowFontScale(1.5f); 
+
+		ImVec2 btnSize = colocarBoton(0.5f, 0.85f);
+		if (ImGui::Button("Cerrar", btnSize))
+		{
+			show_menu_creditos = false;
+			show_menu_inicio = true;
+		}
+		ImGui::SetWindowFontScale(1.0f); 
+		regresarEstiloBotones();
 	}
 	ImGui::End();
+	ImGui::PopStyleColor();
 }
 
 // Menu de pausa 
@@ -991,22 +1118,24 @@ void menuMuerte()
 	{
 		std::vector<int> statsFinales = pl->getStatsFinales();
 
-		char tEnemigos[64], tDinero[64], tTorretas[64], tMejoras[64];
+		char tEnemigos[64], tDinero[64], tTorretas[64], tMejoras[64], tRonda[64];
 
 		sprintf_s(tEnemigos, "Enemigos derrotados: %d", statsFinales[0]);
 		sprintf_s(tDinero, "Dinero conseguido: %d $", statsFinales[1]);
 		sprintf_s(tTorretas, "Torretas colocadas: %d", statsFinales[2]);
 		sprintf_s(tMejoras, "Mejoras conseguidas: %d", statsFinales[3]);
+		sprintf_s(tRonda, "Ronda maxima: %d", pl->getRound());
 
 		ImGui::SetWindowFontScale(2.0f);
 
 
 		// Imagen de fondo
-		DibujarImagen(imgMuerte, 0.5f, 0.5f, 2.0f, {
-			TextoOverlay(tEnemigos, viewport->Size.x / 3  , 350.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
-			TextoOverlay(tDinero, viewport->Size.x / 3 , 400.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
-			TextoOverlay(tTorretas, viewport->Size.x / 3, 450.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
-			TextoOverlay(tMejoras, viewport->Size.x / 3, 500.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)) });
+		DibujarImagen(imgMuerte, 0.5f, 0.5f, 0.25f, {
+			TextoOverlay(tEnemigos, viewport->Size.x * 2 / 5  , 300.0f,   ImVec4(1.0f, 1.0f, 1.0f, 1.0f)),
+			TextoOverlay(tDinero, viewport->Size.x * 2 / 5 , 350.0f,   ImVec4(1.0f, 1.0f, 1.0f, 1.0f)),
+			TextoOverlay(tTorretas, viewport->Size.x * 2 / 5, 400.0f,   ImVec4(1.0f, 1.0f, 1.0f, 1.0f)),
+			TextoOverlay(tMejoras, viewport->Size.x * 2 / 5, 450.0f,   ImVec4(1.0f, 1.0f, 1.0f, 1.0f)),
+			TextoOverlay(tRonda, viewport->Size.x * 2 / 5, 500.0f,   ImVec4(1.0f, 1.0f, 1.0f, 1.0f)) });
 		
 		//DibujarImagen(imgMuerte, 0.5f, 0.5f, 2.0f, {});
 		cambiarEstiloBotones();
@@ -1016,7 +1145,7 @@ void menuMuerte()
 		ImGui::SetCursorPosY(viewport->Size.y * 0.2f);
 
 		// --- BOTONES  ---
-		ImVec2 btnSize = colocarBoton(0.5f, 0.55f);
+		ImVec2 btnSize = colocarBoton(0.5f, 0.65f);
 		if (ImGui::Button("Reinciar", btnSize))
 		{
 			reiniciar = true;
@@ -1026,7 +1155,7 @@ void menuMuerte()
 			show_menu_muerte = false;
 		}
 
-		btnSize = colocarBoton(0.5f, 0.70f);
+		btnSize = colocarBoton(0.5f, 0.80f);
 		if (ImGui::Button("Menu Principal", btnSize))
 		{
 			reiniciar = true;
