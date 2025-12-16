@@ -411,7 +411,36 @@ void iniciarPartida(bool& salir)
 			TextoOverlay(txtRonda, 100.0f, 8.0f, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))
 			});
 
-		ImGui::SetWindowFontScale(1.0f); 
+		ImGui::SetWindowFontScale(1.0f);
+
+
+		ImGuiWindowFlags btnFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBackground;
+
+		// Posicionamiento esquina superior derecha
+		ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->WorkSize.x / 2 - 160.0f, viewport->WorkPos.y + 12.0f), ImGuiCond_Always);
+
+		// Fondo invisible
+		ImGui::SetNextWindowBgAlpha(0.0f);
+
+		if (ImGui::Begin("BtnVelocidad", NULL, btnFlags))
+		{
+			cambiarEstiloBotones();
+			ImGui::SetWindowFontScale(1.5f);
+			char texto[16];
+			int velocidad = debug_speedMult;
+			sprintf_s(texto, "x%d", velocidad);
+			if (ImGui::Button(texto, ImVec2(50, 50)))
+			{
+				if (debug_speedMult < 3.0f)
+					debug_speedMult += 1.0f;
+				else
+					debug_speedMult = 1.0f;
+
+			}
+			ImGui::SetWindowFontScale(1.0f);
+			regresarEstiloBotones();
+		}
+		
 	}
 	ImGui::End();
 
@@ -467,7 +496,11 @@ void iniciarPartida(bool& salir)
 			ImGui::SetWindowFontScale(1.0f);
 		}
 		ImGui::End();
+
+		
 	}
+	
+
 
 	if (show_menu_construccion)
 	{
