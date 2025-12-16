@@ -50,7 +50,7 @@ void InitGL()
 	statusB = false;
 
 // Entorn VGI: Variables de control per Men� Vista: Pantalla Completa, Pan, dibuixar eixos i grids 
-	fullscreen = false;
+	fullscreen = true;
 	eixos = true;
 
 // Entorn VGI: Variables de control Skybox Cube
