@@ -588,14 +588,83 @@ void menuAjustes()
 // Menu informativo de los integrantes del grupo y su respectivo trabajo
 void menuCreditos()
 {
+	// Aseguramos que el menu de inicio no se pinte debajo
 	show_menu_inicio = false;
-	ImGui::Begin("Menu Creditos", &show_menu_creditos);
-	if (ImGui::Button("Cerrar"))
+
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	// 1. Configuración ventana Fullscreen (Igual que menuPausa)
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+
+	// Fondo negro menu
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+	// Transparencia del fondo (Un poco más oscuro para leer bien el texto)
+	ImGui::SetNextWindowBgAlpha(0.5f);
+
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+
+	if (ImGui::Begin("Menu_Creditos_Fullscreen", &show_menu_creditos, flags))
 	{
-		show_menu_creditos = false;
-		show_menu_inicio = true;
+		// ---------------- TÍTULO ----------------
+		ImGui::SetWindowFontScale(3.0f); // Fuente grande para el título
+		const char* titulo = "CREDITOS";
+		ImVec2 titleSize = ImGui::CalcTextSize(titulo);
+
+		// Centrar título horizontalmente y colocarlo al 15% de altura
+		ImGui::SetCursorPos(ImVec2((viewport->Size.x - titleSize.x) * 0.5f, viewport->Size.y * 0.10f));
+		// Color Cobre para el título (Opcional, para estilo)
+		ImGui::TextColored(ImVec4(0.85f, 0.55f, 0.25f, 1.0f), titulo);
+
+		// ---------------- LISTA DE INTEGRANTES ----------------
+		ImGui::SetWindowFontScale(2.0f); // Fuente mediana para el texto
+
+		// Posición inicial vertical (30% de la pantalla)
+		float currentY = viewport->Size.y * 0.20f;
+		// Espacio entre lineas (7% de la pantalla)
+		float spacingY = viewport->Size.y * 0.03f;
+
+		// Array de textos para iterar y centrar fácilmente
+		const char* creditos[] = {
+			"Modelaje de mapa: Joan Aguilar",
+			"Animacion de enemigos: Joan Aguilar y Gerard Benet",
+			"Visualizacion e iluminacion del entorno: Javier Emparan",
+			"Interfaz de usuario: Aime Moral",
+			"Algoritmos y balanceo: Gerard Benet",
+			"",
+			"EXTERNO",
+			"Modelaje de torretas: Marti Barrio"
+		};
+
+		for (const char* texto : creditos)
+		{
+			ImVec2 txtSize = ImGui::CalcTextSize(texto);
+			// Centrar texto: (AnchoPantalla - AnchoTexto) / 2
+			ImGui::SetCursorPos(ImVec2((viewport->Size.x - txtSize.x) * 0.5f, currentY));
+			ImGui::Text(texto);
+
+			// Bajar la posición Y para la siguiente línea
+			currentY += spacingY;
+		}
+
+		// ---------------- BOTÓN CERRAR ----------------
+		cambiarEstiloBotones();
+		ImGui::SetWindowFontScale(1.0f); // Restaurar fuente botón
+
+		// Usamos colocarBoton para situarlo abajo al centro (0.5x, 0.85y)
+		ImVec2 btnSize = colocarBoton(0.5f, 0.85f);
+		if (ImGui::Button("Cerrar", btnSize))
+		{
+			show_menu_creditos = false;
+			show_menu_inicio = true;
+		}
+
+		regresarEstiloBotones();
 	}
 	ImGui::End();
+
+	// Quita el fondo de color negro
+	ImGui::PopStyleColor();
 }
 
 // Menu de pausa 
