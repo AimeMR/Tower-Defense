@@ -96,7 +96,7 @@ void main()
 			FragColor = vec4(1.0 - shadow, 1.0 - shadow, 1.0 - shadow, 1.0);
 			break;
 		case 3:
-			FragColor = vec4(ambient * diffuse * finalMaterialColor.rgb, 1.0);
+			FragColor = vec4((ambient + 1) * diffuse * finalMaterialColor.rgb, 1.0);
 			break;
 		default:
 			FragColor = vec4(result, 1.0);
