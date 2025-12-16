@@ -33,7 +33,7 @@ bool show_menu_pruebas = false;
 bool juego_pausado = false;   //flag para el control del timer (activado o pausado)
 bool show_menu_construccion = false;
 bool show_menu_mejora = false;
-bool show_menu_muerte = false;
+bool show_menu_muerte = true;
 bool enConstruccion = true;
 bool debugMode = false;
 bool enterDebugMode = false;
@@ -991,22 +991,24 @@ void menuMuerte()
 	{
 		std::vector<int> statsFinales = pl->getStatsFinales();
 
-		char tEnemigos[64], tDinero[64], tTorretas[64], tMejoras[64];
+		char tEnemigos[64], tDinero[64], tTorretas[64], tMejoras[64], tRonda[64];
 
 		sprintf_s(tEnemigos, "Enemigos derrotados: %d", statsFinales[0]);
 		sprintf_s(tDinero, "Dinero conseguido: %d $", statsFinales[1]);
 		sprintf_s(tTorretas, "Torretas colocadas: %d", statsFinales[2]);
 		sprintf_s(tMejoras, "Mejoras conseguidas: %d", statsFinales[3]);
+		sprintf_s(tRonda, "Ronda maxima: %d", pl->getRound());
 
 		ImGui::SetWindowFontScale(2.0f);
 
 
 		// Imagen de fondo
-		DibujarImagen(imgMuerte, 0.5f, 0.5f, 2.0f, {
-			TextoOverlay(tEnemigos, viewport->Size.x / 3  , 350.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
-			TextoOverlay(tDinero, viewport->Size.x / 3 , 400.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
-			TextoOverlay(tTorretas, viewport->Size.x / 3, 450.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)),
-			TextoOverlay(tMejoras, viewport->Size.x / 3, 500.0f,   ImVec4(0.0f, 0.0f, 0.0f, 1.0f)) });
+		DibujarImagen(imgMuerte, 0.5f, 0.5f, 0.25f, {
+			TextoOverlay(tEnemigos, viewport->Size.x * 2 / 5  , 300.0f,   ImVec4(1.0f, 1.0f, 1.0f, 1.0f)),
+			TextoOverlay(tDinero, viewport->Size.x * 2 / 5 , 350.0f,   ImVec4(1.0f, 1.0f, 1.0f, 1.0f)),
+			TextoOverlay(tTorretas, viewport->Size.x * 2 / 5, 400.0f,   ImVec4(1.0f, 1.0f, 1.0f, 1.0f)),
+			TextoOverlay(tMejoras, viewport->Size.x * 2 / 5, 450.0f,   ImVec4(1.0f, 1.0f, 1.0f, 1.0f)),
+			TextoOverlay(tRonda, viewport->Size.x * 2 / 5, 500.0f,   ImVec4(1.0f, 1.0f, 1.0f, 1.0f)) });
 		
 		//DibujarImagen(imgMuerte, 0.5f, 0.5f, 2.0f, {});
 		cambiarEstiloBotones();
@@ -1016,7 +1018,7 @@ void menuMuerte()
 		ImGui::SetCursorPosY(viewport->Size.y * 0.2f);
 
 		// --- BOTONES  ---
-		ImVec2 btnSize = colocarBoton(0.5f, 0.55f);
+		ImVec2 btnSize = colocarBoton(0.5f, 0.65f);
 		if (ImGui::Button("Reinciar", btnSize))
 		{
 			reiniciar = true;
@@ -1026,7 +1028,7 @@ void menuMuerte()
 			show_menu_muerte = false;
 		}
 
-		btnSize = colocarBoton(0.5f, 0.70f);
+		btnSize = colocarBoton(0.5f, 0.80f);
 		if (ImGui::Button("Menu Principal", btnSize))
 		{
 			reiniciar = true;
