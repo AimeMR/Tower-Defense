@@ -584,6 +584,9 @@ void resetGame()
 	cameraDir = forward;
 	cameraRight = glm::normalize(glm::cross(forward, glm::vec3(0, 0, 1)));
 
+	freeCameraPos = forward * distancia;
+
+
 	//Menus
 	juego_pausado = false;
 	show_menu_construccion = false;

@@ -732,6 +732,9 @@ void menuPausa(bool& salir, const ImGuiViewport* viewport)
 			show_menu_inicio = true;
 			show_menu_muerte = false;
 			debugMode = false;
+			show_menu_pruebas = false;
+			reiniciar = true;
+			debugMode = false;
 		}
 
 		btnSize = colocarBoton(0.1f, 0.90f);
@@ -1317,6 +1320,13 @@ void menuPruebas(bool& salir)
 		{
 			show_menu_pruebas = false;
 			show_menu_inicio = true;
+
+			juego_pausado = false;
+			show_jugar = false;
+			reiniciar = true;
+
+			show_menu_muerte = false;
+			debugMode = false;
 		}
 
 		ImGui::SetWindowFontScale(1.0f);
