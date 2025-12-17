@@ -601,17 +601,17 @@ void menuCreditos()
 	if (ImGui::Begin("Menu_Creditos_Fullscreen", &show_menu_creditos, flags))
 	{
 		// ---------------- TÍTULO ----------------
-		ImGui::SetWindowFontScale(3.0f); 
+		ImGui::SetWindowFontScale(5.0f); 
 		const char* titulo = "CREDITOS";
 		ImVec2 titleSize = ImGui::CalcTextSize(titulo);
 
 		// Centrar título horizontalmente y colocarlo al 10% de altura
 		ImGui::SetCursorPos(ImVec2((viewport->Size.x - titleSize.x) * 0.5f, viewport->Size.y * 0.10f));
 		// Color Cobre para el título 
-		ImGui::TextColored(ImVec4(0.85f, 0.55f, 0.25f, 1.0f), titulo);
+		ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), titulo);
 
 		// ---------------- RECUADRO GRIS INDUSTRIAL ----------------
-
+		ImGui::SetWindowFontScale(3.0f);
 		// Tamaño del panel 
 		ImVec2 panelSize(viewport->Size.x * 0.7f, viewport->Size.y * 0.55f);
 
