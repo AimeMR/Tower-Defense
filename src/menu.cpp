@@ -633,7 +633,7 @@ void menuCreditos()
 			float spacingY = panelSize.y * 0.08f; 			// Espacio entre lineas
 
 			const char* creditos[] = {
-				"Modelaje de mapa: Joan Aguilar",
+				"Modelaje de mapa y enemigos: Joan Aguilar",
 				"Animacion de enemigos: Joan Aguilar y Gerard Benet",
 				"Visualizacion e iluminacion del entorno: Javier Emparan",
 				"Interfaz de usuario: Aime Moral",
